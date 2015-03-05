@@ -4,6 +4,7 @@
 
 \documentclass[11pt,a4paper,oneside,onecolumn]{IEEEtran}
 \usepackage{graphicx}
+\usepackage{caption}
 % Enter the project title and your project supervisor here
 \newcommand{\ProjectTitle}{SfM from RGB-D data}
 \newcommand{\ProjectSupervisor}{Bernhard Zeisl}
@@ -14,9 +15,9 @@
 \newcommand{\PutPhotos}{}
 % Please include a clear photo of each member. (use pdf or png files for Latex to embed them in the document well)
 \newcommand{\memberone}{Seonwook Park}
-\newcommand{\memberonepicture}{pic1.png}
+\newcommand{\memberonepicture}{pic2.png}
 \newcommand{\membertwo}{Yifan Wang}
-\newcommand{\membertwopicture}{pic2.png}
+\newcommand{\membertwopicture}{pic1.png}
 %\newcommand{\memberthree}{Member Name}
 %\newcommand{\memberthreepicture}{pic3.png}
 
@@ -39,15 +40,34 @@
 
 \section{Description of the project}
 
-A high level description of the project, mentioning the main goal, the input and planned output data. Typically 4-5 sentences, also citing immediately related literature \cite{paper}.
+This project aims to reconstruct a 3D model of an environment using structure
+from motion (SfM). A pipeline will be assembled which makes use of depth data
+taken from a Kinect \cite{reckerdepth}. Our work will be devoted to investigate whether or
+how depth information may simplify the scene registration and improve the global
+accuracy.
 
 \section{Work packages and timeline}
 
-Detailed descriptions of work packages you planned, their outcomes, the responsible group member and estimated timeline. Specify the challenges that will be tackled and considered solutions with possible alternatives, citing related documents if applicable. Mention the platform (Android, PC etc.) and the language (C++ etc.) you plan to use.
+First, a small base dataset will be acquired using a Kinect. A basic pipeline
+will be assembled where (i) SURF/SIFT features are detected (ii) then matched to
+find coarse estimations of camera pose (iii) then a final step where a finer
+estimate of the scene is found.
+
+A challenge is the evaluation of various scene registration methods, including
+2D-2D, 3D-3D and 3D-2D point registration. Furthermore a suitable global
+optimizer is to be found, which incorporates sensor’s depth information as
+prior.
+
+The implementation will mainly be carried out using C++. Various libraries will
+be used, such as vlfeat (feature detection),  PnP solvers (scene registration),
+and ceres (bundle adjustment).
 
 \section{Outcomes and Demonstration}
 
-Give detailed information on the expected outcome of your project and the experiments you plan to test your implementation. If applicable, describe the online or offline demo you plan to present at the end of the semester.
+The project should yield a 3D reconstruction of a room environment. This
+procedure can be verified by applying to an unknown scene. A visualization of
+the result will be shown using the Point Cloud Library (PCL) or Meshlab, with
+comparisons to a video feed.
 
 
 %\vspace{1cm}
@@ -57,6 +77,13 @@ Give detailed information on the expected outcome of your project and the experi
 %\item The document should not exceed two pages including the references.
 %\item Please name the document \textbf{3DPhoto\_Proposal\_Surname1\_Surname2.pdf} and send it to Ya\u{g}{\i}z in an email titled \textbf{[3DPhoto] Project Proposal - Surname1 Surname2}, filling in your surnames.
 %\end{itemize}
+
+\begin{figure}[h!]
+\begin{center}
+	\includegraphics[width=.5\textwidth]{img.png}
+	\caption{A 3D reconstruction of houses on a street\cite{varga2008practical}}
+\end{center}
+\end{figure}
 
 {%\singlespace
 {\small
