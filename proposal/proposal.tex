@@ -53,6 +53,40 @@ will be assembled where (i) SURF/SIFT features are detected (ii) then matched to
 find coarse estimations of camera pose (iii) then a final step where a finer
 estimate of the scene is found.
 
+We aim to follow the following timeline:
+
+\def\arraystretch{1.5}
+\vspace{1em}
+\begin{tabular}{|r|p{.82\columnwidth}|}
+	\hline
+	22nd March &
+	Acquisition of small initial dataset using the Kinect. \newline
+	Review and planning of specifics of the pipeline implementation.
+	\\
+	\hline
+	2nd April &
+	Feature extraction from acquired images using $\mathrm{vlfeat}$ and
+	matching of image pairs or triples.
+	\\
+	\hline
+	24th April &
+	Coarse estimation of camera and feature pose and initial visualization
+	using $\mathrm{PCL}$.
+	\\
+	\hline
+	8th May &
+	Finer estimation of feature pose via Bundle Adjustment using
+	$\mathrm{ceres}$.
+	\\
+	\hline
+	22nd May &
+	Implementation of alternate scene registration methods. Evaluation of
+	results.
+	\\
+	\hline
+\end{tabular}
+\vspace{1em}
+
 A challenge is the evaluation of various scene registration methods, including
 2D-2D, 3D-3D and 3D-2D point registration. Furthermore a suitable global
 optimizer is to be found, which incorporates sensor’s depth information as
