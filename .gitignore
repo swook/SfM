@@ -38,3 +38,6 @@
 # vlfeat
 /lib/vlfeat
 
+# Make targets
+src/main
+
