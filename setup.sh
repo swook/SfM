@@ -17,9 +17,8 @@ if [ ! -d vlfeat/ ]; then
 fi
 cd vlfeat
 git pull origin master
-cd vlfeat
 make
-cd ../..
+cd ..
 
 cd ..
 ## END 3rd party
