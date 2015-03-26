@@ -31,6 +31,9 @@
 *.bbl
 *.aux
 
+# Bernhard's data acquisition code
+/bernhard/build
+
 # Datasets
 /data
 /sfm_data.zip
