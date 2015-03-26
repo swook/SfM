@@ -30,3 +30,11 @@
 # Latex output files
 *.bbl
 *.aux
+
+# Datasets
+/data
+/sfm_data.zip
+
+# vlfeat
+/lib/vlfeat
+
