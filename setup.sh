@@ -13,7 +13,7 @@ cd lib/
 
 # Get vlfeat
 if [ ! -d vlfeat/ ]; then
-	git clone git@github.com:vlfeat/vlfeat.git
+	git clone https://github.com/vlfeat/vlfeat.git
 fi
 cd vlfeat
 git pull origin master
