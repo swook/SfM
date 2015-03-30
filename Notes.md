@@ -3,7 +3,7 @@ PIPELINE
 
 # Feature detection
 
-Detect [SIFT features][vlfeat-sift] using [vlfeat][vlfeat-docs].
+Detect SIFT/SURF features using [OpenCV][opencv-sift-example].
 
 ## Inputs
 
@@ -11,22 +11,43 @@ Detect [SIFT features][vlfeat-sift] using [vlfeat][vlfeat-docs].
 
 ## Outputs
 
-* List of keypoints
-* List of descriptors
+* Vector of descriptors
 
+## Code Example
+
+For each image
+
+* detect keypoint `SiftFeatureDetector` or `SurfFeatureDetector`
+    SurfFeatureDetector detector(400);
+    vector<KeyPoint> keypoints1;
+    detector.detect(img1, keypoints1);
+* compute descriptors from keypoints `SurfDescriptorExtractor`
+    SurfDescriptorExtractor extractor;
+    Mat descriptors1;
+    extractor.compute(img1, keypoints1, descriptors1);
 
 # Feature matching
 
-Text
+Feature matching
 
 ## Inputs
 
-* A
+* N descriptors
 
 ## Outputs
 
-* B
+* K matches
 
+## Code Example
+
+For image k, pair (k,j) j = k+1 to N
+
+* match using `FlannBasedMatcher`
+    FlannBasedMatcher matcher;
+    std::vector< DMatch > matches;
+    matcher.match( descriptors_k, descriptors_j, matches );
+
+* get match pairs (i,j) if matches.size()>threshold
 
 # Initial (relative) camera pose estimates
 
@@ -88,4 +109,4 @@ PCL
 <!-- Reference URLs -->
 [vlfeat-sift]: http://www.vlfeat.org/api/sift.html
 [vlfeat-docs]: http://www.vlfeat.org/api/index.html
-
+[opencv-sift-example]: http://docs.opencv.org/doc/user_guide/ug_features2d.html
