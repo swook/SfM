@@ -39,7 +39,7 @@
 /sfm_data.zip
 
 # vlfeat
-/lib/vlfeat
+/lib
 
 # Make targets
 src/main
