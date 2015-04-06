@@ -12,16 +12,6 @@ if [ ! -d lib/ ]; then
 fi
 cd lib/
 
-# Get vlfeat
-VLDIR="$LIBDIR/vlfeat/"
-if [ ! -d "$VLDIR" ]; then
-	git clone https://github.com/vlfeat/vlfeat.git
-fi
-cd "$VLDIR"
-git pull origin master
-make
-cd ..
-
 # Get OpenCV 3
 CVDIR="$LIBDIR/opencv/"
 if [ ! -d "$CVDIR" ]; then
