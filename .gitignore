@@ -41,6 +41,6 @@
 # vlfeat
 /lib
 
-# Make targets
-src/main
+# CMake targets
+build/
 
