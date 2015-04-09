@@ -6,23 +6,24 @@ DATA_DIR=data/
 # rm -rf $DATA_DIR
 
 ## BEGIN 3rd party libs
-LIBDIR="$(dirname $(pwd))/lib/"
+LIBDIR=""$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/lib"
 if [ ! -d lib/ ]; then
 	mkdir lib/
 fi
 cd lib/
 
 # Get OpenCV 3
-CVDIR="$LIBDIR/opencv/"
+CVDIR=$LIBDIR/opencv
 if [ ! -d "$CVDIR" ]; then
 	git clone https://github.com/Itseez/opencv.git
 	git clone https://github.com/Itseez/opencv_contrib.git
 fi
-cd $CVDIR
+cd "$CVDIR"
 git pull origin master
 # START OPENCV BUILD
 	rm -rf build/
 	mkdir build/
+	cd build/
 	OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules cmake ..
 	make -j$(nproc)
 	cd ..
@@ -30,7 +31,7 @@ git pull origin master
 cd ..
 
 # Get ceres
-CERESDIR="$LIBDIR/ceres-solver/"
+CERESDIR=$LIBDIR/ceres-solver
 if [ ! -d "$CERESDIR" ]; then
 	git clone https://ceres-solver.googlesource.com/ceres-solver
 fi
@@ -39,6 +40,7 @@ git pull origin master
 # START CERES BUILD
 	rm -rf build/
 	mkdir build/
+	cd build/
 	cmake -D CMAKE_BUILD_TYPE=RELEASE WITH_TBB=ON ..
 	make -j$(nproc)
 	cd ..
