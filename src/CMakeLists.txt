@@ -1,7 +1,7 @@
 set(
   MAIN_SOURCES
   "0_load_images.cpp"
-  "1_feature_detect.cpp"
+  "1_feature_extraction.cpp"
   "2_feature_match.cpp"
   "3_pose_estimates.cpp"
   "4_registration.cpp"

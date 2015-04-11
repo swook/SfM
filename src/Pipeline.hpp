@@ -20,5 +20,8 @@ private:
 
 	void load_images(std::string _folder_path, Images& images);
 
-	void find_matching_pairs(const Images& images, const CamFrames& camframes, ImagePairs& pairs);
+	// detect features and extract descriptors. features are stored in CamFrames::key_points
+	void extract_features(const Images& images, CamFrames& cam_Frames, DescriptorsVec& descriptors_vec);
+
+	// void find_matching_pairs(const Images& images, const CamFrames& camframes, ImagePairs& pairs);
 };

@@ -17,7 +17,7 @@ void Pipeline::run()
 	/**
 	 * Stage 1: Detect features in loaded images
 	 */
-
+	 
 
 	/**
 	 * Stage 2: Calculate descriptors and find image pairs through matching
