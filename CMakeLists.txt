@@ -14,20 +14,19 @@ find_package(Boost  REQUIRED program_options system filesystem date_time)
 include_directories(${Boost_INCLUDE_DIRS})
 #set(Boost_USE_STATIC_LIBS ON)
 
+# OS X specific options
+if (APPLE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -stdlib=libc++")
+  set(CMAKE_CXX_LINK_FLAGS "-lc++")
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif(APPLE)
+
 # Set compile options
 set(
   CMAKE_CXX_FLAGS
-  ${CMAKE_CXX_FLAGS}
-  "-O3 -stdlib=libstdc++ -msse3 -msse4"
+  "${CMAKE_CXX_FLAGS} -O3 -msse3 -msse4"
 )
-
-# OS X specific options
-if (APPLE)
-  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=gnu++11")
-  set(CMAKE_CXX_LINK_FLAGS "-lc++")
-else()
-  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11")
-endif(APPLE)
 
 # Add libraries
 add_subdirectory(src)
