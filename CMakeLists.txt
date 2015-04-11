@@ -1,9 +1,14 @@
 cmake_minimum_required(VERSION 2.8)
 
+set(
+  CMAKE_CXX_COMPILER
+  "clang++"
+)
+
 project(sfm)
 
 # Add libraries
-find_package(OpenCV REQUIRED core highgui imgproc)
+find_package(OpenCV REQUIRED core highgui imgproc xfeatures2d)
 find_package(Boost  REQUIRED program_options system filesystem date_time)
 
 include_directories(${Boost_INCLUDE_DIRS})
@@ -13,8 +18,17 @@ include_directories(${Boost_INCLUDE_DIRS})
 set(
   CMAKE_CXX_FLAGS
   ${CMAKE_CXX_FLAGS}
-  "-O3 -std=c++11 -msse3 -msse4"
+  "-O3 -std=c++11 -stdlib=libstdc++ -msse3 -msse4"
 )
+
+# OS X specific options
+if (APPLE)
+  set(
+    CMAKE_CXX_LINK_FLAGS
+    ${CMAKE_CXX_LINK_FLAGS}
+    "-lc++"
+  )
+endif(APPLE)
 
 # Add libraries
 add_subdirectory(src)
