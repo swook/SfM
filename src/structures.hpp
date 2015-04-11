@@ -21,6 +21,7 @@ struct Image
  * List of Image structs
  */
 typedef std::vector<Image> Images;
+
 /**
  * List of key points
  */

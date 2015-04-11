@@ -19,6 +19,9 @@ void Pipeline::load_images(string folder_path, Images& images)
 		throw runtime_error("Invalid data path: " + folder_path);
 	}
 
+	// Reset images list
+	images = Images(0);
+
 	// Regex to parse image names
 	auto fname_regex = regex(".*/frame_([0-9T\\.]+)_(rgb|depth)\\.png$");
 

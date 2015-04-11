@@ -15,8 +15,7 @@ public:
 
 private:
 	std::string folder_path;
-	Images      images;
 
-	void load_images(std::string folder_path, Images& images);
+	void load_images(std::string _folder_path, Images& images);
 
 };
