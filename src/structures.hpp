@@ -27,10 +27,10 @@ typedef std::vector<Image> Images;
  */
 typedef std::vector<cv::KeyPoint> KeyPoints;
 
- 
-typedef cv::Mat Descriptor;
-typedef std::vector<Descriptor> Descriptors;
+// Descriptor-related helper typedefs
+typedef cv::Mat                  Descriptors;
 typedef std::vector<Descriptors> DescriptorsVec;
+
 
 /**
  * Necessary information for each camera frame
