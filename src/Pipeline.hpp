@@ -1,3 +1,5 @@
+#pragma once
+
 #include "structures.hpp"
 
 class Pipeline {
@@ -18,4 +20,5 @@ private:
 
 	void load_images(std::string _folder_path, Images& images);
 
+	void find_matching_pairs(const Images& images, const CamFrames& camframes, ImagePairs& pairs);
 };
