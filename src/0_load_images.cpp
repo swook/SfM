@@ -61,11 +61,14 @@ void Pipeline::load_images(string folder_path, Images& images)
 		// Get file paths
 		rgb_path = (fmt("%s/frame_%s_rgb.png")   % folder_path % time_str).str();
 		dep_path = (fmt("%s/frame_%s_depth.png") % folder_path % time_str).str();
+		Mat rgb_img = imread(rgb_path);
+		Mat gray_img;
+		cvtColor(rgb_img,gray_img,COLOR_RGB2GRAY);
 
 		// Store Image struct with image read using imread
 		images.push_back((Image) {
 			pt::from_iso_string(time_str),
-			imread(rgb_path),
+			gray_img,
 			imread(dep_path),
 			rgb_path,
 			dep_path

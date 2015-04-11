@@ -17,7 +17,9 @@ void Pipeline::run()
 	/**
 	 * Stage 1: Detect features in loaded images
 	 */
-	 
+	CamFrames cam_Frames;
+	DescriptorsVec descriptors_vec;
+	extract_features(images, cam_Frames, descriptors_vec);
 
 	/**
 	 * Stage 2: Calculate descriptors and find image pairs through matching
