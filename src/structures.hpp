@@ -21,4 +21,18 @@ struct Image
  * List of Image structs
  */
 typedef std::vector<Image> Images;
+/**
+ * List of key points
+ */
+typedef std::vector<cv::KeyPoint> KeyPoints;
 
+/**
+ * Necessary information for each camera frame
+ */
+struct CamFrame
+{
+	const KeyPoints key_points; // list of feature points found in this image
+	// TODO add field for pose when pose_estimation R and t
+};
+
+typedef std::vector<CamFrame> CamFrames;
