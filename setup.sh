@@ -12,24 +12,6 @@ if [ ! -d lib/ ]; then
 fi
 cd lib/
 
-# Get OpenCV 3
-CVDIR=$LIBDIR/opencv
-if [ ! -d "$CVDIR" ]; then
-	git clone https://github.com/Itseez/opencv.git
-	git clone https://github.com/Itseez/opencv_contrib.git
-fi
-cd "$CVDIR"
-git pull origin master
-# START OPENCV BUILD
-	rm -rf build/
-	mkdir build/
-	cd build/
-	OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules cmake ..
-	make -j$(nproc)
-	cd ..
-# END OPENCV BUILD
-cd ..
-
 # Get ceres
 CERESDIR=$LIBDIR/ceres-solver
 if [ ! -d "$CERESDIR" ]; then
