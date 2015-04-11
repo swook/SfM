@@ -18,16 +18,15 @@ include_directories(${Boost_INCLUDE_DIRS})
 set(
   CMAKE_CXX_FLAGS
   ${CMAKE_CXX_FLAGS}
-  "-O3 -std=c++11 -stdlib=libstdc++ -msse3 -msse4"
+  "-O3 -stdlib=libstdc++ -msse3 -msse4"
 )
 
 # OS X specific options
 if (APPLE)
-  set(
-    CMAKE_CXX_LINK_FLAGS
-    ${CMAKE_CXX_LINK_FLAGS}
-    "-lc++"
-  )
+  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=gnu++11")
+  set(CMAKE_CXX_LINK_FLAGS "-lc++")
+else()
+  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11")
 endif(APPLE)
 
 # Add libraries
