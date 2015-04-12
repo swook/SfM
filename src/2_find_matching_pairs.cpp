@@ -69,17 +69,15 @@ void Pipeline::find_matching_pairs(
 			// NOTE: remove continue; to see images
 			//continue;
 			Mat out;
-			drawMatches(images[i].gray, camframes[i].key_points,
-			            images[j].gray, camframes[j].key_points,
+			drawMatches(images[i].rgb, camframes[i].key_points,
+			            images[j].rgb, camframes[j].key_points,
 				    good_matches, out);
 			char title[64];
 			sprintf(title, "Match %d-%d", i, j);
-			showImage(title, out);
+			showImageAndWait("Match results", out);
 
 		}
 	}
 
-
-	waitKey(0);
 }
 
