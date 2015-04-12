@@ -42,3 +42,14 @@ struct CamFrame
 };
 
 typedef std::vector<CamFrame> CamFrames;
+
+/**
+ * Pair of images which have sufficient no. of matching features
+ */
+typedef std::pair<KeyPoints, KeyPoints> KeyPointsPair;
+struct ImagePair
+{
+	const std::pair<KeyPoints, KeyPoints> keypoints;
+};
+typedef std::vector<ImagePair> ImagePairs;
+

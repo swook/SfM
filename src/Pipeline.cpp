@@ -21,7 +21,10 @@ void Pipeline::run()
 	DescriptorsVec descriptors_vec;
 	extract_features(images, cam_Frames, descriptors_vec);
 
+
 	/**
 	 * Stage 2: Calculate descriptors and find image pairs through matching
 	 */
+	ImagePairs image_pairs;
+	find_matching_pairs(images, cam_Frames, descriptors_vec, image_pairs);
 }
