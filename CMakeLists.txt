@@ -8,7 +8,7 @@ set(
 project(sfm)
 
 # Add libraries
-find_package(OpenCV REQUIRED core highgui imgproc xfeatures2d)
+find_package(OpenCV REQUIRED core highgui imgproc xfeatures2d xphoto)
 find_package(Boost  REQUIRED program_options system filesystem date_time)
 
 include_directories(${Boost_INCLUDE_DIRS})

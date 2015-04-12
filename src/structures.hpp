@@ -11,6 +11,7 @@ namespace pt = boost::posix_time;
 struct Image
 {
 	const pt::ptime   time;     // Time taken
+	const cv::Mat     rgb;      // 1-channel cv::Mat containing rgb   data
 	const cv::Mat     gray;     // 1-channel cv::Mat containing gray  data
 	const cv::Mat     dep;      // 1-channel cv::Mat containing depth data
 	const std::string rgb_path; // Path to rgb   file

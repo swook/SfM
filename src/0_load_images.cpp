@@ -8,6 +8,7 @@ namespace fs  = boost::filesystem;
 typedef boost::format fmt;
 
 #include "opencv2/opencv.hpp"
+#include "opencv2/xphoto.hpp"
 using namespace cv;
 
 #include "Pipeline.hpp"
@@ -62,12 +63,17 @@ void Pipeline::load_images(string folder_path, Images& images)
 		rgb_path = (fmt("%s/frame_%s_rgb.png")   % folder_path % time_str).str();
 		dep_path = (fmt("%s/frame_%s_depth.png") % folder_path % time_str).str();
 		Mat rgb_img = imread(rgb_path);
+
+		// Some preprocessing
 		Mat gray_img;
 		cvtColor(rgb_img,gray_img,COLOR_RGB2GRAY);
+		balanceWhite(rgb_img, rgb_img, xphoto::WHITE_BALANCE_SIMPLE);
+		balanceWhite(gray_img, gray_img, xphoto::WHITE_BALANCE_SIMPLE);
 
 		// Store Image struct with image read using imread
 		images.push_back((Image) {
 			pt::from_iso_string(time_str),
+			rgb_img,
 			gray_img,
 			imread(dep_path),
 			rgb_path,
