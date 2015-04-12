@@ -46,13 +46,13 @@ void Pipeline::find_matching_pairs(
 			//	matches.size());
 
 			// Our parameters
-			float max_dist    = 400;
-			int   min_matches = 5;
+			float max_dist    = 90;
+			int   min_matches = 15;
 
 			// Only pick good matches
 			std::vector<DMatch> good_matches;
 			for (int m = 0; m < matches.size(); m++)
-				if (matches[m].distance <= max_dist)
+				if (matches[m].distance < max_dist)
 					good_matches.push_back(matches[m]);
 
 			if (good_matches.size() < min_matches) continue;
