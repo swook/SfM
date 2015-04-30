@@ -198,6 +198,7 @@ DataCapture::saveDepthmap (const std::string &filename, const openni_wrapper::De
 
   // scale according to the depth resolution provided by the sensor
   double scale = (std::pow(2.0, depth_res) - 1.0) / md.ZRes();
+  std::cout << "Max resolution of depth sensor is: " << md.ZRes() << std::endl;
 
   switch (depth_res)
   {
@@ -209,7 +210,7 @@ DataCapture::saveDepthmap (const std::string &filename, const openni_wrapper::De
       break;
     }
     case 16: {
-      mat16bit *= scale;
+      //mat16bit *= scale;
       cv::imwrite (filename + "_depth.png", mat16bit);
       break;
     }
