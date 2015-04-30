@@ -36,6 +36,7 @@
 
 # Datasets
 /data
+/data2
 /sfm_data.zip
 
 # vlfeat
