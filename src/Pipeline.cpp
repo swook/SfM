@@ -10,7 +10,7 @@ Pipeline::Pipeline(std::string _folder_path)
 
 Mat Pipeline::distcoeff_matrix()
 {
-	Mat output(1,4,CV_32F,distcoeff);
+	Mat output(1,4,CV_32F, const_cast<float*>(distcoeff));
 	return output;
 }
 
