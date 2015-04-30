@@ -51,9 +51,8 @@ void Pipeline::load_images(string folder_path, Images& images)
 		}
 	}
 
-	// Construct final output
-	Image new_img;
 	string rgb_path, dep_path;
+	int i = 0;
 	for (auto it = tstamps.begin(); it != tstamps.end(); it++)
 	{
 		// Get time string
@@ -63,22 +62,31 @@ void Pipeline::load_images(string folder_path, Images& images)
 		rgb_path = (fmt("%s/frame_%s_rgb.png")   % folder_path % time_str).str();
 		dep_path = (fmt("%s/frame_%s_depth.png") % folder_path % time_str).str();
 		Mat rgb_img = imread(rgb_path);
+		Mat depth_img = imread(dep_path);
 
 		// Some preprocessing
+		// Distortion coefficients kc1 kc2 kc3 kc4 = 0.2402 -0.6861 -0.0015 0.0003
 		Mat gray_img;
 		cvtColor(rgb_img,gray_img,COLOR_RGB2GRAY);
 		balanceWhite(rgb_img, rgb_img, xphoto::WHITE_BALANCE_SIMPLE);
 		balanceWhite(gray_img, gray_img, xphoto::WHITE_BALANCE_SIMPLE);
+		Mat depth_imgF,depth_smoothF;
+		depth_img.convertTo(depth_imgF,CV_32F);
+		bilateralFilter(depth_imgF,depth_smoothF,3,10,10);
+		depth_imgF.convertTo(depth_img,CV_16U);
 
 		// Store Image struct with image read using imread
 		images.push_back((Image) {
+			i,
 			pt::from_iso_string(time_str),
 			rgb_img,
 			gray_img,
-			imread(dep_path),
+			depth_img,
 			rgb_path,
 			dep_path
 		});
+		// increment index
+		i++;
 	}
 }
 

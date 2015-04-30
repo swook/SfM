@@ -1,8 +1,17 @@
 #include "Pipeline.hpp"
+#include "opencv2/opencv.hpp"
+
+using namespace cv;
 
 Pipeline::Pipeline(std::string _folder_path)
 {
 	folder_path = _folder_path;
+}
+
+Mat Pipeline::distcoeff_matrix()
+{
+	Mat output(1,4,CV_32F,distcoeff);
+	return output;
 }
 
 void Pipeline::run()

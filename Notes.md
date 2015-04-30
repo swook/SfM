@@ -51,30 +51,30 @@ For image k, pair (k,j) j = k+1 to N
 
 # Find camera-pairs
 
+# Pairwise camera registration
+consider choosing one/several of the following three methods and take average.
+average rotation matrix by averaging their quaternions.
+Need camera parameters [kinect-calib]
 
-# Initial (relative) camera pose estimates
+## 2D-2D camera registration
 
 See [cv::findFundamentalMat][findFundamentalMat].
 
-## Inputs
+### Inputs
 
 * Keypoint coordinates in 2D (of camera i)
 * Keypoint coordinates in 2D (of camera j)
 
-## Outputs
+### Outputs
 
 * R: rotation vector i-to-j
 * t: translation vector i-to-j
 
-
-
-# Pairwise camera registration (maybe can omit?)
-
-RANSAC and PnP
+## 2D-3D camera registration RANSAC and PnP
 
 See [cv::solvePnPRansac][solvePnPRansac].
 
-## Inputs
+### Inputs
 
 Per camera-pair
 
@@ -84,11 +84,12 @@ distortion coefficients (?)
 * Keypoints in 3D (of camera j)
 * Optionally, R & t
 
-## Outputs
+### Outputs
 
 * R: rotation vector i-to-j
 * t: translation vector i-to-j
 
+## 3D-3D camera registration ICP
 
 
 # Convert to global (single) coordinate frame
@@ -159,4 +160,4 @@ PCL
 [ceres-BA]: http://ceres-solver.org/nnls_tutorial.html#bundle-adjustment
 
 [wiki-cam-intrins]: https://en.wikipedia.org/wiki/Camera_resectioning#Intrinsic_parameters
-
+[kinect-calib] http://cmp.felk.cvut.cz/ftp/articles/pajdla/Smisek-CDC4CV-2011.pdf

@@ -9,7 +9,8 @@ namespace pt = boost::posix_time;
  * Information related to RGB-D pair images
  */
 struct Image
-{
+{	
+	int 		  index;	// index of frame
 	const pt::ptime   time;     // Time taken
 	const cv::Mat     rgb;      // 1-channel cv::Mat containing rgb   data
 	const cv::Mat     gray;     // 1-channel cv::Mat containing gray  data
@@ -38,8 +39,9 @@ typedef std::vector<Descriptors> DescriptorsVec;
  */
 struct CamFrame
 {
+	const int 		index;		// index of frame
 	const KeyPoints key_points; // list of feature points found in this image
-	// TODO add field for pose when pose_estimation R and t
+	// TODO add field for pose when pose_estimation R and t (in global frame)
 };
 
 typedef std::vector<CamFrame> CamFrames;
@@ -49,7 +51,8 @@ typedef std::vector<CamFrame> CamFrames;
  */
 typedef std::pair<KeyPoints, KeyPoints> KeyPointsPair;
 struct ImagePair
-{
+{	
+	const std::pair<int,int>			  pair_index;
 	const std::pair<KeyPoints, KeyPoints> keypoints;
 };
 typedef std::vector<ImagePair> ImagePairs;

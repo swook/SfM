@@ -18,6 +18,7 @@ void Pipeline::find_matching_pairs(
 
 	// Initialise descriptors matcher
 	FlannBasedMatcher flann;
+	BFMatcher bfmatcher(cv::NORM_L2, true);
 
 	// Get matches
 	std::vector<DMatch> matches;
@@ -37,17 +38,20 @@ void Pipeline::find_matching_pairs(
 			descriptors_i.convertTo(descriptors_i, CV_32F);
 			descriptors_j.convertTo(descriptors_j, CV_32F);
 
-			// Match descriptors
-			// Output is distance between descriptors
-			flann.match(descriptors_i, descriptors_j, matches);
+			/* Match descriptors
+			 Output is distance between descriptors */
+			// flann.match(descriptors_i, descriptors_j, matches);
+			// brutal force matcher
+			bfmatcher.match( descriptors_i, descriptors_j, matches );
+
 			//_log("Input: (%d: %d rows, %d: %d rows)\t Output: %d rows",
 			//	i, descriptors_i.rows,
 			//	j, descriptors_j.rows,
 			//	matches.size());
 
 			// Our parameters
-			float max_dist    = 90;
-			int   min_matches = 15;
+			float max_dist    = 100;
+			int   min_matches = 10;
 
 			// Only pick good matches
 			std::vector<DMatch> good_matches;
@@ -59,6 +63,7 @@ void Pipeline::find_matching_pairs(
 
 			// Add to pairs structure
 			pairs.push_back((ImagePair) {
+				std::pair<int,int> (i,j),
 				KeyPointsPair(
 					camframes[i].key_points,
 					camframes[j].key_points
@@ -71,7 +76,8 @@ void Pipeline::find_matching_pairs(
 			Mat out;
 			drawMatches(images[i].rgb, camframes[i].key_points,
 			            images[j].rgb, camframes[j].key_points,
-				    good_matches, out);
+				    good_matches, out, 
+				    Scalar::all(-1),Scalar::all(-1),std::vector<char>(),DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 			char title[64];
 			sprintf(title, "Match %d-%d", i, j);
 			showImageAndWait("Match results", out);

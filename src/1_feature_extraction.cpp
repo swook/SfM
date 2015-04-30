@@ -2,7 +2,7 @@
 #include "opencv2/features2d.hpp"
 #include "opencv2/xfeatures2d/nonfree.hpp"
 using namespace cv;
-
+using namespace xfeatures2d;
 #include "Pipeline.hpp"
 
 void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,DescriptorsVec& descriptors_vec)
@@ -13,7 +13,7 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 	const double constrast_thresh = .04f;
 	const double edge_threshold   = 4.f;
 	const double sigma            = 1.3f;
-	Ptr<Feature2D> sift_detector = xfeatures2d::SIFT::create(feature_num,
+	Ptr<Feature2D> sift_detector = SIFT::create(feature_num,
 		octavelayers_num, constrast_thresh, edge_threshold, sigma);
 
 	// create brist detector
@@ -29,7 +29,7 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 
 		sift_detector->detectAndCompute(images[i].gray,noArray(),key_points,descriptors);
 		// wrap keypoints to cam_Frame and add in to cam_Frames
-		cam_Frames.push_back((CamFrame) {key_points});
+		cam_Frames.push_back((CamFrame) {i,key_points});
 		descriptors_vec.push_back(descriptors);
 	}
 }
