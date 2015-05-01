@@ -61,18 +61,25 @@ void Pipeline::find_matching_pairs(
 
 			if (good_matches.size() < min_matches) continue;
 
+			// copy matched keypoints from keypoints vector
+			std::vector<Point2f> matched_keypoints_i, matched_keypoints_j;
+			for (auto it = good_matches.begin(); it != good_matches.end(); it++){
+				// only save pt, drop other keypoint members
+				matched_keypoints_i.push_back(camframes[i].key_points[it -> queryIdx].pt);
+				matched_keypoints_j.push_back(camframes[j].key_points[it -> trainIdx].pt);
+			}
 			// Add to pairs structure
 			pairs.push_back((ImagePair) {
 				std::pair<int,int> (i,j),
 				KeyPointsPair(
-					camframes[i].key_points,
-					camframes[j].key_points
+					matched_keypoints_i,
+					matched_keypoints_j
 				)
 			});
 
 			// Draw matches
 			// NOTE: remove continue; to see images
-			//continue;
+			continue;
 			Mat out;
 			drawMatches(images[i].rgb, camframes[i].key_points,
 			            images[j].rgb, camframes[j].key_points,

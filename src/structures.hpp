@@ -49,11 +49,13 @@ typedef std::vector<CamFrame> CamFrames;
 /**
  * Pair of images which have sufficient no. of matching features
  */
-typedef std::pair<KeyPoints, KeyPoints> KeyPointsPair;
+typedef std::pair<std::vector<cv::Point2f>, std::vector<cv::Point2f> > KeyPointsPair;
 struct ImagePair
 {	
 	const std::pair<int,int>			  pair_index;
-	const std::pair<KeyPoints, KeyPoints> keypoints;
+	const KeyPointsPair 				  matched_points;
+	cv::Mat 							  R;
+	cv::Mat           					  t;
 };
 typedef std::vector<ImagePair> ImagePairs;
 
