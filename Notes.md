@@ -106,7 +106,8 @@ Minimum spanning tree?
 
 # Bundle Adjustment
 
-[Ceres][ceres-api] is used for bundle adjustment.
+[Ceres][ceres-api] is used for bundle adjustment. The aim is to optimise global
+camera pose and feature pose estimates.
 
 We need to define a `CostFunctor`, pick a `LinearSolver`.
 

@@ -28,6 +28,7 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		Depths depths1 = pair-> pair_depths.first;
 		Depths depths2 = pair-> pair_depths.second;
 
+
 		// get depth value of all matched keypoints in image1
 		std::vector<Point3f> points3D;
 		std::vector<Point2f> valid_keyPoints;	

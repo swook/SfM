@@ -11,7 +11,7 @@ namespace pt = boost::posix_time;
  * Information related to RGB-D pair images
  */
 struct Image
-{	
+{
 	int 		  index;	// index of frame
 	const pt::ptime   time;     // Time taken
 	const cv::Mat     rgb;      // 1-channel cv::Mat containing rgb   data
@@ -56,7 +56,7 @@ typedef std::vector<CamFrame> CamFrames;
  */
 typedef std::pair<std::vector<cv::Point2f>, std::vector<cv::Point2f> > KeyPointsPair;
 struct ImagePair
-{	
+{
 	const std::pair<int,int>			  pair_index;
 	const KeyPointsPair 				  matched_points;
 	const std::pair<Depths,Depths>		  pair_depths;
