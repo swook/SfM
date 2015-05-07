@@ -121,10 +121,10 @@ typedef std::unordered_map<std::pair<int,int> ,int> PointMap;
 /**
  * Global Camera Pose
  */
-typedef std::vector<CameraPose> CameraPoses;
 struct CameraPose
 {
 	cv::Mat R;
 	cv::Mat t;
-}
+};
+typedef std::vector<CameraPose> CameraPoses;
 
