@@ -42,4 +42,11 @@ void Pipeline::run()
 	* State 3: Compute pairwise R and t
 	*/
 	register_camera(image_pairs,cam_Frames);
+
+
+	/**
+	 * Stage 4: Compute global Rs and ts
+	 */
+	CameraPoses gCameraPoses;
+	build_spanning_tree(gCameraPoses, image_pairs);
 }

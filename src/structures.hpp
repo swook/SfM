@@ -89,7 +89,7 @@ namespace std
     }
   };
 }
- 
+
 template <>
 class std::equal_to<std::pair<int,int> >
 {
@@ -117,3 +117,14 @@ typedef std::unordered_map<std::pair<int,int> ,int> PointMap;
  	std::vector<cv::Point3f> 	cluster; 	//from depth map back projected depth points
  };
  typedef std::vector<CloudPoint> CloudPoints;
+
+/**
+ * Global Camera Pose
+ */
+typedef std::vector<CameraPose> CameraPoses;
+struct CameraPose
+{
+	cv::Mat R;
+	cv::Mat t;
+}
+

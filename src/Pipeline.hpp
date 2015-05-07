@@ -35,4 +35,6 @@ private:
 	void register_camera(ImagePairs& pairs,CamFrames& cam_Frames);
 	// 3D-2D registration
 	// bool ransacRegistration(ImagePair* pair);
+
+	void build_spanning_tree(CameraPoses& cameraPoses, const ImagePairs& pairs);
 };
