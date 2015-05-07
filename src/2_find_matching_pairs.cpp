@@ -67,13 +67,13 @@ void Pipeline::find_matching_pairs(
 			for (auto it = good_matches.begin(); it != good_matches.end(); it++){
 				// only save pt, drop other keypoint members
 				Point2f point_i = camframes[i].key_points[it -> queryIdx].pt;
-				Point2f point_j = camframes[j].key_points[it -> queryIdx].pt;
+				Point2f point_j = camframes[j].key_points[it -> trainIdx].pt;
 				matched_keypoints_i.push_back(point_i);
 				matched_keypoints_j.push_back(point_j);
 				// save depth of keypoints
-				float d_i = images[i].dep.at<float>((int)point_i.x,(int)point_i.y);
-				float d_j = images[j].dep.at<float>((int)point_j.x,(int)point_j.y);
-				
+				float d_i = images[i].dep.at<float>((int)point_i.y,(int)point_i.x);
+				float d_j = images[j].dep.at<float>((int)point_j.y,(int)point_j.x);
+
 				depth_values_i.push_back(d_i);
 				depth_values_j.push_back(d_j);
 			}

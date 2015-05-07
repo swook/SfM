@@ -45,18 +45,34 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 			valid_keyPoints.push_back(keyPoints2[k]);
 			points3D.push_back(Point3f(new_point));
 		}
-		
+
 		Mat rvec,tvec,R;
 		Mat inliers;
 		//NOTE the following command always fails
-		// solvePnPRansac(points3D,valid_keyPoints,cameraMatrix,distCoeffs,
-		// 	rvec,tvec,
-		// 	useExtrinsicGuess, iterationsCount, reprojectionError,100, noArray(), flag);
+		std::cout << "Before PnP" << std::endl;
+		//InputArray  	objectPoints,
+		//InputArray  	imagePoints,
+		//InputArray  	cameraMatrix,
+		//InputArray  	distCoeffs,
+		//OutputArray  	rvec,
+		//OutputArray  	tvec,
+		//bool  	useExtrinsicGuess = false,
+		//int  	iterationsCount = 100,
+		//float  	reprojectionError = 8.0,
+		//double  	confidence = 0.99,
+		//OutputArray  	inliers = noArray(),
+		//int  	flags = SOLVEPNP_ITERATIVE
 		solvePnPRansac(points3D,valid_keyPoints,cameraMatrix,distCoeffs,
-			rvec,tvec);
+			 rvec,tvec,
+			 useExtrinsicGuess, iterationsCount, reprojectionError, .95, inliers, flag);
+		std::cout << "After PnP" << std::endl;
+		//solvePnPRansac(points3D,valid_keyPoints,cameraMatrix,distCoeffs,
+			//rvec,tvec);
+		std::cout << inliers.rows << " inliers in total." << std::endl;
+		std::cout << "Inliers:" << inliers << std::endl;
 		tvec.convertTo(tvec,CV_32FC1);
 		rvec.convertTo(rvec,CV_32FC1);
-		
+
 		Rodrigues(rvec,R);
 		pair -> R = R;
 		pair -> t = tvec;
