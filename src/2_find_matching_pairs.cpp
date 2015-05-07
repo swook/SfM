@@ -107,6 +107,6 @@ void Pipeline::find_matching_pairs(
 		}
 	}
 
-	_log("Complete");
+	_log.tok();
 }
 
