@@ -36,9 +36,9 @@ void Pipeline::run()
 	 */
 	ImagePairs image_pairs;
 	find_matching_pairs(images, cam_Frames, descriptors_vec, image_pairs);
-	
+	// free (&images); or actually free everything in images except rgb
 	/**
 	* State 3: Compute pairwise R and t
 	*/
-	register_camera( image_pairs,images, cam_Frames);
+	register_camera(image_pairs,cam_Frames);
 }

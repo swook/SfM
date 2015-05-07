@@ -36,7 +36,7 @@ Feature matching
 
 ## Outputs
 
-* K matches
+* Map that uses camera index pair (i,j) as key and a vector of their matches value
 
 ## Code Example
 

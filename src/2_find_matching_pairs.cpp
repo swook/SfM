@@ -61,12 +61,21 @@ void Pipeline::find_matching_pairs(
 
 			if (good_matches.size() < min_matches) continue;
 
-			// copy matched keypoints from keypoints vector
+			// only store matched keypoints and their depths
 			std::vector<Point2f> matched_keypoints_i, matched_keypoints_j;
+			Depths depth_values_i, depth_values_j;
 			for (auto it = good_matches.begin(); it != good_matches.end(); it++){
 				// only save pt, drop other keypoint members
-				matched_keypoints_i.push_back(camframes[i].key_points[it -> queryIdx].pt);
-				matched_keypoints_j.push_back(camframes[j].key_points[it -> trainIdx].pt);
+				Point2f point_i = camframes[i].key_points[it -> queryIdx].pt;
+				Point2f point_j = camframes[j].key_points[it -> queryIdx].pt;
+				matched_keypoints_i.push_back(point_i);
+				matched_keypoints_j.push_back(point_j);
+				// save depth of keypoints
+				float d_i = images[i].dep.at<float>((int)point_i.x,(int)point_i.y);
+				float d_j = images[j].dep.at<float>((int)point_j.x,(int)point_j.y);
+				
+				depth_values_i.push_back(d_i);
+				depth_values_j.push_back(d_j);
 			}
 			// Add to pairs structure
 			pairs.push_back((ImagePair) {
@@ -74,12 +83,16 @@ void Pipeline::find_matching_pairs(
 				KeyPointsPair(
 					matched_keypoints_i,
 					matched_keypoints_j
-				)
+				),
+				std::pair<Depths,Depths> (depth_values_i,depth_values_j)
 			});
+
+			// add matches to match_map
+			// match_map.insert(make_pair(i,j),good_matches);
 
 			// Draw matches
 			// NOTE: remove continue; to see images
-			continue;
+			// continue;
 			Mat out;
 			drawMatches(images[i].rgb, camframes[i].key_points,
 			            images[j].rgb, camframes[j].key_points,
@@ -91,6 +104,5 @@ void Pipeline::find_matching_pairs(
 
 		}
 	}
-
 }
 

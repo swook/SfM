@@ -19,6 +19,7 @@ private:
 	std::string folder_path;
 	const cv::Mat cameraMatrix;
 	const cv::Mat distCoeffs;
+	MatchMap match_map;
 
 	void load_images(std::string _folder_path, Images& images);
 
@@ -31,5 +32,7 @@ private:
 		const DescriptorsVec& descriptors_vec,
 		ImagePairs& pairs);
 	// get pairwise camera pose from matching frames
-	void register_camera(ImagePairs& pairs,const Images& images,CamFrames& cam_Frames);
+	void register_camera(ImagePairs& pairs,CamFrames& cam_Frames);
+	// 3D-2D registration
+	// bool ransacRegistration(ImagePair* pair);
 };
