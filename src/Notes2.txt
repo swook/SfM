@@ -1,0 +1,51 @@
+DATA	RGB, Depth Images
+
+****************************************************************************
+
+STEP	Extract keypoints
+STEP	Match keypoints to find camera pairs (triplets?)
+
+****************************************************************************
+
+DATA	Depth data PER Camera/Image
+	Keypoints  PER Camera/Image
+	LIST <Camera i, Camera j>
+
+****************************************************************************
+
+STEP	Registration. Find approximate relative camera pose
+	> [3D-2D] Use keypoints+depth (3D, i) and keypoints       (2D, j)
+	- [2D-2D] Use keypoints       (2D, i) and keypoints       (2D, j)
+	- [3D-3D] Use keypoints+depth (3D, i) and keypoints+depth (3D, j)
+
+RESI	BETWEEN
+	3D Keypoint pose in <Camera i> world frame
+	AND
+	2D Keypoint pose in <Camera j> image frame
+
+****************************************************************************
+
+DATA	LIST R, t to transform a keypoint from <Camera i, 3D> to <Camera j, 3D>
+
+****************************************************************************
+
+STEP	Convert relative camera poses to global coordinate frame
+	- Min spanning tree
+
+****************************************************************************
+
+DATA	LIST R, t to transform a keypoint from <Camera i> to global frame
+
+****************************************************************************
+
+STEP	Get feature poses in single coordinate frame via BA
+
+RESI	BETWEEN
+	AND
+
+****************************************************************************
+
+DATA	LIST Keypoint pose wrt global frame
+
+STEP	Visualisation
+
