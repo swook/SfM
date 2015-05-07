@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstdarg>
+#include <ctime>
 
 #include "opencv2/opencv.hpp"
 
@@ -19,9 +20,11 @@ cv::Point3f backproject3D(const float x,const float y, float depth, const cv::Ma
 class Logger {
 private:
 	const char* name_space;
+	const clock_t  start;
 
 public:
 	Logger(const char* _namespace);
 	void operator() (const char* format, ...);
+	void tok();
 };
 

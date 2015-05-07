@@ -102,6 +102,6 @@ void Pipeline::load_images(string folder_path, Images& images)
 		i++;
 	}
 
-	_log("Complete");
+	_log.tok();
 }
 

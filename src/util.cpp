@@ -32,9 +32,8 @@ Point3f backproject3D(const float x,const float y, float depth, const Mat m_came
  *     Logger _log("Load Images");
  */
 Logger::Logger(const char* _namespace)
-{
-	name_space = _namespace;
-}
+	: name_space(_namespace), start(clock())
+{}
 
 void Logger::operator() (const char* format, ...)
 {
@@ -48,3 +47,7 @@ void Logger::operator() (const char* format, ...)
 	va_end(args);
 }
 
+void Logger::tok()
+{
+	(*this)("Done in %.2fs.", (clock() - start) / (float) CLOCKS_PER_SEC);
+}

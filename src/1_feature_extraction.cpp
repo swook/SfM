@@ -37,5 +37,5 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 		descriptors_vec.push_back(descriptors);
 	}
 
-	_log("Complete");
+	_log.tok();
 }

@@ -1,7 +1,8 @@
-#include "Pipeline.hpp"
 #include "opencv2/opencv.hpp"
-
 using namespace cv;
+
+#include "Pipeline.hpp"
+#include "util.hpp"
 
 float _intrinsic_array[9]= {524,0,316.7,0,524,238.5,0,0,1};
 float _distcoeff_array[4] = {0.2402,-0.6861,-0.0015,0.0003};
@@ -16,6 +17,7 @@ Pipeline::Pipeline(std::string _folder_path)
 
 void Pipeline::run()
 {
+	Logger _log("Pipeline");
 	/**
 	 * Stage 0: Load images from file
 	 */
@@ -49,4 +51,6 @@ void Pipeline::run()
 	 */
 	CameraPoses gCameraPoses;
 	build_spanning_tree(gCameraPoses, image_pairs);
+
+	_log.tok();
 }
