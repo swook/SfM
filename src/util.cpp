@@ -111,6 +111,7 @@ Vec4f R2Quaternion(Mat& R)
     	}
 	}
 	Vec4f q = normalize(Vec<float,4>::Vec(q0, q1, q2, q3));
+	return q;
 }
 
 
