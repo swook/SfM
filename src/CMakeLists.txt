@@ -4,10 +4,11 @@ set(
   "0_load_images.cpp"
   "1_feature_extraction.cpp"
   "2_find_matching_pairs.cpp"
-  "3_pose_estimates.cpp"
-  "4_registration.cpp"
-  "5_to_global_coords.cpp"
-  "6_bundle_adjustment.cpp"
+  "3_registration.cpp"
+  "4_spanning_tree.cpp"
+  "5_find_clusters.cpp"
+  "6_find_CoM.cpp"
+  "7_bundle_adjustment.cpp"
 )
 
 add_library(pipeline ${MAIN_SOURCES})

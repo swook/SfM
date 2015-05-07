@@ -11,8 +11,8 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 
 	// ---------Parameters for solvePnPRansac----------------//
 	bool useExtrinsicGuess = false;
-	int iterationsCount=100;
-	float reprojectionError=8.0;
+	int iterationsCount=500;
+	float reprojectionError=15.0;
 	// portion of inliers in matches
 	float minInliers = 0.8;
 	int flag = CV_ITERATIVE; //CV_ITERATIVE CV_P3P CV_EPNP
