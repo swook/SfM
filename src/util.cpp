@@ -4,6 +4,7 @@
 #include "opencv2/opencv.hpp"
 using namespace cv;
 
+#include "structures.hpp"
 #include "util.hpp"
 
 void showImage(const char* title, const Mat& img)
@@ -26,15 +27,29 @@ Point3f backproject3D(const float x,const float y, float depth, const Mat m_came
 	return Point3f(new_point);
 }
 
+pImagePairs getAssociatedPairs(const int i, const Associativity assocMat)
+{
+	pImagePairs pairs;
+	int n = assocMat.n;
+
+	ImagePair* pair = NULL;
+	for (int j = 0; j < n; j++)
+	{
+		if (i == j) continue;
+		pair = assocMat(i, j);
+		if (pair != NULL) pairs.push_back(pair);
+	}
+	return pairs;
+}
+
 /**
  * Custom logger, instantiate with namespace string to prefix messages with.
  * For example:
  *     Logger _log("Load Images");
  */
 Logger::Logger(const char* _namespace)
-{
-	name_space = _namespace;
-}
+	: name_space(_namespace), start(clock())
+{}
 
 void Logger::operator() (const char* format, ...)
 {
@@ -99,3 +114,7 @@ Vec4f R2Quaternion(Mat& R)
 }
 
 
+void Logger::tok()
+{
+	(*this)("Done in %.2fs.", (clock() - start) / (float) CLOCKS_PER_SEC);
+}

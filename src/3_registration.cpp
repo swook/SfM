@@ -99,7 +99,7 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		
 	}
 
-	_log("Complete");
+	_log.tok();
 }
 /**
 * 3D-2D registration using Kinect depth points

@@ -50,8 +50,9 @@ void Pipeline::find_matching_pairs(
 			//	matches.size());
 
 			// Our parameters
-			float max_dist    = 100;
-			int   min_matches = 10;
+			//float max_dist    = 100; // SIFT
+			float max_dist    = 480; // BRISK
+			int   min_matches = 20;
 
 			// Only pick good matches
 			std::vector<DMatch> good_matches;
@@ -107,6 +108,6 @@ void Pipeline::find_matching_pairs(
 		}
 	}
 
-	_log("Complete");
+	_log.tok();
 }
 

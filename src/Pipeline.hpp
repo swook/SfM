@@ -36,5 +36,6 @@ private:
 	// 3D-2D registration
 	// bool ransacRegistration(ImagePair* pair);
 
-	void build_spanning_tree(CameraPoses& cameraPoses, const ImagePairs& pairs);
+	void build_spanning_tree(CameraPoses& cameraPoses, const ImagePairs& pairs,
+		const Associativity& assocMat);
 };
