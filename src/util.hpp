@@ -12,6 +12,8 @@ void showImage(const char* title, const cv::Mat& img);
 void showImageAndWait(const char* title, const cv::Mat& img);
 cv::Point3f backproject3D(const float x,const float y, float depth, const cv::Mat m_cameraMatrix);
 
+pImagePairs getAssociatedPairs(const int i, const Associativity assocMat);
+
 /**
  * Custom logger, instantiate with namespace string to prefix messages with.
  * For example:

@@ -47,10 +47,29 @@ void Pipeline::run()
 
 
 	/**
+	 * Stage 3.5: Construct associative matrix
+	 */
+	Associativity assocMat(cam_Frames.size());
+	for (int p = 0; p < image_pairs.size(); p++)
+	{
+		ImagePair* pair = &image_pairs[p];
+		int i = pair->pair_index.first,
+		    j = pair->pair_index.second;
+		assocMat(i, j) = pair;
+		assocMat(j, i) = pair;
+
+		assert(assocMat(i, j) == assocMat(j, i));
+		assert(assocMat(i, j)->pair_index.first  == i &&
+		       assocMat(i, j)->pair_index.second == j);
+	}
+
+
+
+	/**
 	 * Stage 4: Compute global Rs and ts
 	 */
 	CameraPoses gCameraPoses;
-	build_spanning_tree(gCameraPoses, image_pairs);
+	build_spanning_tree(gCameraPoses, image_pairs, assocMat);
 
 	_log.tok();
 }

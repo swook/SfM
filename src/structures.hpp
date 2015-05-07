@@ -63,7 +63,8 @@ struct ImagePair
 	cv::Mat 							  R;
 	cv::Mat           					  t;
 };
-typedef std::vector<ImagePair> ImagePairs;
+typedef std::vector<ImagePair>   ImagePairs;
+typedef std::vector<ImagePair*> pImagePairs;
 
 
 /*
@@ -117,6 +118,31 @@ typedef std::unordered_map<std::pair<int,int> ,int> PointMap;
  	std::vector<cv::Point3f> 	cluster; 	//from depth map back projected depth points
  };
  typedef std::vector<CloudPoint> CloudPoints;
+
+
+/**
+ * Associativity of cameras (matching features, essentially camera pairs)
+ */
+typedef std::pair<int, int> PairIndex;
+class Associativity
+{
+public:
+	std::map<PairIndex, ImagePair*> _map;
+	const int n;
+	Associativity(int _n) : n(_n) {}
+	ImagePair*& operator()(const int i, const int j)
+	{
+		return _map[PairIndex(i, j)];
+	}
+
+	ImagePair* operator()(const int i, const int j) const
+	{
+		auto found = _map.find(PairIndex(i, j));
+		if (found != _map.end()) return found->second;
+		else                     return NULL;
+	}
+};
+
 
 /**
  * Global Camera Pose
