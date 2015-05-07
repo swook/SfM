@@ -62,26 +62,35 @@ void Pipeline::load_images(string folder_path, Images& images)
 		rgb_path = (fmt("%s/frame_%s_rgb.png")   % folder_path % time_str).str();
 		dep_path = (fmt("%s/frame_%s_depth.png") % folder_path % time_str).str();
 		Mat rgb_img = imread(rgb_path);
-		Mat depth_img = imread(dep_path,CV_LOAD_IMAGE_ANYDEPTH);
-		
-		// Some preprocessing
-		Mat gray_img,depth_undist_img,depth_smooth_img,rgb_undist_img;
-		cvtColor(rgb_img,gray_img,COLOR_RGB2GRAY);
+		Mat _depth_img = imread(dep_path,CV_LOAD_IMAGE_ANYDEPTH);
+
+		// White-balance RGB image
+		// TODO: undistort?
+		Mat rgb_undist_img;
 		balanceWhite(rgb_img, rgb_img, xphoto::WHITE_BALANCE_SIMPLE);
-		undistort(rgb_img,rgb_undist_img,cameraMatrix,distCoeffs);
-		
-		undistort(gray_img,depth_undist_img, cameraMatrix, distCoeffs);
-		depth_img.convertTo(depth_img,CV_32F);
+		rgb_undist_img = rgb_img;
+		//undistort(rgb_img, rgb_undist_img, cameraMatrix, distCoeffs);
+
+		// Get grayscale image
+		Mat gray_undist_img;
+		cvtColor(rgb_undist_img, gray_undist_img, COLOR_RGB2GRAY);
+
+		// Convert depth map to floats
+		Mat depth_img;
+		_depth_img.convertTo(depth_img, CV_32F);
+
+		// Smooth depth map
+		Mat depth_smooth_img;
 		//bilateralFilter(InputArray src, OutputArray dst, int d, double sigmaColor, double sigmaSpace, int borderType=BORDER_DEFAULT )
-		bilateralFilter(depth_img,depth_smooth_img,-1,10,10);
-		
+		bilateralFilter(depth_img, depth_smooth_img, 5, 10, 10);
+
 		// Store Image struct with image read using imread
 		images.push_back((Image) {
 			i,
 			pt::from_iso_string(time_str),
-			rgb_img,
-			gray_img,
-			depth_img,
+			rgb_undist_img,
+			gray_undist_img,
+			depth_smooth_img,
 			rgb_path,
 			dep_path
 		});
