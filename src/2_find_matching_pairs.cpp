@@ -83,7 +83,7 @@ void Pipeline::find_matching_pairs(
 			Mat out;
 			drawMatches(images[i].rgb, camframes[i].key_points,
 			            images[j].rgb, camframes[j].key_points,
-				    good_matches, out, 
+				    good_matches, out,
 				    Scalar::all(-1),Scalar::all(-1),std::vector<char>(),DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 			char title[64];
 			sprintf(title, "Match %d-%d", i, j);
