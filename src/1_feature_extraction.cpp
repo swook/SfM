@@ -3,10 +3,14 @@
 #include "opencv2/xfeatures2d/nonfree.hpp"
 using namespace cv;
 using namespace xfeatures2d;
+
 #include "Pipeline.hpp"
+#include "util.hpp"
 
 void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,DescriptorsVec& descriptors_vec)
 {
+	Logger _log("Step 1 (features)");
+
 	// create a sift detector
 	const int    feature_num      = 800;
 	const int    octavelayers_num = 3;
@@ -32,4 +36,6 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 		cam_Frames.push_back((CamFrame) {i,key_points});
 		descriptors_vec.push_back(descriptors);
 	}
+
+	_log("Complete");
 }

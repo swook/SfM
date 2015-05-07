@@ -5,8 +5,6 @@ using namespace cv;
 #include "Pipeline.hpp"
 #include "util.hpp"
 
-Logger _log("Step 2 (match)");
-
 void Pipeline::find_matching_pairs(
 	const Images&         images,
 	const CamFrames&      camframes,
@@ -14,6 +12,8 @@ void Pipeline::find_matching_pairs(
 	      ImagePairs&     pairs
 )
 {
+	Logger _log("Step 2 (matching)");
+
 	const int N = descriptors_vec.size();
 
 	// Initialise descriptors matcher
@@ -43,7 +43,6 @@ void Pipeline::find_matching_pairs(
 			flann.match(descriptors_i, descriptors_j, matches);
 			// brutal force matcher
 			//bfmatcher.match( descriptors_i, descriptors_j, matches );
-			std::cout << "Matched." << std::endl;
 
 			//_log("Input: (%d: %d rows, %d: %d rows)\t Output: %d rows",
 			//	i, descriptors_i.rows,
@@ -61,7 +60,7 @@ void Pipeline::find_matching_pairs(
 					good_matches.push_back(matches[m]);
 
 			if (good_matches.size() < min_matches) continue;
-			std::cout << "Got " << good_matches.size() << " good matches." << std::endl;
+			_log("Got %03d good matches for %04d-%04d.", good_matches.size(), i, j);
 
 			// only store matched keypoints and their depths
 			std::vector<Point2f> matched_keypoints_i, matched_keypoints_j;
@@ -79,7 +78,6 @@ void Pipeline::find_matching_pairs(
 				depth_values_i.push_back(d_i);
 				depth_values_j.push_back(d_j);
 			}
-			std::cout << "Extracted depths and coords for matches" << std::endl;
 
 			// Add to pairs structure
 			pairs.push_back((ImagePair) {
@@ -90,14 +88,13 @@ void Pipeline::find_matching_pairs(
 				),
 				std::pair<Depths,Depths> (depth_values_i,depth_values_j)
 			});
-			std::cout << "Added ImagePair to pairs list" << std::endl;
 
 			// add matches to match_map
 			// match_map.insert(make_pair(i,j),good_matches);
 
 			// Draw matches
 			// NOTE: remove continue; to see images
-			// continue;
+			continue;
 			Mat out;
 			drawMatches(images[i].rgb, camframes[i].key_points,
 			            images[j].rgb, camframes[j].key_points,
@@ -109,5 +106,7 @@ void Pipeline::find_matching_pairs(
 
 		}
 	}
+
+	_log("Complete");
 }
 

@@ -41,7 +41,7 @@ void Logger::operator() (const char* format, ...)
 	va_list args;
 	va_start(args, format);
 
-	printf("%s> ", name_space);
+	printf("%s>\t", name_space);
 	vprintf(format, args);
 	printf("\n");
 

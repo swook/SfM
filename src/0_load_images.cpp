@@ -12,9 +12,12 @@ typedef boost::format fmt;
 using namespace cv;
 
 #include "Pipeline.hpp"
+#include "util.hpp"
 
 void Pipeline::load_images(string folder_path, Images& images)
 {
+	Logger _log("Step 0 (preprocess)");
+
 	// Get list of image files from dataset path
 	if (!fs::exists(folder_path) || !fs::is_directory(folder_path)) {
 		throw runtime_error("Invalid data path: " + folder_path);
@@ -50,6 +53,7 @@ void Pipeline::load_images(string folder_path, Images& images)
 			}
 		}
 	}
+	_log("Found %d timestamps.", tstamps.size());
 
 	string rgb_path, dep_path;
 	int i = 0;
@@ -97,5 +101,7 @@ void Pipeline::load_images(string folder_path, Images& images)
 		// increment index
 		i++;
 	}
+
+	_log("Complete");
 }
 
