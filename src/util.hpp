@@ -12,7 +12,7 @@ void showImage(const char* title, const cv::Mat& img);
 void showImageAndWait(const char* title, const cv::Mat& img);
 cv::Point3f backproject3D(const float x,const float y, float depth, const cv::Mat m_cameraMatrix);
 cv::Vec4f R2Quaternion(cv::Mat& R);
-
+cv::Mat quat2R(cv::Vec4f& q);
 pImagePairs getAssociatedPairs(const int i, const Associativity assocMat);
 
 /**

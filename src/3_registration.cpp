@@ -57,12 +57,12 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 
 		Mat rvec_i,tvec_i,R_i,rvec_j,tvec_j,R_j;
 		Mat inliers,inliers_j;
-		//NOTE the following command always fails
+		//get R_i and t_i wrt camera j
 		solvePnPRansac(points3D_i,valid_keyPoints_j,
 			cameraMatrix,noArray(),
 			rvec_i,tvec_i,
 			useExtrinsicGuess, iterationsCount, reprojectionError, .95, inliers, flag);
-		
+		// get R_j and t_j wrt camera i
 		solvePnPRansac(points3D_j,valid_keyPoints_i,
 			cameraMatrix,noArray(),
 			rvec_j,tvec_j,
@@ -75,20 +75,27 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		tvec_j.convertTo(tvec_j,CV_32FC1);
 		rvec_j.convertTo(rvec_j,CV_32FC1);
 		
+		// average R_i and R_j transpose using quaternion
 		Rodrigues(rvec_i,R_i);
 		Rodrigues(rvec_j,R_j);
 		Mat R_j_t = R_j.t();
 		Vec4f q_i = R2Quaternion(R_i);
 		Vec4f q_j = R2Quaternion(R_j_t);
-		// std::cout<<"points3D_j "<<points3D_j<<std::endl;
-		std::cout<<"inliers "<<std::endl<<inliers<<std::endl;
-		std::cout<<"inliers_j "<<std::endl<<inliers_j<<std::endl;
+		
+		std::cout<<"R_i "<<std::endl<<R_i<<std::endl;
+		std::cout<<"R_j_t "<<std::endl<<R_j_t<<std::endl;
 		std::cout<<"q_i "<<std::endl<<q_i<<std::endl;
 		std::cout<<"q_j "<<std::endl<<q_j<<std::endl;
+		Vec4f q_avg = normalize(q_j + q_i);
+		Mat R = quat2R(q_avg);
 
-		pair -> R = R_i;
-		pair -> t = tvec_i;
-		//TODO CheckCoherentRotation(R);
+		std::cout<<"R_i "<<std::endl<<R_i<<std::endl;
+		std::cout<<"R "<<std::endl<<R<<std::endl;
+		pair -> R = R;
+
+		// average t_i and t_j
+		Mat tvec = (tvec_i - tvec_j)/2;
+		pair -> t = tvec;
 		
 		std::vector<cv::Point2f> projected3D;
 		cv::projectPoints(points3D_j, rvec_j, tvec_j, cameraMatrix, noArray(), projected3D);
@@ -96,69 +103,7 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 			std::cout << i << ". " << valid_keyPoints_i[i] << std::endl;
 			std::cout << i << ". " << projected3D[i] << std::endl;
 		}
-		
 	}
 
 	_log.tok();
 }
-/**
-* 3D-2D registration using Kinect depth points
-*/
-// bool Pipeline::ransacRegistration(ImagePair& pair)
-// {
-// 	int i = (pair -> pair_index).first;
-// 	int j = (pair -> pair_index).second;
-
-// 	std::vector<Point2f> keyPoints1 = pair -> matched_points.first;
-// 	std::vector<Point2f> keyPoints2 = pair -> matched_points.second;
-// 	Depths depths1 = pair-> pair_depths.first;
-// 	Depths depths2 = pair-> pair_depths.second;
-
-// 	// get depth value of all matched keypoints in image1
-// 	std::vector<Point3f> points3D;
-// 	std::vector<Point2f> valid_keyPoints;
-// 	for(std::size_t k = 0; k < keyPoints1.size(); ++k){
-
-// 		float x = keyPoints1[k].x;
-// 		float y = keyPoints1[k].y;
-// 		float d = depths1[k];
-// 		// skip invalid depth
-// 		if (d == 0) continue;
-// 		// backproject 3d points
-// 		Mat new_point = d * cameraMatrix.inv() * (Mat_<float>(3,1) << x,y,1.f);
-// 		// Point3f new_point = backproject3D(x,y,d,cameraMatrix);
-// 		valid_keyPoints.push_back(keyPoints2[k]);
-// 		points3D.push_back(Point3f(new_point));
-// 	}
-
-// 	Mat rvec,tvec,R;
-// 	Mat inliers;
-// 	//NOTE the following command always fails
-// 	// solvePnPRansac(points3D,valid_keyPoints,cameraMatrix,distCoeffs,
-// 	// 	rvec,tvec,
-// 	// 	useExtrinsicGuess, iterationsCount, reprojectionError,100, noArray(), flag);
-// 	solvePnPRansac(points3D,valid_keyPoints,cameraMatrix,distCoeffs,
-// 		rvec,tvec);
-// 	tvec.convertTo(tvec,CV_32FC1);
-// 	rvec.convertTo(rvec,CV_32FC1);
-
-// 	Rodrigues(rvec,R);
-// 	pair -> R = R;
-// 	pair -> t = tvec;
-// 	//TODO CheckCoherentRotation(R);
-// 	std::cout << " test" << std::endl<< R <<std::endl;
-// 	std::vector<cv::Point2f> projected3D;
-// 	cv::projectPoints(points3D, rvec, tvec, cameraMatrix, distCoeffs, projected3D);
-// 	for(int i=0;i<projected3D.size();i++) {
-// 		std::cout << i << ". " << valid_keyPoints[i] << std::endl;
-// 		std::cout << i << ". " << projected3D[i] << std::endl;
-// 	}
-// }
-// bool CheckCoherentRotation(cv::Mat_<float>& R) {
-
-// 	if(fabs(determinant(R))-1.0 > 1e-05) {
-// 		std::cerr << "det(R) != +-1.0, this is not a rotation matrix" << std::endl;
-// 		return false;
-// 	}
-// 	return true;
-// }
