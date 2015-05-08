@@ -38,7 +38,8 @@ private:
 	// 3D-2D registration
 	// bool ransacRegistration(ImagePair* pair);
 
-	void build_spanning_tree(const ImagePairs& pairs, Associativity& assocMat);
+	void build_spanning_tree(const ImagePairs& pairs, Associativity& assocMat,
+		Associativity& tree);
 
 	void glo_cam_poses(Images& images, CameraPoses& cameraPoses, const ImagePairs& pairs,
 		Associativity& tree);
