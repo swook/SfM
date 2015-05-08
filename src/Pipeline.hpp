@@ -40,6 +40,6 @@ private:
 
 	void build_spanning_tree(const ImagePairs& pairs, Associativity& assocMat);
 
-	void glo_cam_poses(CameraPoses& cameraPoses, const ImagePairs& pairs,
+	void glo_cam_poses(Images& images, CameraPoses& cameraPoses, const ImagePairs& pairs,
 		Associativity& tree);
 };

@@ -34,6 +34,8 @@ void Associativity::walk(walk_func func)
 	_walk(0, checked, func);
 }
 
+// TODO: Combine with spanning_tree code to make breadth-first? I dunno
+// i: current camera index
 void Associativity::_walk(int i, std::vector<bool>& checked, walk_func func)
 {
 	pImagePairs pairs = getAssociatedPairs(i);
@@ -46,7 +48,7 @@ void Associativity::_walk(int i, std::vector<bool>& checked, walk_func func)
 
 		if (checked[j]) continue;
 
-		bool _continue = func(pair);
+		bool _continue = func(j, pair);
 		checked[j] = true;
 		if (_continue) _walk(j, checked, func);
 	}

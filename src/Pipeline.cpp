@@ -42,7 +42,7 @@ void Pipeline::run()
 
 
 	// Free some memory
-	Images().swap(images);
+	//Images().swap(images);
 	DescriptorsVec().swap(descriptors_vec);
 
 
@@ -79,7 +79,7 @@ void Pipeline::run()
 	 * Stage 5: Compute global Rs and ts
 	 */
 	CameraPoses gCameraPoses;
-	glo_cam_poses(gCameraPoses, image_pairs, tree);
+	glo_cam_poses(images, gCameraPoses, image_pairs, tree);
 
 
 	// End

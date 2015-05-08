@@ -60,7 +60,8 @@ int _build_spanning_tree(const ImagePairs& pairs, Associativity& assocMat)
 		}
 	}
 
-	tree.n = n;
+	//tree.n = n;
+	tree.n = assocMat.n; // We still use indices up to assocMat.n
 	std::swap(assocMat, tree);
 	return n;
 }
