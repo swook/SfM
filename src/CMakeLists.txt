@@ -1,6 +1,7 @@
 set(
   MAIN_SOURCES
   "util.cpp"
+  "Associativity.cpp"
   "0_load_images.cpp"
   "1_feature_extraction.cpp"
   "2_find_matching_pairs.cpp"

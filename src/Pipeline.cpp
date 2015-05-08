@@ -2,6 +2,7 @@
 using namespace cv;
 
 #include "Pipeline.hpp"
+#include "Associativity.hpp"
 #include "util.hpp"
 
 float _intrinsic_array[9]= {524,0,316.7,0,524,238.5,0,0,1};
@@ -78,7 +79,7 @@ void Pipeline::run()
 	 * Stage 5: Compute global Rs and ts
 	 */
 	CameraPoses gCameraPoses;
-	//glo_cam_poses(gCameraPoses, image_pairs, tree);
+	glo_cam_poses(gCameraPoses, image_pairs, tree);
 
 
 	// End

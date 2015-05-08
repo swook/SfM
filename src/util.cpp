@@ -27,21 +27,6 @@ Point3f backproject3D(const float x,const float y, float depth, const Mat m_came
 	return Point3f(new_point);
 }
 
-pImagePairs getAssociatedPairs(const int i, const Associativity assocMat)
-{
-	pImagePairs pairs;
-	int n = assocMat.n;
-
-	ImagePair* pair = NULL;
-	for (int j = 0; j < n; j++)
-	{
-		if (i == j) continue;
-		pair = assocMat(i, j);
-		if (pair != NULL) pairs.push_back(pair);
-	}
-	return pairs;
-}
-
 /**
  * Custom logger, instantiate with namespace string to prefix messages with.
  * For example:

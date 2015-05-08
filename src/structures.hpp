@@ -1,8 +1,8 @@
 #pragma once
 
-#include "opencv2/opencv.hpp"
 #include <unordered_map>
-#include "boost/functional/hash_fwd.hpp"
+
+#include "opencv2/opencv.hpp"
 
 #include "boost/date_time/posix_time/posix_time.hpp"
 namespace pt = boost::posix_time;
@@ -66,48 +66,50 @@ struct ImagePair
 typedef std::vector<ImagePair>   ImagePairs;
 typedef std::vector<ImagePair*> pImagePairs;
 
-
-/*
- Hash function for unordered_map
-*/
-template <class T>
+/**
+ * Hash function for unordered_map
+ */
+	template <class T>
 inline void hash_combine(std::size_t & seed, const T & v)
 {
-  std::hash<T> hasher;
-  seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+	std::hash<T> hasher;
+	seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 namespace std
 {
-  template<typename S, typename T> struct hash<pair<S, T>>
-  {
-    inline size_t operator()(const pair<S, T> & v) const
-    {
-      size_t seed = 0;
-      ::hash_combine(seed, v.first);
-      ::hash_combine(seed, v.second);
-      return seed;
-    }
-  };
+	template<typename S, typename T> struct hash<pair<S, T>>
+	{
+		inline size_t operator()(const pair<S, T> & v) const
+		{
+			size_t seed = 0;
+			::hash_combine(seed, v.first);
+			::hash_combine(seed, v.second);
+			return seed;
+		}
+	};
 }
 
 template <>
 class std::equal_to<std::pair<int,int> >
 {
-  public:
-     bool operator()(const std::pair<int,int>& a, const std::pair<int,int>& b) const
-     {
-        return a.first == a.first && a.second == b.second;
-     }
+	public:
+		bool operator()(const std::pair<int,int>& a, const std::pair<int,int>& b) const
+		{
+			return a.first == a.first && a.second == b.second;
+		}
 };
+
 /**
  * Unordered map to store matches of image pair (idx_i, idx_j)
  */
 typedef std::unordered_map<std::pair<int,int> ,std::vector<cv::DMatch> > MatchMap;
+
 /**
  * Unordered map to store idx of triangulated 3d point of (img_c,keypoint_k)
  */
 typedef std::unordered_map<std::pair<int,int> ,int> PointMap;
+
 
 /**
  * CloudPoint structure
@@ -119,30 +121,6 @@ typedef std::unordered_map<std::pair<int,int> ,int> PointMap;
  };
  typedef std::vector<CloudPoint> CloudPoints;
 
-
-/**
- * Associativity of cameras (matching features, essentially camera pairs)
- */
-typedef std::pair<int, int> PairIndex;
-class Associativity
-{
-	std::unordered_map<PairIndex, ImagePair*> _map;
-public:
-	int n;
-	Associativity(): n(0) {}
-	Associativity(int _n) : n(_n) {}
-	ImagePair*& operator()(const int i, const int j)
-	{
-		return _map[PairIndex(i, j)];
-	}
-
-	ImagePair* operator()(const int i, const int j) const
-	{
-		auto found = _map.find(PairIndex(i, j));
-		if (found != _map.end()) return found->second;
-		else                     return NULL;
-	}
-};
 
 
 /**

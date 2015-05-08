@@ -1,7 +1,9 @@
 #pragma once
 
-#include "structures.hpp"
 #include "opencv2/opencv.hpp"
+
+#include "structures.hpp"
+#include "Associativity.hpp"
 
 class Pipeline {
 
@@ -37,4 +39,7 @@ private:
 	// bool ransacRegistration(ImagePair* pair);
 
 	void build_spanning_tree(const ImagePairs& pairs, Associativity& assocMat);
+
+	void glo_cam_poses(CameraPoses& cameraPoses, const ImagePairs& pairs,
+		Associativity& tree);
 };

@@ -4,6 +4,7 @@
 using namespace cv;
 
 #include "Pipeline.hpp"
+#include "Associativity.hpp"
 #include "util.hpp"
 
 int _build_spanning_tree(const ImagePairs& pairs, Associativity& assocMat);
@@ -39,7 +40,7 @@ int _build_spanning_tree(const ImagePairs& pairs, Associativity& assocMat)
 		int i = queue.front();
 		queue.pop_front();
 
-		pImagePairs found_pairs = getAssociatedPairs(i, assocMat);
+		pImagePairs found_pairs = assocMat.getAssociatedPairs(i);
 		ImagePair* pair;
 		for (int p = 0; p < found_pairs.size(); p++)
 		{
