@@ -6,9 +6,10 @@ set(
   "2_find_matching_pairs.cpp"
   "3_registration.cpp"
   "4_spanning_tree.cpp"
-  "5_find_clusters.cpp"
-  "6_find_CoM.cpp"
-  "7_bundle_adjustment.cpp"
+  "5_global_cam_poses.cpp"
+  "6_find_clusters.cpp"
+  "7_find_CoM.cpp"
+  "8_bundle_adjustment.cpp"
 )
 
 add_library(pipeline ${MAIN_SOURCES})

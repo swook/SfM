@@ -126,9 +126,10 @@ typedef std::unordered_map<std::pair<int,int> ,int> PointMap;
 typedef std::pair<int, int> PairIndex;
 class Associativity
 {
+	std::unordered_map<PairIndex, ImagePair*> _map;
 public:
-	std::map<PairIndex, ImagePair*> _map;
-	const int n;
+	int n;
+	Associativity(): n(0) {}
 	Associativity(int _n) : n(_n) {}
 	ImagePair*& operator()(const int i, const int j)
 	{
