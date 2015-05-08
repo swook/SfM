@@ -71,8 +71,7 @@ void Pipeline::run()
 	}
 
 	Associativity tree;
-	build_spanning_tree(image_pairs, assocMat);
-	std::swap(tree, assocMat);
+	build_spanning_tree(image_pairs, assocMat, tree);
 
 
 	/**

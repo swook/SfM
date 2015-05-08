@@ -1,3 +1,5 @@
+#include <list>
+
 #include "Associativity.hpp"
 #include "util.hpp"
 
@@ -31,25 +33,27 @@ void Associativity::walk(walk_func func)
 {
 	std::vector<bool> checked(n);
 	checked[0] = true;
-	_walk(0, checked, func);
-}
 
-// TODO: Combine with spanning_tree code to make breadth-first? I dunno
-// i: current camera index
-void Associativity::_walk(int i, std::vector<bool>& checked, walk_func func)
-{
-	pImagePairs pairs = getAssociatedPairs(i);
-	for (int p = 0; p < pairs.size(); p++)
+	std::list<int> queue;
+	queue.push_back(0);
+	while (!queue.empty())
 	{
-		ImagePair* pair = pairs[p];
-		int j = pair->pair_index.first == i ?
-			pair->pair_index.second :
-			pair->pair_index.first;
+		int i = queue.front();
+		queue.pop_front();
 
-		if (checked[j]) continue;
+		pImagePairs pairs = getAssociatedPairs(i);
+		for (int p = 0; p < pairs.size(); p++)
+		{
+			ImagePair* pair = pairs[p];
+			int j = pair->pair_index.first == i ?
+				pair->pair_index.second :
+				pair->pair_index.first;
 
-		bool _continue = func(j, pair);
-		checked[j] = true;
-		if (_continue) _walk(j, checked, func);
+			if (checked[j]) continue;
+
+			bool _continue = func(j, pair);
+			checked[j] = true;
+			if (_continue) queue.push_back(j);
+		}
 	}
 }

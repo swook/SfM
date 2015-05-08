@@ -10,11 +10,9 @@
 class Associativity
 {
 	typedef std::pair<int, int> PairIndex;
-	typedef std::function<bool (const int, const ImagePair* pair)> walk_func;
+	typedef std::function<bool (const int, ImagePair* pair)> walk_func;
 
 	std::unordered_map<PairIndex, ImagePair*> _map;
-
-	void _walk(int i, std::vector<bool>& checked, walk_func func);
 public:
 	int n;
 
