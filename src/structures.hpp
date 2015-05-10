@@ -114,16 +114,14 @@ typedef std::unordered_map<std::pair<int,int> ,int> PointMap;
 /**
  * PointCluster structure for clusters
  */
- struct PointCluster
- {
- 	std::vector<cv::Point3f> 	cluster; 	//from depth map back projected depth points
- };
- typedef std::vector<PointCluster> PointClusters;
+typedef std::vector<cv::Point3f> 	PointCluster; 	//from depth map back projected depth points
+ 
+typedef std::vector<PointCluster> PointClusters;
 
 /**
  * PointCluster structure for point after CoM
  */
-typedef std::vector<Point3f> PointCloud;
+typedef std::vector<cv::Point3f> PointCloud;
 
 
 /**
