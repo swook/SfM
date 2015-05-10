@@ -46,5 +46,8 @@ private:
 
 	// find and cluster depth points from local camera frame to global camera frame
 	void find_clusters(Associativity& assocMat,const CameraPoses& cameraPoses,
-		const CamFrames& camFrames,PointClusters& pointClusters);
+		const CamFrames& camFrames,PointClusters& pointClusters,PointMap& pointMap);
+
+	void find_CoM(const PointClusters& pointClusters,Images& images,CamFrames& camFrames,PointMap& pointMap, PointCloud& pointCloud);
+	// void find_CoM(const PointClusters& pointClusters, ImagePairs& pairs, PointCloud& pointCloud);
 };

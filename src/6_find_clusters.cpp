@@ -11,7 +11,6 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 
 	Logger _log("Step 6 (clusters)");
 
-	// PointMap pointMap;
 
 	// function when walking through the pair tree
 	tree.walk([&cameraPoses,&pointClusters, &pointMap,&_log,this](const int i, const int j, const ImagePair* pair) -> bool
@@ -57,11 +56,11 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 			Mat gPoint3D_j_tmp = R_j.t()*Mat(point3D_j) - t_j;
 			Point3f gPoint3D_j = Point3f(gPoint3D_j_tmp);
 
-			std:: cout << "cam idx j"<<std::endl << j <<std::endl;
-			std:: cout << "R_j "<<std::endl << R_j <<std::endl;
-			std:: cout << "t_j "<<std::endl << t_j <<std::endl;
-			std:: cout << "local 3D j"<<std::endl << Mat(point3D_j)<<std::endl;
-			std:: cout << "global 3D j"<<std::endl<< gPoint3D_j <<std::endl;
+			// std:: cout << "cam idx j"<<std::endl << j <<std::endl;
+			// std:: cout << "R_j "<<std::endl << R_j <<std::endl;
+			// std:: cout << "t_j "<<std::endl << t_j <<std::endl;
+			// std:: cout << "local 3D j"<<std::endl << Mat(point3D_j)<<std::endl;
+			// std:: cout << "global 3D j"<<std::endl<< gPoint3D_j <<std::endl;
 
 			// find matching global point from pointMap
 			std::pair<int,int> key(i,kpIdx_i[m]);
@@ -78,11 +77,11 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 				Mat gPoint3D_i_tmp = R_i.t()*Mat(point3D_i) - t_i;
 				Point3f gPoint3D_i = Point3f(gPoint3D_i_tmp);
 
-				std:: cout << "cam idx i"<<std::endl << i <<std::endl;
-				std:: cout << "R_i "<<std::endl << R_i <<std::endl;
-				std:: cout << "t_i "<<std::endl << t_i <<std::endl;
-				std:: cout << "local 3D i"<<std::endl << Mat(point3D_i)<<std::endl;
-				std:: cout << "global 3D i"<<std::endl<< gPoint3D_i <<std::endl;
+				// std:: cout << "cam idx i"<<std::endl << i <<std::endl;
+				// std:: cout << "R_i "<<std::endl << R_i <<std::endl;
+				// std:: cout << "t_i "<<std::endl << t_i <<std::endl;
+				// std:: cout << "local 3D i"<<std::endl << Mat(point3D_i)<<std::endl;
+				// std:: cout << "global 3D i"<<std::endl<< gPoint3D_i <<std::endl;
 
 				// add new entry in pointMap for camera i
 				p3D_idx = pointClusters.size();
