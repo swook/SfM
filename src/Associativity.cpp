@@ -3,14 +3,22 @@
 #include "Associativity.hpp"
 #include "util.hpp"
 
+Associativity::PairIndex Associativity::makeIndex(int a, int b) const
+{
+	int i = std::min(a, b),
+	    j = i == a ? b : a;
+
+	return PairIndex(i, j);
+}
+
 ImagePair*& Associativity::operator()(const int i, const int j)
 {
-	return _map[PairIndex(i, j)];
+	return _map[makeIndex(i, j)];
 }
 
 ImagePair* Associativity::operator()(const int i, const int j) const
 {
-	auto found = _map.find(PairIndex(i, j));
+	auto found = _map.find(makeIndex(i, j));
 	if (found != _map.end()) return found->second;
 	else                     return NULL;
 }

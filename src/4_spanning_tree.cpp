@@ -23,7 +23,6 @@ void Pipeline::build_spanning_tree(const ImagePairs& pairs, Associativity& assoc
 			      pair->pair_index.first;
 
 		tree(i, j) = pair;
-		tree(j, i) = pair;
 		new_n++;
 
 		return true; // continue

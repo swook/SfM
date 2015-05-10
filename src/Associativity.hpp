@@ -9,10 +9,14 @@
  */
 class Associativity
 {
+private:
 	typedef std::pair<int, int> PairIndex;
 	typedef std::function<bool (const int, ImagePair* pair)> walk_func;
 
 	std::unordered_map<PairIndex, ImagePair*> _map;
+
+	PairIndex makeIndex(int a, int b) const;
+
 public:
 	int n;
 
