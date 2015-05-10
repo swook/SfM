@@ -39,8 +39,7 @@ pImagePairs Associativity::getAssociatedPairs(const int i)
 
 void Associativity::walk(walk_func func)
 {
-	std::vector<bool> checked(n);
-	checked[0] = true;
+	std::unordered_map<PairIndex, bool> checked;
 
 	std::list<int> queue;
 	queue.push_back(0);
@@ -57,10 +56,11 @@ void Associativity::walk(walk_func func)
 				pair->pair_index.second :
 				pair->pair_index.first;
 
-			if (checked[j]) continue;
+			PairIndex chk_idx = makeIndex(i, j);
+			if (checked[chk_idx]) continue;
 
 			bool _continue = func(j, pair);
-			checked[j] = true;
+			checked[chk_idx] = true;
 			if (_continue) queue.push_back(j);
 		}
 	}

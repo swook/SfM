@@ -12,17 +12,25 @@ void Pipeline::build_spanning_tree(const ImagePairs& pairs, Associativity& assoc
 {
 	Logger _log("Step 4 (spanning)");
 
-	// Build rest of tree
 	const int old_n = assocMat.n;
+
+	// Only add camera once
+	std::vector<bool> checked(old_n);
+	checked[0] = true;
+
+	// Build rest of tree
 	int new_n = 1;
-	assocMat.walk([&tree, &new_n](const int j, ImagePair* pair) -> bool
+	assocMat.walk([&tree, &new_n, &checked](const int j, ImagePair* pair) -> bool
 	{
 		// Find index of other side of pair
 		const int i = pair->pair_index.first == j ?
 		              pair->pair_index.second :
 			      pair->pair_index.first;
 
+		if (checked[j]) return true;
+
 		tree(i, j) = pair;
+		checked[j] = true;
 		new_n++;
 
 		return true; // continue
