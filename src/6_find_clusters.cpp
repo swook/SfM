@@ -110,4 +110,5 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 	// std::cout<< pointClusters[1] << std::endl;
 	// std::cout<< pointClusters[2] << std::endl;
 	// std::cout<< pointClusters[3] << std::endl;
+	_log.tok();
 }
