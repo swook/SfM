@@ -32,7 +32,7 @@ void Pipeline::build_spanning_tree(const ImagePairs& pairs, Associativity& assoc
 
 		return true; // continue
 	});
-	tree.n = new_n;
+	tree.n = old_n; // NOTE: Indices are still relative to old_n
 
 	// NOTE: Number of nodes (cameras) may be reduced if no edge from/to
 	// camera exists

@@ -9,7 +9,7 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 	const CamFrames& camFrames,PointClusters& pointClusters, PointMap& pointMap)
 {
 
-	Logger _log("Step 6 (global)");
+	Logger _log("Step 6 (clusters)");
 
 	// PointMap pointMap;
 
