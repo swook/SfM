@@ -24,6 +24,8 @@ void Pipeline::build_spanning_tree(const ImagePairs& pairs, Associativity& assoc
 	{
 		if (checked[j]) return true;
 
+		if (pair->R.empty()) return true;
+		
 		tree(i, j) = pair;
 		checked[j] = true;
 		new_n++;

@@ -13,6 +13,10 @@ void showImageAndWait(const char* title, const cv::Mat& img);
 cv::Point3f backproject3D(const float x,const float y, float depth, const cv::Mat m_cameraMatrix);
 cv::Vec4f R2Quaternion(cv::Mat& R);
 cv::Mat quat2R(cv::Vec4f& q);
+// eigenvalue of rotation matrix should be one (or minus one);
+bool checkCoherentRotation(cv::Mat& R);	
+// two quaternion shouldn't varie too much
+bool checkCoherentQ(cv::Vec4f& q0, cv::Vec4f& q1);
 
 /**
  * Custom logger, instantiate with namespace string to prefix messages with.

@@ -18,6 +18,7 @@ void Pipeline::glo_cam_poses(Images& images, CameraPoses& cameraPoses, const Ima
 
 	// Go through spanning tree and for each camera calculate R and t
 	// NOTE: This needs R, t of parent/previous camera
+	if (tree.n <= 1) return;
 	tree.walk([&cameraPoses, &images, &_log](const int i, const int j, const ImagePair* pair) -> bool
 	{
 		// jth camera is current leaf

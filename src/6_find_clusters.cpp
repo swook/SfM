@@ -6,12 +6,12 @@ using namespace cv;
 #include "util.hpp"
 
 void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
-	const CamFrames& camFrames,PointClusters& pointClusters)
+	const CamFrames& camFrames,PointClusters& pointClusters, PointMap& pointMap)
 {
 
 	Logger _log("Step 6 (global)");
 
-	PointMap pointMap;
+	// PointMap pointMap;
 
 	// function when walking through the pair tree
 	tree.walk([&cameraPoses,&pointClusters, &pointMap,&_log,this](const int i, const int j, const ImagePair* pair) -> bool
@@ -19,7 +19,7 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 		Depths depths_i, depths_j;							//depth values of keypoints in current camera
 		std::vector<Point2f> keypoints_i,keypoints_j;		//matched keypoints in current camera
 		std::vector<int> kpIdx_i,kpIdx_j;					//index of matched keypoings in the other camera in pair
-		std::cout << "try0" << std::endl;
+		
 		// Find index of other side of pair
 		if (pair->pair_index.first ==j){
 			kpIdx_i = pair -> matched_indices.second;
@@ -43,7 +43,7 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 		Mat t_i = cameraPoses[i].t;
 		Mat R_j = cameraPoses[j].R;
 		Mat t_j = cameraPoses[j].t;
-		std::cout << "try1" << std::endl;
+		
 		// for all matching in camera j, get their global coordinate
 		// and insert them in corresponding cluster
 		for(size_t m=0;m < kpIdx_i.size();m++){
@@ -105,9 +105,5 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 		return true;
 	});
 
-	std::cout<< pointClusters[0] << std::endl;
-	std::cout<< pointClusters[1] << std::endl;
-	std::cout<< pointClusters[2] << std::endl;
-	std::cout<< pointClusters[3] << std::endl;
 	_log.tok();
 }

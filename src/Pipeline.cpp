@@ -52,7 +52,6 @@ void Pipeline::run()
 	*/
 	register_camera(image_pairs, cam_Frames);
 
-
 	/**
 	 * Stage 4: Construct associativity matrix and spanning tree
 	 */
@@ -62,6 +61,7 @@ void Pipeline::run()
 		ImagePair* pair = &image_pairs[p];
 		int i = pair->pair_index.first,
 		    j = pair->pair_index.second;
+		if(pair -> R.empty()) continue;
 		assocMat(i, j) = pair;
 		assocMat(j, i) = pair;
 
@@ -84,8 +84,15 @@ void Pipeline::run()
 	 * Stage 6: Find and cluster depth points from local camera frame to global camera frame
 	 */ 
 	PointClusters pointClusters;
-	find_clusters(assocMat,gCameraPoses,cam_Frames,pointClusters);
+	PointMap pointMap;
+	find_clusters(assocMat,gCameraPoses,cam_Frames,pointClusters,pointMap);
 
+	/**
+	 * Stage 7: get center of mass from clusters
+	 */ 
+	PointCloud pointCloud(pointClusters.size());
+	// find_CoM(pointClusters, image_pairs, pointCloud);
+	find_CoM(pointClusters,images,cam_Frames,pointMap, pointCloud);
 	// End
 	_log.tok();
 }

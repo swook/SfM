@@ -129,6 +129,21 @@ Mat quat2R(Vec4f& q){
     return R;
 }
 
+bool checkCoherentRotation(cv::Mat& R) {
+	
+	if(fabs(determinant(R))-1.0 > 1e-07) return false;
+	return true;
+}
+
+bool checkCoherentQ(Vec4f& q0, Vec4f& q1)
+{	
+	Vec4f absdelta,reldelta;
+	absdiff(q0,q1,absdelta);
+	divide(absdelta,q1,reldelta);
+	if (reldelta[0]>0.05 ||reldelta[1]>0.05 ||reldelta[2]>0.05 ||reldelta[3]>0.05)
+		return false;
+	return true;
+}
 
 void Logger::tok()
 {
