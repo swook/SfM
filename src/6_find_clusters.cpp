@@ -19,6 +19,7 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 		Depths depths_i, depths_j;							//depth values of keypoints in current camera
 		std::vector<Point2f> keypoints_i,keypoints_j;		//matched keypoints in current camera
 		std::vector<int> kpIdx_i,kpIdx_j;					//index of matched keypoings in the other camera in pair
+		std::cout << "try0" << std::endl;
 		// Find index of other side of pair
 		if (pair->pair_index.first ==j){
 			kpIdx_i = pair -> matched_indices.second;
@@ -42,7 +43,7 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 		Mat t_i = cameraPoses[i].t;
 		Mat R_j = cameraPoses[j].R;
 		Mat t_j = cameraPoses[j].t;
-
+		std::cout << "try1" << std::endl;
 		// for all matching in camera j, get their global coordinate
 		// and insert them in corresponding cluster
 		for(size_t m=0;m < kpIdx_i.size();m++){
@@ -50,16 +51,17 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 			float x_j = keypoints_j[m].x;
 			float y_j = keypoints_j[m].y;
 			Point3f point3D_j = backproject3D(x_j,y_j,depths_j[m],cameraMatrix);
-
+			
+			
 			// transform into global frame
 			Mat gPoint3D_j_tmp = R_j.t()*Mat(point3D_j) - t_j;
 			Point3f gPoint3D_j = Point3f(gPoint3D_j_tmp);
 
-			// std:: cout << "cam idx j"<<std::endl << j <<std::endl;
-			// std:: cout << "R_j "<<std::endl << R_j <<std::endl;
-			// std:: cout << "t_j "<<std::endl << t_j <<std::endl;
-			// std:: cout << "local 3D j"<<std::endl << Mat(point3D_j)<<std::endl;
-			// std:: cout << "global 3D j"<<std::endl<< gPoint3D_j <<std::endl;
+			std:: cout << "cam idx j"<<std::endl << j <<std::endl;
+			std:: cout << "R_j "<<std::endl << R_j <<std::endl;
+			std:: cout << "t_j "<<std::endl << t_j <<std::endl;
+			std:: cout << "local 3D j"<<std::endl << Mat(point3D_j)<<std::endl;
+			std:: cout << "global 3D j"<<std::endl<< gPoint3D_j <<std::endl;
 
 			// find matching global point from pointMap
 			std::pair<int,int> key(i,kpIdx_i[m]);
@@ -76,11 +78,11 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 				Mat gPoint3D_i_tmp = R_i.t()*Mat(point3D_i) - t_i;
 				Point3f gPoint3D_i = Point3f(gPoint3D_i_tmp);
 
-				// std:: cout << "cam idx i"<<std::endl << i <<std::endl;
-				// std:: cout << "R_i "<<std::endl << R_i <<std::endl;
-				// std:: cout << "t_i "<<std::endl << t_i <<std::endl;
-				// std:: cout << "local 3D i"<<std::endl << Mat(point3D_i)<<std::endl;
-				// std:: cout << "global 3D i"<<std::endl<< gPoint3D_i <<std::endl;
+				std:: cout << "cam idx i"<<std::endl << i <<std::endl;
+				std:: cout << "R_i "<<std::endl << R_i <<std::endl;
+				std:: cout << "t_i "<<std::endl << t_i <<std::endl;
+				std:: cout << "local 3D i"<<std::endl << Mat(point3D_i)<<std::endl;
+				std:: cout << "global 3D i"<<std::endl<< gPoint3D_i <<std::endl;
 
 				// add new entry in pointMap for camera i
 				p3D_idx = pointClusters.size();
@@ -103,9 +105,9 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 		return true;
 	});
 
-	// std::cout<< pointClusters[0] << std::endl;
-	// std::cout<< pointClusters[1] << std::endl;
-	// std::cout<< pointClusters[2] << std::endl;
-	// std::cout<< pointClusters[3] << std::endl;
+	std::cout<< pointClusters[0] << std::endl;
+	std::cout<< pointClusters[1] << std::endl;
+	std::cout<< pointClusters[2] << std::endl;
+	std::cout<< pointClusters[3] << std::endl;
 	_log.tok();
 }
