@@ -59,7 +59,7 @@ void Associativity::walk(walk_func func)
 			PairIndex chk_idx = makeIndex(i, j);
 			if (checked[chk_idx]) continue;
 
-			bool _continue = func(j, pair);
+			bool _continue = func(i, j, pair);
 			checked[chk_idx] = true;
 			if (_continue) queue.push_back(j);
 		}
