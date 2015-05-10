@@ -25,7 +25,7 @@ endif(APPLE)
 # Set compile options
 set(
   CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -ggdb -O3 -msse3 -msse4"
+  "${CMAKE_CXX_FLAGS} -g -O0 -msse3 -msse4"
 )
 
 # Add libraries
