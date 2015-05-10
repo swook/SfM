@@ -43,8 +43,6 @@ struct CamFrame
 {
 	const int 			index;		// index of frame
 	const KeyPoints 	key_points; // list of feature points found in this image
-	const Depths		depths;		// list of depths of feature points
-	std::vector<int> 	matched_list; // list of camframe indices that are matched to this image
 
 	// TODO add field for pose when pose_estimation R and t (in global frame)
 };
@@ -55,10 +53,12 @@ typedef std::vector<CamFrame> CamFrames;
  * Pair of images which have sufficient no. of matching features
  */
 typedef std::pair<std::vector<cv::Point2f>, std::vector<cv::Point2f> > KeyPointsPair;
+typedef std::pair<std::vector<int>, std::vector<int> >				   MatchIdxPair;
 struct ImagePair
 {
 	const std::pair<int,int>			  pair_index;
 	const KeyPointsPair 				  matched_points;
+	const MatchIdxPair		  	      	  matched_indices; 
 	const std::pair<Depths,Depths>		  pair_depths;
 	cv::Mat 							  R;
 	cv::Mat           					  t;

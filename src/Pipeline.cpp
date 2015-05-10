@@ -80,6 +80,11 @@ void Pipeline::run()
 	CameraPoses gCameraPoses;
 	glo_cam_poses(images, gCameraPoses, image_pairs, tree);
 
+	/**
+	 * Stage 6: Find and cluster depth points from local camera frame to global camera frame
+	 */ 
+	PointClusters pointClusters;
+	find_clusters(assocMat,gCameraPoses,cam_Frames,pointClusters);
 
 	// End
 	_log.tok();
