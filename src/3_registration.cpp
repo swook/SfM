@@ -41,9 +41,6 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 			float x_j = keyPoints_j[k].x;
 			float y_j = keyPoints_j[k].y;
 			float d_j = depths_j[k];
-
-			// skip invalid depth
-			if (d_j == 0 || d_i ==0 ) continue;
 			
 			// backproject 3d points
 			Point3f objPoints_i = backproject3D(x_i,y_i,d_i,cameraMatrix);
@@ -81,28 +78,18 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		Mat R_j_t = R_j.t();
 		Vec4f q_i = R2Quaternion(R_i);
 		Vec4f q_j = R2Quaternion(R_j_t);
-		
-		std::cout<<"R_i "<<std::endl<<R_i<<std::endl;
-		std::cout<<"R_j_t "<<std::endl<<R_j_t<<std::endl;
-		std::cout<<"q_i "<<std::endl<<q_i<<std::endl;
-		std::cout<<"q_j "<<std::endl<<q_j<<std::endl;
+
 		Vec4f q_avg = normalize(q_j + q_i);
 		Mat R = quat2R(q_avg);
 
-		std::cout<<"R_i "<<std::endl<<R_i<<std::endl;
-		std::cout<<"R "<<std::endl<<R<<std::endl;
 		pair -> R = R;
 
 		// average t_i and t_j
 		Mat tvec = (tvec_i - tvec_j)/2;
 		pair -> t = tvec;
 		
-		std::vector<cv::Point2f> projected3D;
-		cv::projectPoints(points3D_j, rvec_j, tvec_j, cameraMatrix, noArray(), projected3D);
-		for(int i=0;i<projected3D.size();i++) {
-			std::cout << i << ". " << valid_keyPoints_i[i] << std::endl;
-			std::cout << i << ". " << projected3D[i] << std::endl;
-		}
+		std::cout<<"tvec "<<std::endl<<tvec<<std::endl;
+		std::cout<<"R "<<std::endl<<R<<std::endl;
 	}
 
 	_log.tok();

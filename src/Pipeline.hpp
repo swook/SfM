@@ -43,4 +43,8 @@ private:
 
 	void glo_cam_poses(Images& images, CameraPoses& cameraPoses, const ImagePairs& pairs,
 		Associativity& tree);
+
+	// find and cluster depth points from local camera frame to global camera frame
+	void find_clusters(Associativity& assocMat,const CameraPoses& cameraPoses,
+		const CamFrames& camFrames,PointClusters& pointClusters);
 };
