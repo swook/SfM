@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "opencv2/opencv.hpp"
 #include "opencv2/features2d.hpp"
 #include "opencv2/xfeatures2d/nonfree.hpp"
@@ -27,16 +29,30 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 	// detect features in a loop
 	for (int i = 0; i < images.size(); ++i)
 	{
+		Image image = images[i];
+
 		KeyPoints key_points;
 		Descriptors descriptors;
 		// detects and computes descriptors
 
-		//sift_detector->detectAndCompute(images[i].gray, noArray(), key_points, descriptors);
-		brisk_detector->detectAndCompute(images[i].gray, noArray(), key_points, descriptors);
+		//sift_detector->detectAndCompute(image.gray, noArray(), key_points, descriptors);
+		brisk_detector->detectAndCompute(image.gray, noArray(), key_points, descriptors);
+
+		// Remove 0-depth keypoints
+		KeyPoints   keep_key_points;
+		Descriptors keep_descriptors;
+		for (size_t k = 0; k < key_points.size(); k++)
+		{
+			if (image.dep.at<float>(key_points[k].pt) != 0)
+			{
+				keep_key_points.push_back(key_points[k]);
+				keep_descriptors.push_back(descriptors.row(k));
+			}
+		}
 
 		// wrap keypoints to cam_Frame and add in to cam_Frames
-		cam_Frames.push_back((CamFrame) {i,key_points});
-		descriptors_vec.push_back(descriptors);
+		cam_Frames.push_back((CamFrame) {i, keep_key_points});
+		descriptors_vec.push_back(keep_descriptors);
 
 		//_log("Found %d key points in image %d.", key_points.size(), i);
 	}
