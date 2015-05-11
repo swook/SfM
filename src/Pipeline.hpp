@@ -21,7 +21,6 @@ private:
 	std::string folder_path;
 	const cv::Mat cameraMatrix;
 	const cv::Mat distCoeffs;
-	MatchMap match_map;
 
 	void load_images(std::string _folder_path, Images& images);
 
@@ -48,6 +47,5 @@ private:
 	void find_clusters(Associativity& assocMat,const CameraPoses& cameraPoses,
 		const CamFrames& camFrames,PointClusters& pointClusters,PointMap& pointMap);
 
-	void find_CoM(const PointClusters& pointClusters,Images& images,CamFrames& camFrames,PointMap& pointMap, PointCloud& pointCloud);
-	// void find_CoM(const PointClusters& pointClusters, ImagePairs& pairs, PointCloud& pointCloud);
+	void find_CoM(const PointClusters& pointClusters,PointCloud& pointCloud);
 };

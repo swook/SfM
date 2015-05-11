@@ -92,7 +92,19 @@ void Pipeline::run()
 	 */ 
 	PointCloud pointCloud(pointClusters.size());
 	// find_CoM(pointClusters, image_pairs, pointCloud);
-	find_CoM(pointClusters,images,cam_Frames,pointMap, pointCloud);
-	// End
+	find_CoM(pointClusters,pointCloud);
+	
+
+	/**
+	 * State 8: Bundle Adjustment
+	 */
+	// RevPointMap revPointMap;
+	// for ( auto it = pointMap.begin(); it != pointMap.end(); ++it )
+	// {
+	// 	std::vector<std::pair<int,int> >* v = &revPointMap[it -> second];
+	// 	v -> push_back(it -> first);
+	// }
+	
+	
 	_log.tok();
 }
