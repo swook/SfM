@@ -15,7 +15,9 @@ find_package(Boost  REQUIRED program_options system filesystem date_time)
 find_package(Ceres  REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${Eigen3_INCLUDE_DIRS})
+include_directories("/usr/include/eigen3/")
+include_directories("/usr/local/include/eigen3/")
+include_directories(${Ceres_INCLUDE_DIRS})
 #set(Boost_USE_STATIC_LIBS ON)
 
 # OS X specific options
@@ -39,4 +41,4 @@ add_subdirectory(src)
 add_executable(main "src/main.cpp")
 
 # Depend on OpenCV and Boost
-target_link_libraries(main pipeline ${OpenCV_LIBS} ${Boost_LIBRARIES} ${Ceres_LIBS} )
+target_link_libraries(main pipeline ${OpenCV_LIBS} ${Boost_LIBRARIES} ${Ceres_LIBRARIES} )
