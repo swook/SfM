@@ -12,14 +12,27 @@ namespace pt = boost::posix_time;
  */
 struct Image
 {
-	int 		  index;	// index of frame
+	int 		  index;    // index of frame
 	const pt::ptime   time;     // Time taken
 	const cv::Mat     rgb;      // 1-channel cv::Mat containing rgb   data
 	const cv::Mat     gray;     // 1-channel cv::Mat containing gray  data
 	const cv::Mat     dep;      // 1-channel cv::Mat containing depth data
 	const std::string rgb_path; // Path to rgb   file
 	const std::string dep_path; // Path to depth file
+
+	Image& operator=(Image other)
+	{
+		index = other.index;
+		const_cast<pt::ptime&>  (time    ) = other.time;
+		const_cast<cv::Mat&>    (rgb     ) = other.rgb;
+		const_cast<cv::Mat&>    (gray    ) = other.gray;
+		const_cast<cv::Mat&>    (dep     ) = other.dep;
+		const_cast<std::string&>(rgb_path) = other.rgb_path;
+		const_cast<std::string&>(dep_path) = other.dep_path;
+		return *this;
+	}
 };
+
 
 /**
  * List of Image structs
@@ -41,10 +54,15 @@ typedef std::vector<float> 		 Depths;
  */
 struct CamFrame
 {
-	const int 			index;		// index of frame
-	const KeyPoints 	key_points; // list of feature points found in this image
+	int             index;      // index of frame
+	const KeyPoints key_points; // list of feature points found in this image
 
-	// TODO add field for pose when pose_estimation R and t (in global frame)
+	CamFrame& operator=(CamFrame other)
+	{
+		const_cast<int&>      (index)      = other.index;
+		const_cast<KeyPoints&>(key_points) = other.key_points;
+		return *this;
+	}
 };
 
 typedef std::vector<CamFrame> CamFrames;
@@ -58,7 +76,7 @@ struct ImagePair
 {
 	const std::pair<int,int>			  pair_index;
 	const KeyPointsPair 				  matched_points;
-	const MatchIdxPair		  	      	  matched_indices; 
+	const MatchIdxPair		  	      	  matched_indices;
 	const std::pair<Depths,Depths>		  pair_depths;
 	cv::Mat 							  R;
 	cv::Mat           					  t;
@@ -90,15 +108,6 @@ namespace std
 	};
 }
 
-template <>
-class std::equal_to<std::pair<int,int> >
-{
-	public:
-		bool operator()(const std::pair<int,int>& a, const std::pair<int,int>& b) const
-		{
-			return a.first == a.first && a.second == b.second;
-		}
-};
 
 /**
  * Unordered map to store matches of image pair (idx_i, idx_j)
@@ -115,7 +124,7 @@ typedef std::unordered_map<std::pair<int,int> ,int> PointMap;
  * PointCluster structure for clusters
  */
 typedef std::vector<cv::Point3f> 	PointCluster; 	//from depth map back projected depth points
- 
+
 typedef std::vector<PointCluster> PointClusters;
 
 /**

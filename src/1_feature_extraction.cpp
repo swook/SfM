@@ -13,6 +13,10 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 {
 	Logger _log("Step 1 (features)");
 
+	const int n     = images.size();
+	cam_Frames      = CamFrames(n);
+	descriptors_vec = DescriptorsVec(n);
+
 	// // create a sift detector
 	// const int    feature_num      = 800;
 	// const int    octavelayers_num = 3;
@@ -27,7 +31,7 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 	Ptr<Feature2D> brisk_detector = BRISK::create();
 
 	// detect features in a loop
-	for (int i = 0; i < images.size(); ++i)
+	for (int i = 0; i < n; ++i)
 	{
 		Image image = images[i];
 
@@ -43,7 +47,7 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 		Descriptors keep_descriptors;
 		for (size_t k = 0; k < key_points.size(); k++)
 		{
-			if (image.dep.at<float>(key_points[k].pt) != 0)
+			if (image.dep.at<float>(key_points[k].pt) != 0.f)
 			{
 				keep_key_points.push_back(key_points[k]);
 				keep_descriptors.push_back(descriptors.row(k));
@@ -51,8 +55,8 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 		}
 
 		// wrap keypoints to cam_Frame and add in to cam_Frames
-		cam_Frames.push_back((CamFrame) {i, keep_key_points});
-		descriptors_vec.push_back(keep_descriptors);
+		cam_Frames[i]      = (CamFrame) {i, keep_key_points};
+		descriptors_vec[i] = keep_descriptors;
 
 		//_log("Found %d key points in image %d.", key_points.size(), i);
 	}

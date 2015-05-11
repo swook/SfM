@@ -30,7 +30,7 @@ void Pipeline::load_images(string folder_path, Images& images)
 	auto fname_regex = regex(".*/frame_([0-9T\\.]+)_(rgb|depth)\\.png$");
 
 	// Create intermediate map structure
-	map<string, bool> tstamps;
+	map<string, bool> _tstamps;
 	fs::directory_iterator end_itr;
 	string path, time_str;
 	smatch match;
@@ -49,22 +49,30 @@ void Pipeline::load_images(string folder_path, Images& images)
 				 * 2: depth
 				 */
 				time_str = match[1];
-				tstamps[time_str] = true;
+				_tstamps[time_str] = true;
 			}
 		}
 	}
-	_log("Found %d timestamps.", tstamps.size());
 
-	string rgb_path, dep_path;
-	int i = 0;
-	for (auto it = tstamps.begin(); it != tstamps.end(); it++)
+	// Convert to vector of timestamps
+	const int n = _tstamps.size();
+	std::vector<string> tstamps;
+	tstamps.reserve(n);
+	for (auto tstamp: _tstamps) tstamps.push_back(tstamp.first);
+
+	_log("Found %d timestamps.", n);
+
+	images = Images(n);
+
+#pragma omp parallel for
+	for (int i = 0; i < n; i++)
 	{
 		// Get time string
-		time_str = it->first;
+		string time_str = tstamps[i];
 
 		// Get file paths
-		rgb_path = (fmt("%s/frame_%s_rgb.png")   % folder_path % time_str).str();
-		dep_path = (fmt("%s/frame_%s_depth.png") % folder_path % time_str).str();
+		string rgb_path = (fmt("%s/frame_%s_rgb.png")   % folder_path % time_str).str();
+		string dep_path = (fmt("%s/frame_%s_depth.png") % folder_path % time_str).str();
 		Mat rgb_img = imread(rgb_path);
 		Mat _depth_img = imread(dep_path,CV_LOAD_IMAGE_ANYDEPTH);
 
@@ -89,7 +97,7 @@ void Pipeline::load_images(string folder_path, Images& images)
 		bilateralFilter(depth_img, depth_smooth_img, 5, 10, 10);
 
 		// Store Image struct with image read using imread
-		images.push_back((Image) {
+		images[i] = (Image){
 			i,
 			pt::from_iso_string(time_str),
 			rgb_undist_img,
@@ -97,9 +105,7 @@ void Pipeline::load_images(string folder_path, Images& images)
 			depth_smooth_img,
 			rgb_path,
 			dep_path
-		});
-		// increment index
-		i++;
+		};
 	}
 
 	_log.tok();
