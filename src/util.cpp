@@ -104,12 +104,12 @@ Vec4f R2Quaternion(Mat& R)
 	    q3 = 0.25 * s;
     	}
 	}
-	Vec4f q = normalize(Vec<float,4>::Vec(q0, q1, q2, q3));
+	Vec4f q = normalize(Vec4f(q0, q1, q2, q3));
 	return q;
 }
 
 Mat quat2R(Vec4f& q){
-	
+
     float sqw = q[0]*q[0];
     float sqx = q[1]*q[1];
     float sqy = q[2]*q[2];
