@@ -7,7 +7,7 @@ using namespace cv;
 #include "Associativity.hpp"
 #include "util.hpp"
 
-void Pipeline::build_spanning_tree(const ImagePairs& pairs, Associativity& assocMat,
+const int Pipeline::build_spanning_tree(const ImagePairs& pairs, Associativity& assocMat,
 	Associativity& tree)
 {
 	Logger _log("Step 4 (spanning)");
@@ -39,5 +39,6 @@ void Pipeline::build_spanning_tree(const ImagePairs& pairs, Associativity& assoc
 	_log("%d cameras reduced to %d cameras by spanning tree.", old_n, new_n);
 
 	_log.tok();
+	return new_n;
 }
 

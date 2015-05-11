@@ -71,7 +71,7 @@ void Pipeline::run()
 	}
 
 	Associativity tree;
-	build_spanning_tree(image_pairs, assocMat, tree);
+	const int camera_num = build_spanning_tree(image_pairs, assocMat, tree);
 
 
 	/**

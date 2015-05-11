@@ -131,7 +131,7 @@ Mat quat2R(Vec4f& q){
 
 bool checkCoherentRotation(cv::Mat& R) {
 	
-	if(fabs(determinant(R))-1.0 > 1e-07) return false;
+	if(fabs(determinant(R))-1.0 > 1e-05) return false;
 	return true;
 }
 
