@@ -12,6 +12,10 @@ public:
 	 * Constructors
 	 */
 	Pipeline(std::string folder_path);
+
+	const cv::Mat cameraMatrix;
+	const cv::Mat distCoeffs;
+
 	/**
 	 * Run pipeline
 	 */
@@ -19,8 +23,6 @@ public:
 
 private:
 	std::string folder_path;
-	const cv::Mat cameraMatrix;
-	const cv::Mat distCoeffs;
 
 	void load_images(std::string _folder_path, Images& images);
 
@@ -48,4 +50,6 @@ private:
 		const CamFrames& camFrames,PointClusters& pointClusters,PointMap& pointMap);
 
 	void find_CoM(const PointClusters& pointClusters,PointCloud& pointCloud);
+
+	void bundle_adjustment(const PointMap& pointMap,const CamFrames& camFrames,const int camera_num,PointCloud pointCloud);
 };
