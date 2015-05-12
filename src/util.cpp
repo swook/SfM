@@ -155,8 +155,9 @@ bool checkCoherentQ(Vec4f& q0, Vec4f& q1)
 }
 
 bool checkCoherent(Mat& q0, Mat& q1)
-{	
-	double reldiff = norm( q0, q1, NORM_RELATIVE);
-	return (reldiff<0.05);
+{
+	double reldiff = norm( q0, q1, NORM_RELATIVE | NORM_L2);
+	std::cout << reldiff << std::endl;
+	return (reldiff < 2.0);
 }
 
