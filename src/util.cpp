@@ -24,7 +24,7 @@ void showImageAndWait(const char* title, const Mat& img)
 
 Point3f backproject3D(const float x, const float y, const float depth, const Mat& m_cameraMatrix)
 {
-	Mat new_point = depth * (Mat_<float>(1,3) << x,y,1) * m_cameraMatrix.inv().t();
+	Mat new_point = depth * m_cameraMatrix.inv()* (Mat_<float>(3,1) << x,y,1);
 	return Point3f(new_point);
 }
 

@@ -73,17 +73,10 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		rvec_j.convertTo(rvec_j,CV_32FC1);
 		
 		// average R_i and R_j transpose using quaternion
-		Rodrigues(rvec_i,R_i);
-		Rodrigues(rvec_j,R_j);
-		Mat R_j_t = R_j.t();
-		Vec4f q_i = R2Quaternion(R_i);
-		Vec4f q_j = R2Quaternion(R_j_t);
-		Vec4f q_avg = normalize(q_j + q_i);
-		Mat R = quat2R(q_avg);
-
-		// average t_i and t_j
-		Mat tvec = (tvec_i - tvec_j)/2;
-		
+		Mat r,R,tvec;
+		r = (rvec_i-rvec_j)/2;
+		tvec = (tvec_i - tvec_j)/2;
+		Rodrigues(r,R);
 
 		// std::vector<cv::Point2f> projected3D;
 		// rvec_j rotation j wrt i
@@ -106,12 +99,37 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 			continue;
 		}
 
-		if (!checkCoherentQ(q_j,q_i))
-		{
-			_log("Invalid R in %04d-%04d, this pair is skipped!", i, j);
-			continue;
-		}
 		// TODO get rid of outliers
+		
+		int inliers_idx_j = 0;
+		int inliers_idx_i = 0;
+
+		std::vector<int> new_matched_indices_i;
+		std::vector<int> new_matched_indices_j;
+		std::vector<cv::Point2f> new_matched_kp_i;
+		std::vector<cv::Point2f> new_matched_kp_j;
+
+		while (inliers_idx_i != inliers_i.rows && inliers_idx_j != inliers_j.rows) {
+
+	        if (inliers_i.at<int>(inliers_idx_i,0) < inliers_j.at<int>(inliers_idx_j,0)) {
+	            ++inliers_idx_i;
+	        } 
+	        else
+	        {
+	            if (!(inliers_j.at<int>(inliers_idx_j,0) < inliers_i.at<int>(inliers_idx_i,0))) {
+	                new_matched_indices_i.push_back(pair -> matched_indices.first[inliers_idx_i]);
+	                new_matched_indices_j.push_back(pair -> matched_indices.second[inliers_idx_j]);
+	                new_matched_kp_i.push_back(pair -> matched_points.first[inliers_idx_i]);
+	                new_matched_kp_j.push_back(pair -> matched_points.second[inliers_idx_j]);
+        		}
+	            ++inliers_idx_j;
+        	}
+	    }
+		pair -> matched_indices.first = new_matched_indices_i;
+		pair -> matched_indices.second = new_matched_indices_j;
+		pair -> matched_points.first = new_matched_kp_i;
+		pair -> matched_points.second = new_matched_kp_j;
+
 		pair -> R = R;
 		pair -> t = tvec;
 	}

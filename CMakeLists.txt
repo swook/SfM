@@ -9,7 +9,7 @@ project(sfm)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
 # Add libraries
-find_package(Qt5Widgets REQUIRED)
+
 find_package(PCL 1.5    REQUIRED common io visualization)
 find_package(OpenCV     REQUIRED core highgui imgproc xfeatures2d xphoto)
 find_package(Boost      REQUIRED program_options system filesystem date_time)
@@ -29,6 +29,7 @@ if (APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -stdlib=libc++")
   set(CMAKE_CXX_LINK_FLAGS "-lc++")
 else()
+  find_package(Qt5Widgets REQUIRED)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -std=c++11")
 endif(APPLE)
 

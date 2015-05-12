@@ -77,8 +77,8 @@ typedef std::pair<std::vector<int>, std::vector<int> >				   MatchIdxPair;
 struct ImagePair
 {
 	const std::pair<int,int>			  pair_index;
-	const KeyPointsPair 				  matched_points;
-	const MatchIdxPair		  	      	  matched_indices;
+	KeyPointsPair 				  		  matched_points;
+	MatchIdxPair		  	      	  	  matched_indices;
 	const std::pair<Depths,Depths>		  pair_depths;
 	cv::Mat 							  R;
 	cv::Mat           					  t;

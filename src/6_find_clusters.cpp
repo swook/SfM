@@ -45,7 +45,7 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 		
 		// for all matching in camera j, get their global coordinate
 		// and insert them in corresponding cluster
-		for(size_t m=0;m < kpIdx_i.size();m++){
+		for(size_t m=0;m < keypoints_j.size();m++){
 			// back project keypoints in camera j into local 3D frame
 			float x_j = keypoints_j[m].x;
 			float y_j = keypoints_j[m].y;
