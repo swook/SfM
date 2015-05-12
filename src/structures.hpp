@@ -56,12 +56,13 @@ struct CamFrame
 {
 	int             index;      // index of frame
 	const KeyPoints key_points; // list of feature points found in this image
-	const Depths 		depths;		// list of depth values of features found in this image
-	
+	const Depths    depths;     // list of depth values of features found in this image
+
 	CamFrame& operator=(CamFrame other)
 	{
 		const_cast<int&>      (index)      = other.index;
 		const_cast<KeyPoints&>(key_points) = other.key_points;
+		const_cast<Depths&>   (depths)     = other.depths;
 		return *this;
 	}
 };

@@ -19,7 +19,7 @@ include_directories(${PCL_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories("/usr/include/eigen3/")
 include_directories("/usr/local/include/eigen3/")
-include_directories(${Ceres_INCLUDE_DIRS})
+include_directories(${CERES_INCLUDE_DIRS})
 #set(Boost_USE_STATIC_LIBS ON)
 
 add_definitions(${PCL_DEFINITIONS})
@@ -45,5 +45,5 @@ add_subdirectory(src)
 add_executable(main "src/main.cpp")
 
 # Depend on OpenCV and Boost
-target_link_libraries(main pipeline ${PCL_LIBRARIES} ${OpenCV_LIBS} ${Boost_LIBRARIES} ${Ceres_LIBRARIES} )
+target_link_libraries(main pipeline ${PCL_LIBRARIES} ${OpenCV_LIBS} ${Boost_LIBRARIES} ${CERES_LIBRARIES} )
 
