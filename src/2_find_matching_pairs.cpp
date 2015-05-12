@@ -6,7 +6,7 @@ using namespace cv;
 #include "util.hpp"
 
 void Pipeline::find_matching_pairs(
-	const Images&         images,
+	const Images&		  images,
 	const CamFrames&      camframes,
 	const DescriptorsVec& descriptors_vec,
 	      ImagePairs&     pairs
@@ -80,8 +80,8 @@ void Pipeline::find_matching_pairs(
 				matched_indices_j.push_back(it -> trainIdx);
 
 				// save depth of keypoints
-				float d_i = images[i].dep.at<float>((int)point_i.y,(int)point_i.x);
-				float d_j = images[j].dep.at<float>((int)point_j.y,(int)point_j.x);
+				float d_i = camframes[i].depths[it -> queryIdx];
+				float d_j = camframes[j].depths[it -> trainIdx];
 
 				depth_values_i.push_back(d_i);
 				depth_values_j.push_back(d_j);

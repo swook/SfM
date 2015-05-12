@@ -41,17 +41,20 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 		// Remove 0-depth keypoints
 		KeyPoints   keep_key_points;
 		Descriptors keep_descriptors;
+		Depths		keep_depths;
 		for (size_t k = 0; k < key_points.size(); k++)
-		{
-			if (image.dep.at<float>(key_points[k].pt) != 0)
+		{	
+			float d = image.dep.at<float>(key_points[k].pt);
+			if (d != 0)
 			{
 				keep_key_points.push_back(key_points[k]);
 				keep_descriptors.push_back(descriptors.row(k));
+				keep_depths.push_back(d);
 			}
 		}
 
 		// wrap keypoints to cam_Frame and add in to cam_Frames
-		cam_Frames.push_back((CamFrame) {i, keep_key_points});
+		cam_Frames.push_back((CamFrame) {i, keep_key_points,keep_depths});
 		descriptors_vec.push_back(keep_descriptors);
 
 		//_log("Found %d key points in image %d.", key_points.size(), i);
