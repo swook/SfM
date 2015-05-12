@@ -165,7 +165,7 @@ void Pipeline::bundle_adjustment(
 		ceres::CostFunction* cost_function =
       		ErrorFunctor::Create(
            		observed_x,observed_y,observed_depth,cameraMatrix);
-  		problem.AddResidualBlock(cost_function,NULL,cameras+pCamera_idx,points+pPoint_idx)
+  		// problem.AddResidualBlock(cost_function,NULL,cameras+pCamera_idx,points+pPoint_idx);
   		break;
 	}
 	
