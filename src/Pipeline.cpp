@@ -38,7 +38,7 @@ void Pipeline::run()
 	 * Stage 2: Calculate descriptors and find image pairs through matching
 	 */
 	ImagePairs image_pairs;
-	find_matching_pairs(images, cam_Frames, descriptors_vec, image_pairs);
+	find_matching_pairs(images,cam_Frames, descriptors_vec, image_pairs);
 
 
 	// Free some memory
@@ -104,7 +104,7 @@ void Pipeline::run()
 	// 	std::vector<std::pair<int,int> >* v = &revPointMap[it -> second];
 	// 	v -> push_back(it -> first);
 	// }
-	
+	bundle_adjustment(pointMap,gCameraPoses,cam_Frames,pointCloud);
 	
 	_log.tok();
 }

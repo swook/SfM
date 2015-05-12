@@ -43,7 +43,7 @@ struct CamFrame
 {
 	const int 			index;		// index of frame
 	const KeyPoints 	key_points; // list of feature points found in this image
-
+	const Depths 		depths;		// list of depth values of features found in this image
 	// TODO add field for pose when pose_estimation R and t (in global frame)
 };
 
@@ -101,15 +101,9 @@ class std::equal_to<std::pair<int,int> >
 };
 
 /**
- * Unordered map to store matches of image pair (idx_i, idx_j)
- */
-typedef std::unordered_map<std::pair<int,int> ,std::vector<cv::DMatch> > MatchMap;
-
-/**
  * Unordered map to store idx of triangulated 3d point of (img_c,keypoint_k)
  */
 typedef std::unordered_map<std::pair<int,int> ,int> PointMap;
-
 
 /**
  * PointCluster structure for clusters

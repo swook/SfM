@@ -51,5 +51,9 @@ private:
 
 	void find_CoM(const PointClusters& pointClusters,PointCloud& pointCloud);
 
-	void bundle_adjustment(const PointMap& pointMap,const CamFrames& camFrames,const int camera_num,PointCloud pointCloud);
+	void bundle_adjustment(
+	const PointMap& pointMap,
+	const CameraPoses& poses,
+	const CamFrames& camFrames,
+	PointCloud pointCloud);
 };
