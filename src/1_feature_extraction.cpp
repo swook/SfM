@@ -28,7 +28,9 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 
 	// create brist detector
 	// parameters for brisk : int thresh = 30, int octaves = 3, float patternScale = 1.0f
-	Ptr<Feature2D> brisk_detector = BRISK::create();
+	const int thresh  = 70;
+	const int octaves = 2;
+	Ptr<Feature2D> brisk_detector = BRISK::create(thresh, octaves);
 
 	// detect features in a loop
 	for (int i = 0; i < n; ++i)
@@ -47,7 +49,7 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 		Descriptors keep_descriptors;
 		Depths		keep_depths;
 		for (size_t k = 0; k < key_points.size(); k++)
-		{	
+		{
 			float d = image.dep.at<float>(key_points[k].pt);
 			if (d != 0)
 			{

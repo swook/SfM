@@ -19,15 +19,13 @@ void Pipeline::find_matching_pairs(
 	const int N = descriptors_vec.size();
 
 	// Our parameters
-	//const float max_dist   = 100; // SIFT
-	const float max_dist    = 480; // BRISK
-	const int   min_matches = 20;
+	const int min_matches = 20;
 
 	// Match between all image pairs possible
 #pragma omp parallel for
 	for (int j = 0; j < N; j++)
 	{
-		std::vector<DMatch> matches;
+		std::vector<std::vector<DMatch>> matches;
 
 		// Initialise descriptors matcher
 		FlannBasedMatcher flann;
@@ -55,7 +53,7 @@ void Pipeline::find_matching_pairs(
 			/* Match descriptors
 			 Output is distance between descriptors */
 			//flann.match(descriptors_i, descriptors_j, matches);
-			flann.match(descriptors_i, matches);
+			flann.knnMatch(descriptors_i, matches, 2);
 			// brutal force matcher
 			//bfmatcher.match(descriptors_i, descriptors_j, matches);
 
@@ -66,9 +64,14 @@ void Pipeline::find_matching_pairs(
 
 			// Only pick good matches
 			std::vector<DMatch> good_matches;
+			double d1, d2;
 			for (int m = 0; m < matches.size(); m++)
-				if (matches[m].distance < max_dist)
-					good_matches.push_back(matches[m]);
+			{
+				d1 = matches[m][0].distance; // Distance to 1st nearest neighbour
+				d2 = matches[m][1].distance; // Distance to 2nd nearest neighbour
+				if (d1 / d2 < 0.8)
+					good_matches.push_back(matches[m][0]);
+			}
 
 			if (good_matches.size() < min_matches) continue;
 #pragma omp critical
