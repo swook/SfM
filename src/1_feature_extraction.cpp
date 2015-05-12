@@ -18,11 +18,11 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 	descriptors_vec = DescriptorsVec(n);
 
 	// create a sift detector
-	const int    feature_num      = 800;
-	const int    octavelayers_num = 3;
-	const double constrast_thresh = .04f;
-	const double edge_threshold   = 4.f;
-	const double sigma            = 1.3f;
+	const int    feature_num      = 300;  // Default: 0
+	const int    octavelayers_num = 3;    // Default: 3
+	const double constrast_thresh = .04f; // Default: 0.04 (larger: less feats)
+	const double edge_threshold   = 4.f;  // Default: 10   (larger: more feats)
+	const double sigma            = 1.4f; // Default: 1.6
 	Ptr<Feature2D> sift_detector = SIFT::create(feature_num,
 		octavelayers_num, constrast_thresh, edge_threshold, sigma);
 
