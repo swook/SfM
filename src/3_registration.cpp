@@ -15,7 +15,7 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 	float reprojectionError=8.0;
 	// portion of inliers in matches
 	float minInliers = 0.95;
-	int flag = CV_ITERATIVE; //CV_ITERATIVE CV_P3P CV_EPNP
+	int flag = SOLVEPNP_EPNP; //CV_ITERATIVE CV_P3P CV_EPNP
 
 	// get 3D-2D registration for all matched frames
 	for(auto pair = pairs.begin(); pair != pairs.end(); pair++){
@@ -77,30 +77,24 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		r = (rvec_i-rvec_j)/2;
 		tvec = (tvec_i - tvec_j)/2;
 		Rodrigues(r,R);
-
-		// std::vector<cv::Point2f> projected3D;
-		// rvec_j rotation j wrt i
-		// cv::projectPoints(points3D_j, rvec_j, tvec_j, cameraMatrix, noArray(), projected3D);
 		
-		// for(int i=0;i<inliers_i.rows;i++) {
-		// 	int inlier_idx = inliers_i.at<int>(i,0);
-		// 	// std::cout << inlier_idx << std::endl;
-		// 	std::cout << inlier_idx << ". " << keyPoints_i[inlier_idx] << std::endl;
-		// 	std::cout << inlier_idx << ". " << projected3D[inlier_idx] << std::endl;
-		// 	std::cout << inlier_idx << ". " << points3D_i[inlier_idx] << std::endl;
-
-		// 	std::cout << inlier_idx << ". " << R_j*(Mat(points3D_j[inlier_idx]))+tvec_j << std::endl;
-		// 	break;
-		// }
 		// TODO check validity
 		if (!checkCoherentRotation(R))
 		{
 			_log("Invalid R in %04d-%04d, this pair is skipped!", i, j);
 			continue;
 		}
+		// if (!checkCoherentQ(q_j,q_i))		
+		// {		
+		// 	_log("Invalid q in %04d-%04d, this pair is skipped!", i, j);		
+		// 	continue;
+		// }
+		if (inliers_j.rows< (int)(keyPoints_j.size()*0.75) || inliers_i.rows< (int) (keyPoints_i.size()*0.75)){
+			_log("Too few inliers in %04d-%04d, this pair is skipped!", i, j);
+			continue;	
+		} 
 
-		// TODO get rid of outliers
-		
+		// get rid of outliers
 		int inliers_idx_j = 0;
 		int inliers_idx_i = 0;
 
@@ -108,6 +102,7 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		std::vector<int> new_matched_indices_j;
 		std::vector<cv::Point2f> new_matched_kp_i;
 		std::vector<cv::Point2f> new_matched_kp_j;
+
 
 		while (inliers_idx_i != inliers_i.rows && inliers_idx_j != inliers_j.rows) {
 

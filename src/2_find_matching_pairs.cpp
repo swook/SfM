@@ -19,7 +19,7 @@ void Pipeline::find_matching_pairs(
 	const int N = descriptors_vec.size();
 
 	// Our parameters
-	const int min_matches = 20;
+	const int min_matches = 30;
 
 	// Match between all image pairs possible
 #pragma omp parallel for

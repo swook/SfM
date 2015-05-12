@@ -181,8 +181,8 @@ void Pipeline::bundle_adjustment(
 	}
 	std::cout << "problem created " << std::endl;
 	ceres::Solver::Options options;
-	options.linear_solver_type = ceres::SPARSE_SCHUR;
-	options.max_num_iterations = 100;
+	options.linear_solver_type = ceres::DENSE_SCHUR;
+	options.max_num_iterations = 5000;
 	options.minimizer_progress_to_stdout = true;
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
