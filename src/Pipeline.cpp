@@ -112,5 +112,5 @@ void Pipeline::run()
 	 * Show calculated point cloud
 	 */
 	Viewer viewer;
-	viewer.showCloudPoints(pointCloud);
+	viewer.showCloudPoints(pointCloud, images, cam_Frames, pointMap);
 }
