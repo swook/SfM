@@ -29,6 +29,7 @@ void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 		Image   image = images[c];
 		cv::Mat R     = poses[c].R;
 		cv::Mat t     = poses[c].t;
+		if (R.empty()) continue;
 
 		// Per pixel
 		const cv::Vec3b* rgbs;
