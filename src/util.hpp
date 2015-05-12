@@ -18,6 +18,7 @@ cv::Mat quat2R(cv::Vec4f& q);
 bool checkCoherentRotation(cv::Mat& R);	
 // two quaternion shouldn't varie too much
 bool checkCoherentQ(cv::Vec4f& q0, cv::Vec4f& q1);
+bool checkCoherent(cv::Mat& q0, cv::Mat& q1);
 
 /**
  * Custom logger, instantiate with namespace string to prefix messages with.

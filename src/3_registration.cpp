@@ -84,11 +84,12 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 			_log("Invalid R in %04d-%04d, this pair is skipped!", i, j);
 			continue;
 		}
-		// if (!checkCoherentQ(q_j,q_i))		
-		// {		
-		// 	_log("Invalid q in %04d-%04d, this pair is skipped!", i, j);		
-		// 	continue;
-		// }
+		if (!checkCoherent(rvec_i,rvec_j))		
+		{		
+			_log("Invalid q in %04d-%04d, this pair is skipped!", i, j);		
+			continue;
+		}
+
 		if (inliers_j.rows< (int)(keyPoints_j.size()*0.75) || inliers_i.rows< (int) (keyPoints_i.size()*0.75)){
 			_log("Too few inliers in %04d-%04d, this pair is skipped!", i, j);
 			continue;	
