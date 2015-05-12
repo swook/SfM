@@ -27,7 +27,7 @@ set (OpenCV_LIBS opencv_core opencv_highgui)
 
 # option (1): use the package information from OpenCV to find the library
 # recommended for Linux or if you compiled OpenCV yourself and installed it propperly
-find_package (OpenCV REQUIRED core highgui)
+find_package (OpenCV REQUIRED core highgui imgcodecs)
 if (OpenCV_FOUND)
 	message (STATUS "Found OpenCV version " ${OpenCV_VERSION})
 else()
