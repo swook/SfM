@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
-set(
-  CMAKE_CXX_COMPILER
-  "clang++"
-)
+set(CMAKE_C_COMPILER   "gcc")
+set(CMAKE_CXX_COMPILER "g++")
 
 project(sfm)
 
@@ -31,7 +29,7 @@ endif(APPLE)
 # Set compile options
 set(
   CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -g -O0 -msse3 -msse4"
+  "${CMAKE_CXX_FLAGS} -g -O3 -fopenmp -msse3 -msse4 -mavx"
 )
 
 # Add libraries

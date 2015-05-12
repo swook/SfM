@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <cmath>
 #include <cstdarg>
 #include <ctime>
@@ -23,10 +24,13 @@ bool checkCoherentQ(cv::Vec4f& q0, cv::Vec4f& q1);
  * For example:
  *     Logger _log("Load Images");
  */
+namespace ch = std::chrono;
 class Logger {
 private:
-	const char* name_space;
-	const clock_t  start;
+	typedef ch::system_clock::time_point clock_t;
+
+	const char*   name_space;
+	const clock_t start;
 
 public:
 	Logger(const char* _namespace);

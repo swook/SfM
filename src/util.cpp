@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdarg>
 #include <assert.h>
+
 #include "opencv2/opencv.hpp"
 using namespace cv;
 
@@ -33,7 +34,7 @@ Point3f backproject3D(const float x,const float y, float depth, const Mat m_came
  *     Logger _log("Load Images");
  */
 Logger::Logger(const char* _namespace)
-	: name_space(_namespace), start(clock())
+	: name_space(_namespace), start(ch::system_clock::now())
 {}
 
 void Logger::operator() (const char* format, ...)
@@ -47,6 +48,14 @@ void Logger::operator() (const char* format, ...)
 
 	va_end(args);
 }
+
+void Logger::tok()
+{
+	const clock_t    end = ch::system_clock::now();
+	ch::milliseconds dur = ch::duration_cast<ch::milliseconds>(end - start);
+	(*this)("Done in %.2fs.", (float)dur.count() / 1e3);
+}
+
 /*
  * convert rotation matrix to quaternion
 */
@@ -145,7 +154,3 @@ bool checkCoherentQ(Vec4f& q0, Vec4f& q1)
 	return true;
 }
 
-void Logger::tok()
-{
-	(*this)("Done in %.2fs.", (clock() - start) / (float) CLOCKS_PER_SEC);
-}
