@@ -26,7 +26,9 @@ void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 #pragma omp parallel for
 	for (int c = 0; c < poses.size(); c++)
 	{
-		Image image = images[c];
+		Image   image = images[c];
+		cv::Mat R     = poses[c].R;
+		cv::Mat t     = poses[c].t;
 
 		// Per pixel
 		const cv::Vec3b* rgbs;
@@ -36,6 +38,7 @@ void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 		float     dep;
 
 		cv::Point3f point;
+		cv::Mat     gPoint;
 
 		for (int i = 0; i < image.dep.rows; i++)
 		{
@@ -49,7 +52,11 @@ void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 				// Valid depth is between 40cm and 8m
 				if (dep < 400 || dep > 8000) continue;
 
-				point = backproject3D(j, i, dep, cameraMatrix);
+				// Calculate point pos in global coordinates
+				point  = backproject3D(j, i, dep, cameraMatrix);
+				gPoint = R.t() * cv::Mat(point) - t;
+				point  = cv::Point3f(gPoint);
+
 				point_t pcl_p;
 				pcl_p.x = point.x;
 				pcl_p.y = point.y;
