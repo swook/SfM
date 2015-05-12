@@ -11,6 +11,7 @@ set(
   "6_find_clusters.cpp"
   "7_find_CoM.cpp"
   "8_bundle_adjustment.cpp"
+  "Viewer.cpp"
 )
 
 add_library(pipeline ${MAIN_SOURCES})

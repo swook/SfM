@@ -1,8 +1,8 @@
 #include "opencv2/opencv.hpp"
-using namespace cv;
 
 #include "Pipeline.hpp"
 #include "Associativity.hpp"
+#include "Viewer.hpp"
 #include "util.hpp"
 
 float _intrinsic_array[9]= {524,0,316.7,0,524,238.5,0,0,1};
@@ -10,8 +10,8 @@ float _distcoeff_array[4] = {0.2402,-0.6861,-0.0015,0.0003};
 
 Pipeline::Pipeline(std::string _folder_path)
 :
-	cameraMatrix(Mat(3, 3, CV_32F, _intrinsic_array)),
-	distCoeffs(Mat(1, 4, CV_32F, _distcoeff_array))
+	cameraMatrix(cv::Mat(3, 3, CV_32F, _intrinsic_array)),
+	distCoeffs(cv::Mat(1, 4, CV_32F, _distcoeff_array))
 {
 	folder_path = _folder_path;
 }
@@ -19,6 +19,7 @@ Pipeline::Pipeline(std::string _folder_path)
 void Pipeline::run()
 {
 	Logger _log("Pipeline");
+
 	/**
 	 * Stage 0: Load images from file
 	 */
@@ -82,18 +83,17 @@ void Pipeline::run()
 
 	/**
 	 * Stage 6: Find and cluster depth points from local camera frame to global camera frame
-	 */ 
+	 */
 	PointClusters pointClusters;
 	PointMap pointMap;
 	find_clusters(assocMat,gCameraPoses,cam_Frames,pointClusters,pointMap);
 
 	/**
 	 * Stage 7: get center of mass from clusters
-	 */ 
+	 */
 	PointCloud pointCloud(pointClusters.size());
 	// find_CoM(pointClusters, image_pairs, pointCloud);
 	find_CoM(pointClusters,pointCloud);
-	
 
 	/**
 	 * State 8: Bundle Adjustment
@@ -107,4 +107,10 @@ void Pipeline::run()
 	bundle_adjustment(pointMap,gCameraPoses,cam_Frames,pointCloud);
 	
 	_log.tok();
+
+	/**
+	 * Show calculated point cloud
+	 */
+	Viewer viewer;
+	viewer.showCloudPoints(pointCloud);
 }
