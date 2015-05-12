@@ -15,36 +15,52 @@ Viewer::Viewer()
 	_viewer.addCoordinateSystem(0.1, "global");
 }
 
-void Viewer::showCloudPoints(PointCloud& cloud, Images& images,
-	CamFrames& camFrames, PointMap& pointMap)
+void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
+	const cv::Mat& cameraMatrix)
 {
-	// Get rgb colours for each point in pointCloud
-	RGBCloud rgb(cloud.size());
-	for (auto& kv: pointMap)
-	{
-		int i = kv.first.first,
-		    k = kv.first.second,
-		    p = kv.second;
-		cv::Vec3b bgr = images[i].rgb.at<cv::Vec3b>(camFrames[i].key_points[k].pt);
-		rgb[p][0] = bgr[2];
-		rgb[p][1] = bgr[1];
-		rgb[p][2] = bgr[0];
-	}
-
 	// Fill cloud structure
 	typedef pcl::PointXYZRGB point_t;
 	pcl::PointCloud<point_t>::Ptr pcl_points(new pcl::PointCloud<point_t>);
 
-	for (int i = 0; i < cloud.size(); i++)
+	// Per camera
+#pragma omp parallel for
+	for (int c = 0; c < poses.size(); c++)
 	{
-		point_t pcl_point;
-		pcl_point.x = cloud[i].x;
-		pcl_point.y = cloud[i].y;
-		pcl_point.z = cloud[i].z;
-		pcl_point.r = rgb[i][0];
-		pcl_point.g = rgb[i][1];
-		pcl_point.b = rgb[i][2];
-		pcl_points->points.push_back(pcl_point);
+		Image image = images[c];
+
+		// Per pixel
+		const cv::Vec3b* rgbs;
+		const float*     deps;
+
+		cv::Vec3b rgb;
+		float     dep;
+
+		cv::Point3f point;
+
+		for (int i = 0; i < image.dep.rows; i++)
+		{
+			rgbs = image.rgb.ptr<cv::Vec3b>(i);
+			deps = image.dep.ptr<float>(i);
+			for (int j = 0; j < image.dep.cols; j++)
+			{
+				rgb = rgbs[j];
+				dep = deps[j];
+
+				// Valid depth is between 40cm and 8m
+				if (dep < 400 || dep > 8000) continue;
+
+				point = backproject3D(j, i, dep, cameraMatrix);
+				point_t pcl_p;
+				pcl_p.x = point.x;
+				pcl_p.y = point.y;
+				pcl_p.z = point.z;
+				pcl_p.r = rgb[2];
+				pcl_p.g = rgb[1];
+				pcl_p.b = rgb[0];
+#pragma omp critical
+				pcl_points->points.push_back(pcl_p);
+			}
+		}
 	}
 
 	// Show cloud

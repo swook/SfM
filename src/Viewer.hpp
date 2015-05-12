@@ -10,8 +10,8 @@ class Viewer
 {
 public:
 	Viewer();
-	void showCloudPoints(PointCloud& cloud, Images& images,
-		CamFrames& camFrames, PointMap& pointMap);
+	void showCloudPoints(const Images& images, const CameraPoses& poses,
+		const cv::Mat& cameraMatrix);
 
 private:
 	vis::PCLVisualizer _viewer;
