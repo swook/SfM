@@ -19,7 +19,8 @@ void Pipeline::find_matching_pairs(
 	const int N = descriptors_vec.size();
 
 	// Our parameters
-	const int min_matches = 30;
+	const float max_ratio   = 0.8;
+	const int   min_matches = 30;
 
 	// Match between all image pairs possible
 #pragma omp parallel for
@@ -69,7 +70,7 @@ void Pipeline::find_matching_pairs(
 			{
 				d1 = matches[m][0].distance; // Distance to 1st nearest neighbour
 				d2 = matches[m][1].distance; // Distance to 2nd nearest neighbour
-				if (d1 / d2 < 0.8)
+				if (d1 < d2 * max_ratio)
 					good_matches.push_back(matches[m][0]);
 			}
 
