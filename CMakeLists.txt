@@ -4,7 +4,7 @@ set(CMAKE_C_COMPILER   "gcc")
 set(CMAKE_CXX_COMPILER "g++")
 
 project(sfm)
-set(CMAKE_BUILD_TYPE Debug)
+#set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
@@ -29,13 +29,13 @@ if (APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -stdlib=libc++")
   set(CMAKE_CXX_LINK_FLAGS "-lc++")
 else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -std=c++11")
 endif(APPLE)
 
 # Set compile options
 set(
   CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -g -O3 -fopenmp -msse3 -msse4 -mavx"
+  "${CMAKE_CXX_FLAGS} -g -O3 -msse3 -msse4 -mavx"
 )
 
 # Add libraries
