@@ -49,9 +49,10 @@ void Pipeline::run()
 
 
 	/**
-	* State 3: Compute pairwise R and t
-	*/
+	 * State 3: Compute pairwise R and t
+	 */
 	register_camera(image_pairs, cam_Frames);
+
 
 	/**
 	 * Stage 4: Construct associativity matrix and spanning tree
@@ -62,7 +63,9 @@ void Pipeline::run()
 		ImagePair* pair = &image_pairs[p];
 		int i = pair->pair_index.first,
 		    j = pair->pair_index.second;
-		if(pair -> R.empty()) continue;
+
+		if (pair -> R.empty()) continue;
+
 		assocMat(i, j) = pair;
 		assocMat(j, i) = pair;
 
@@ -105,7 +108,7 @@ void Pipeline::run()
 	// 	v -> push_back(it -> first);
 	// }
 	bundle_adjustment(pointMap,cam_Frames,gCameraPoses,pointCloud);
-	
+
 	_log.tok();
 
 	/**
