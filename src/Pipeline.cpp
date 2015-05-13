@@ -101,7 +101,7 @@ void Pipeline::run()
 	// Save cloud before BA
 	Viewer viewer;
 	auto cloud = viewer.createPointCloud(images, gCameraPoses, cameraMatrix);
-	viewer.saveCloud(cloud);
+	viewer.saveCloud(cloud, "noBA");
 
 	/**
 	 * State 8: Bundle Adjustment

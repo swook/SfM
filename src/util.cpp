@@ -54,6 +54,9 @@ void Logger::tok()
 	const clock_t    end = ch::system_clock::now();
 	ch::milliseconds dur = ch::duration_cast<ch::milliseconds>(end - start);
 	(*this)("Done in %.2fs.", (float)dur.count() / 1e3);
+
+	// Reset start time
+	start = ch::system_clock::now();
 }
 
 /*

@@ -96,6 +96,8 @@ Viewer::cloud_t::Ptr Viewer::createPointCloud(const Images& images, const Camera
 	// Final reduction of points
 	reduceCloud(pcl_points);
 
+	_log("Generated %d points.", pcl_points->points.size());
+
 	return pcl_points;
 }
 
@@ -106,9 +108,11 @@ void Viewer::saveCloud(cloud_t::Ptr pcl_points, std::string suffix)
 	auto time   = ptime::second_clock::local_time();
 	auto tstamp = ptime::to_iso_string(time);
 	auto fname  = (fmt("output_%s_%d%s%s.pcd") % tstamp % n %
-	               (suffix.length() > 0 ? "_" : "") % suffix).str();
+	               (suffix.length() > 0 ? "_" : "") % suffix).str().c_str();
 	pcl::PCDWriter writer;
 	writer.writeBinaryCompressed(fname, *pcl_points);
+	_log("Saved point cloud to: %s", fname);
+	_log.tok();
 }
 
 void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
@@ -122,10 +126,9 @@ void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 void Viewer::showCloudPoints(const cloud_t::Ptr pcl_points)
 {
 	// Show cloud
-	_log("\nShowing %d points",pcl_points->points.size());
+	_log("Showing %d points",pcl_points->points.size());
 	vis::PointCloudColorHandlerRGBField<point_t> rgb_handler(pcl_points);
 	_viewer.addPointCloud<pcl::PointXYZRGB>(pcl_points, rgb_handler);
-	_log.tok();
 
 	// Wait until closed
 	while (!_viewer.wasStopped())

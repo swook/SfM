@@ -30,8 +30,8 @@ class Logger {
 private:
 	typedef ch::system_clock::time_point clock_t;
 
-	const char*   name_space;
-	const clock_t start;
+	const char* name_space;
+	clock_t     start;
 
 public:
 	Logger(const char* _namespace);
