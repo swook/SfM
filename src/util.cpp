@@ -149,15 +149,20 @@ bool checkCoherentQ(Vec4f& q0, Vec4f& q1)
 	Vec4f absdelta,reldelta;
 	absdiff(q0,q1,absdelta);
 	divide(absdelta,q1,reldelta);
-	if (reldelta[0]>0.05 ||reldelta[1]>0.05 ||reldelta[2]>0.05 ||reldelta[3]>0.05)
+	if (fabs(reldelta[0])>0.1 ||fabs(reldelta[1])>0.1 ||fabs(reldelta[2])>0.1 ||fabs(reldelta[3])>0.1)
 		return false;
 	return true;
 }
 
 bool checkCoherent(Mat& q0, Mat& q1)
-{
-	double reldiff = norm( q0, q1, NORM_RELATIVE | NORM_L2);
-	std::cout << reldiff << std::endl;
-	return (reldiff < 2.0);
+{	
+	Mat q,reldelta;
+	absdiff(q0,q1,q);
+	divide(q,q1,reldelta);
+	std::cout << reldelta << std::endl;
+	for(int d = 0;d <3; d++){
+		if (fabs(reldelta.at<float>(d,0)) > 0.1) return false;
+	}
+	return true;
 }
 

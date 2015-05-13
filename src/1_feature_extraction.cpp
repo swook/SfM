@@ -18,11 +18,11 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 	descriptors_vec = DescriptorsVec(n);
 
 	// create a sift detector
-	const int    feature_num      = 300;  // Default: 0
+	const int    feature_num      = 0;    // Default: 0
 	const int    octavelayers_num = 3;    // Default: 3
-	const double constrast_thresh = .04f; // Default: 0.04 (larger: less feats)
-	const double edge_threshold   = 4.f;  // Default: 10   (larger: more feats)
-	const double sigma            = 1.4f; // Default: 1.6
+	const double constrast_thresh = .08f; // Default: 0.04 (larger: less feats)
+	const double edge_threshold   = 8.0f;  // Default: 10   (larger: more feats)
+	const double sigma            = 1.6f; // Default: 1.6
 	Ptr<Feature2D> sift_detector = SIFT::create(feature_num,
 		octavelayers_num, constrast_thresh, edge_threshold, sigma);
 
@@ -63,7 +63,7 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 		cam_Frames[i]      = (CamFrame) {i, keep_key_points,keep_depths};
 		descriptors_vec[i] = keep_descriptors;
 
-		//_log("Found %d key points in image %d.", key_points.size(), i);
+		_log("Found %d key points in image %d.", keep_key_points.size(), i);
 	}
 
 	_log.tok();

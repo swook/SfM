@@ -11,11 +11,12 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 
 	// ---------Parameters for solvePnPRansac----------------//
 	bool useExtrinsicGuess = false;
-	int iterationsCount=500;
+	int iterationsCount=1000;
 	float reprojectionError=8.0;
 	// portion of inliers in matches
-	float minInliers = 0.95;
-	int flag = SOLVEPNP_EPNP; //CV_ITERATIVE CV_P3P CV_EPNP
+	float minInliers = 0.90;
+	float minInliers_check = 0.75;
+	int flag = SOLVEPNP_EPNP; //SOLVEPNP_ITERATIVE SOLVEPNP_P3P SOLVEPNP_EPNP SOLVEPNP_DLS SOLVEPNP_UPNP
 
 	// get 3D-2D registration for all matched frames
 	for(auto pair = pairs.begin(); pair != pairs.end(); pair++){
@@ -84,13 +85,17 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 			_log("Invalid R in %04d-%04d, this pair is skipped!", i, j);
 			continue;
 		}
-		if (!checkCoherent(rvec_i,rvec_j))		
+		Mat _rvev_j = -rvec_j;
+		std::cout << "rvec" << std::endl;
+		std::cout << _rvev_j << std::endl;
+		std::cout << rvec_i << std::endl;
+		if (!checkCoherent(rvec_i,_rvev_j))		
 		{		
 			_log("Invalid q in %04d-%04d, this pair is skipped!", i, j);		
 			continue;
 		}
 
-		if (inliers_j.rows< (int)(keyPoints_j.size()*0.75) || inliers_i.rows< (int) (keyPoints_i.size()*0.75)){
+		if (inliers_j.rows< (int)(keyPoints_j.size()*minInliers_check) || inliers_i.rows< (int) (keyPoints_i.size()*minInliers_check)){
 			_log("Too few inliers in %04d-%04d, this pair is skipped!", i, j);
 			continue;	
 		} 

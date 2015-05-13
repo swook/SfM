@@ -20,31 +20,34 @@ void Pipeline::find_matching_pairs(
 
 	// Our parameters
 	const float max_ratio   = 0.8; // larger: more possible mismatches
-	const int   min_matches = 30;
+	const int   min_matches = 20;
+	const float max_dist	= 100;
 
 	// Match between all image pairs possible
 #pragma omp parallel for
 	for (int j = 0; j < N; j++)
 	{
-		std::vector<std::vector<DMatch>> matches;
-
 		// Initialise descriptors matcher
-		FlannBasedMatcher flann;
-		//BFMatcher bfmatcher(NORM_HAMMING, true);
-		//BFMatcher bfmatcher(NORM_L2, true);
+		// FlannBasedMatcher flann;
+		// BFMatcher bfmatcher(NORM_L2);
+		BFMatcher bfmatcher(NORM_L2,true);
 
 		// Get descriptors of j-th image
 		Descriptors descriptors_j = descriptors_vec[j];
 		descriptors_j.convertTo(descriptors_j, CV_32F);
 
 		// Train matcher with j-th image
-		flann.add(descriptors_j);
-		flann.train();
+		// flann.add(descriptors_j);
+		// flann.train();
+		// bfmatcher.add(descriptors_j);
+		// bfmatcher.train();
 
 		Descriptors descriptors_i;
 
 		for (int i = j + 1; i < N; i++)
 		{
+			// std::vector<std::vector<DMatch>> matches;
+			std::vector<DMatch> matches;
 			// Get descriptors from image i
 			descriptors_i = descriptors_vec[i];
 
@@ -53,10 +56,11 @@ void Pipeline::find_matching_pairs(
 
 			/* Match descriptors
 			 Output is distance between descriptors */
-			//flann.match(descriptors_i, descriptors_j, matches);
-			flann.knnMatch(descriptors_i, matches, 2);
-			// brutal force matcher
-			//bfmatcher.match(descriptors_i, descriptors_j, matches);
+			// flann.match(descriptors_i, descriptors_j, matches);
+			// flann.knnMatch(descriptors_i, matches, 2);
+			// brute force matcher
+			bfmatcher.match(descriptors_i, descriptors_j, matches);
+			// bfmatcher.knnMatch(descriptors_i, matches, 2);
 
 			//_log("Input: (%d: %d rows, %d: %d rows)\t Output: %d rows",
 			//	i, descriptors_i.rows,
@@ -68,10 +72,12 @@ void Pipeline::find_matching_pairs(
 			double d1, d2;
 			for (int m = 0; m < matches.size(); m++)
 			{
-				d1 = matches[m][0].distance; // Distance to 1st nearest neighbour
-				d2 = matches[m][1].distance; // Distance to 2nd nearest neighbour
-				if (d1 < d2 * max_ratio)
-					good_matches.push_back(matches[m][0]);
+				// d1 = matches[m][0].distance; // Distance to 1st nearest neighbour
+				// d2 = matches[m][1].distance; // Distance to 2nd nearest neighbour
+				if (matches[m].distance< max_dist)
+				// if (d1 < d2 * max_ratio && d1< max_dist)
+					// good_matches.push_back(matches[m][0]);
+					good_matches.push_back(matches[m]);
 			}
 
 			if (good_matches.size() < min_matches) continue;
@@ -83,6 +89,7 @@ void Pipeline::find_matching_pairs(
 			std::vector<int> matched_indices_i,matched_indices_j;
 			Depths depth_values_i, depth_values_j;
 			for (auto it = good_matches.begin(); it != good_matches.end(); it++){
+				
 				assert(camframes[i].key_points.size() > it->queryIdx);
 				assert(camframes[j].key_points.size() > it->trainIdx);
 
@@ -124,7 +131,7 @@ void Pipeline::find_matching_pairs(
 
 			// Draw matches
 			// NOTE: remove continue; to see images
-			continue;
+			// continue;
 //#pragma omp critical
 			{
 				std::cout << camframes[i].key_points.size() << "\t"
