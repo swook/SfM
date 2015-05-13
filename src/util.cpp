@@ -161,9 +161,9 @@ bool checkCoherent(Mat& q0, Mat& q1)
 	normalize(q1,q1_normed);
 
 	// check direction
-	if (norm(q0+q1) > 2.0) return false;
+	if (norm(q1_normed+q0_normed) > 1.0) return false;
 	// check rotation angle
-	if (norm(q0)-norm(q1) > 2.0) return false;
+	if (norm(q0)-norm(q1) > 1.0) return false;
 	return true;
 }
 
