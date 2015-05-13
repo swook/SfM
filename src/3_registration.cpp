@@ -21,16 +21,18 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 	const int flag = SOLVEPNP_EPNP;
 
 	// get 3D-2D registration for all matched frames
-	for(auto pair = pairs.begin(); pair != pairs.end(); pair++){
+#pragma omp parallel for
+	for(int p = 0; p < pairs.size(); p++)
+	{
+		ImagePair pair = pairs[p];
 
+		int i = (pair.pair_index).first;
+		int j = (pair.pair_index).second;
 
-		int i = (pair -> pair_index).first;
-		int j = (pair -> pair_index).second;
-
-		std::vector<Point2f> keyPoints_i = pair -> matched_points.first;
-		std::vector<Point2f> keyPoints_j = pair -> matched_points.second;
-		Depths depths_i = pair-> pair_depths.first;
-		Depths depths_j = pair-> pair_depths.second;
+		std::vector<Point2f> keyPoints_i = pair.matched_points.first;
+		std::vector<Point2f> keyPoints_j = pair.matched_points.second;
+		Depths depths_i = pair.pair_depths.first;
+		Depths depths_j = pair.pair_depths.second;
 
 
 		// get depth value of all matched keypoints in image1
@@ -115,27 +117,27 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 
 		while (inliers_idx_i != inliers_i.rows && inliers_idx_j != inliers_j.rows) {
 
-	        if (inliers_i.at<int>(inliers_idx_i,0) < inliers_j.at<int>(inliers_idx_j,0)) {
-	            ++inliers_idx_i;
-	        }
-	        else
-	        {
-	            if (!(inliers_j.at<int>(inliers_idx_j,0) < inliers_i.at<int>(inliers_idx_i,0))) {
-	                new_matched_indices_i.push_back(pair -> matched_indices.first[inliers_idx_i]);
-	                new_matched_indices_j.push_back(pair -> matched_indices.second[inliers_idx_j]);
-	                new_matched_kp_i.push_back(pair -> matched_points.first[inliers_idx_i]);
-	                new_matched_kp_j.push_back(pair -> matched_points.second[inliers_idx_j]);
-        		}
-	            ++inliers_idx_j;
-        	}
-	    }
-		pair -> matched_indices.first = new_matched_indices_i;
-		pair -> matched_indices.second = new_matched_indices_j;
-		pair -> matched_points.first = new_matched_kp_i;
-		pair -> matched_points.second = new_matched_kp_j;
+			if (inliers_i.at<int>(inliers_idx_i,0) < inliers_j.at<int>(inliers_idx_j,0)) {
+				++inliers_idx_i;
+			}
+			else
+			{
+				if (!(inliers_j.at<int>(inliers_idx_j,0) < inliers_i.at<int>(inliers_idx_i,0))) {
+					new_matched_indices_i.push_back(pair.matched_indices.first[inliers_idx_i]);
+					new_matched_indices_j.push_back(pair.matched_indices.second[inliers_idx_j]);
+					new_matched_kp_i.push_back(pair.matched_points.first[inliers_idx_i]);
+					new_matched_kp_j.push_back(pair.matched_points.second[inliers_idx_j]);
+				}
+				++inliers_idx_j;
+			}
+		}
+		pair.matched_indices.first = new_matched_indices_i;
+		pair.matched_indices.second = new_matched_indices_j;
+		pair.matched_points.first = new_matched_kp_i;
+		pair.matched_points.second = new_matched_kp_j;
 
-		pair -> R = R;
-		pair -> t = tvec;
+		pair.R = R;
+		pair.t = tvec;
 	}
 
 	_log.tok();
