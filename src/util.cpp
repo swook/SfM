@@ -156,13 +156,14 @@ bool checkCoherentQ(Vec4f& q0, Vec4f& q1)
 
 bool checkCoherent(Mat& q0, Mat& q1)
 {	
-	Mat q,reldelta;
-	absdiff(q0,q1,q);
-	divide(q,q1,reldelta);
-	std::cout << reldelta << std::endl;
-	for(int d = 0;d <3; d++){
-		if (fabs(reldelta.at<float>(d,0)) > 0.1) return false;
-	}
+	Mat q0_normed,q1_normed;
+	normalize(q0,q0_normed);
+	normalize(q1,q1_normed);
+
+	// check direction
+	if (norm(q0+q1) > 2.0) return false;
+	// check rotation angle
+	if (norm(q0)-norm(q1) > 2.0) return false;
 	return true;
 }
 
