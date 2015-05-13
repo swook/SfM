@@ -67,26 +67,36 @@ struct ErrorFunctor {
   //   	localPoint3D_est[0] += c[3]; 
   //   	localPoint3D_est[1] += c[4]; 
   //   	localPoint3D_est[2] += c[5];
-    	
-		// T norm = sqrt(localPoint3D_est[0]*localPoint3D_est[0]
+  //   	T squaredNorm = localPoint3D_est[0]*localPoint3D_est[0]
   //   		+ localPoint3D_est[1]*localPoint3D_est[1]
-  //   		+ localPoint3D_est[2]*localPoint3D_est[2]);
+  //   		+ localPoint3D_est[2]*localPoint3D_est[2];
+  //   	if (squaredNorm>T(0.0)){
 
-		// localPoint3D_est[0] = localPoint3D_est[0]/norm;
-  //   	localPoint3D_est[1] = localPoint3D_est[1]/norm;
-  //   	localPoint3D_est[2] = localPoint3D_est[2]/norm;
+  //   		T norm = ceres::sqrt(squaredNorm);
+
+		// 	localPoint3D_est[0] = localPoint3D_est[0]/norm;
+  //   		localPoint3D_est[1] = localPoint3D_est[1]/norm;
+  //   		localPoint3D_est[2] = localPoint3D_est[2]/norm;
+  //   	}else{
+  //   		localPoint3D_est
+  //   	}
+		
 
   //   	residuals[0] = T(1.0) - 
   //   	(localPoint3D_est[0]*localPoint3D_obs[0] + 
 		//  localPoint3D_est[1]*localPoint3D_obs[1] +
 		//  localPoint3D_est[2]*localPoint3D_obs[2] );
 
-  //   	/*
-		// depth term
-  //   	*/
-  //   	T depth_est = p[2];
-		// T depth_obs = T(_observed_depth);
-  //   	residuals[1] = depth_est - depth_obs;
+	/*
+	depth term
+	*/
+	// T depth_est = p[2];
+	// T depth_obs = T(_observed_depth);
+	// residuals[2] = T(5/depth_est) * (depth_est - depth_obs);
+
+    /*
+	reprojection error
+	*/
 
     T point[3];
     ceres::AngleAxisRotatePoint(c, p, point);
@@ -134,6 +144,7 @@ void Pipeline::bundle_adjustment(
 	const int pCamera_num = 6;			// rotation vector 3x1 + translation vector 3x1
 	const int pPoint_num = 3;			// point 3x1
 	const double huberParam = 1.0;
+	const double cauchyParam = 1.0;
 	const int camera_num = camFrames.size();
 	/*
 		set initial parameter
@@ -141,7 +152,7 @@ void Pipeline::bundle_adjustment(
 	double cameras[pCamera_num*camera_num];
 	double points[pointCloud.size()*pPoint_num];
 	ceres::Problem problem;	
-	ceres::LossFunction* loss_function = new ceres::HuberLoss(huberParam);
+	ceres::LossFunction* loss_function = new ceres::CauchyLoss(cauchyParam);
 	for (auto it = pointMap.begin();it != pointMap.end(); it++)
 	{
 		// parameters associated to 3Dpoint
@@ -177,12 +188,13 @@ void Pipeline::bundle_adjustment(
 		ceres::CostFunction* cost_function =
       		ErrorFunctor::Create(
            		observed_x,observed_y,observed_depth,cameraMatrix);
-  		problem.AddResidualBlock(cost_function,NULL,cameras+pCamera_idx,points+pPoint_idx);
+  		problem.AddResidualBlock(cost_function,loss_function,cameras+pCamera_idx,points+pPoint_idx);
 	}
 	std::cout << "problem created " << std::endl;
 	ceres::Solver::Options options;
-	options.linear_solver_type = ceres::DENSE_SCHUR;
-	options.max_num_iterations = 5000;
+	options.linear_solver_type = ceres::SPARSE_SCHUR;
+	options.use_inner_iterations = true;
+	options.max_num_iterations = 30;
 	options.minimizer_progress_to_stdout = true;
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
