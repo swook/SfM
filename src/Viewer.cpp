@@ -25,7 +25,7 @@ Viewer::Viewer()
 
 void Viewer::reduceCloud(cloud_t::Ptr& cloud)
 {
-	const float voxel_resolution = 2.f;
+	const float voxel_resolution = 5.f;
 
 	// Configure grid
 	_grid.setInputCloud(cloud);
@@ -38,7 +38,7 @@ void Viewer::reduceCloud(cloud_t::Ptr& cloud)
 	std::swap(cloud, reduc);
 }
 
-void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
+Viewer::cloud_t::Ptr Viewer::createPointCloud(const Images& images, const CameraPoses& poses,
 	const cv::Mat& cameraMatrix)
 {
 	// Fill cloud structure
@@ -96,16 +96,33 @@ void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 	// Final reduction of points
 	reduceCloud(pcl_points);
 
+	return pcl_points;
+}
+
+void Viewer::saveCloud(cloud_t::Ptr pcl_points, std::string suffix)
+{
 	// TODO: Save to disk with timestamp
 	const int n = pcl_points->points.size();
 	auto time   = ptime::second_clock::local_time();
 	auto tstamp = ptime::to_iso_string(time);
-	auto fname  = (fmt("output_%s_%d.pcd") % tstamp % n).str();
+	auto fname  = (fmt("output_%s_%d%s%s.pcd") % tstamp % n %
+	               (suffix.length() > 0 ? "_" : "") % suffix).str();
 	pcl::PCDWriter writer;
 	writer.writeBinaryCompressed(fname, *pcl_points);
+}
 
+void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
+	const cv::Mat& cameraMatrix)
+{
+	cloud_t::Ptr pcl_points = createPointCloud(images, poses, cameraMatrix);
+	showCloudPoints(pcl_points);
+}
+
+
+void Viewer::showCloudPoints(const cloud_t::Ptr pcl_points)
+{
 	// Show cloud
-	_log("\nShowing %d points", n);
+	_log("\nShowing %d points",pcl_points->points.size());
 	vis::PointCloudColorHandlerRGBField<point_t> rgb_handler(pcl_points);
 	_viewer.addPointCloud<pcl::PointXYZRGB>(pcl_points, rgb_handler);
 	_log.tok();

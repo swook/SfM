@@ -98,6 +98,11 @@ void Pipeline::run()
 	// find_CoM(pointClusters, image_pairs, pointCloud);
 	find_CoM(pointClusters,pointCloud);
 
+	// Save cloud before BA
+	Viewer viewer;
+	auto cloud = viewer.createPointCloud(images, gCameraPoses, cameraMatrix);
+	viewer.saveCloud(cloud);
+
 	/**
 	 * State 8: Bundle Adjustment
 	 */
@@ -114,6 +119,7 @@ void Pipeline::run()
 	/**
 	 * Show calculated point cloud
 	 */
-	Viewer viewer;
-	viewer.showCloudPoints(images, gCameraPoses, cameraMatrix);
+	cloud = viewer.createPointCloud(images, gCameraPoses, cameraMatrix);
+	viewer.saveCloud(cloud, "BA");
+	viewer.showCloudPoints(cloud);
 }

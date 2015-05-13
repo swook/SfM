@@ -10,15 +10,19 @@ namespace vis = pcl::visualization;
 class Viewer
 {
 public:
-	Viewer();
-	void showCloudPoints(const Images& images, const CameraPoses& poses,
-		const cv::Mat& cameraMatrix);
-
-private:
 	typedef pcl::PointXYZRGB         point_t;
 	typedef pcl::PointCloud<point_t> cloud_t;
 	typedef pcl::VoxelGrid<point_t>  grid_t;
 
+	Viewer();
+	cloud_t::Ptr createPointCloud(const Images& images, const CameraPoses& poses,
+	                              const cv::Mat& cameraMatrix);
+	void         saveCloud(cloud_t::Ptr cloud, std::string suffix="");
+	void         showCloudPoints(const Images& images, const CameraPoses& poses,
+	                             const cv::Mat& cameraMatrix);
+	void         showCloudPoints(const cloud_t::Ptr pcl_points);
+
+private:
 	vis::PCLVisualizer _viewer;
 	Logger             _log;
 	grid_t             _grid;
