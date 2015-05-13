@@ -98,7 +98,6 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		if (!checkCoherent(rvec_i,rvec_j))
 		{
 			_log("Invalid r in %04d-%04d, this pair is skipped!", i, j);
-			std::cout << "rvec" << std::endl;
 			std::cout << rvec_i << std::endl;
 			std::cout << rvec_j << std::endl;
 			continue;

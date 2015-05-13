@@ -104,7 +104,7 @@ void Pipeline::run()
 	// 	std::vector<std::pair<int,int> >* v = &revPointMap[it -> second];
 	// 	v -> push_back(it -> first);
 	// }
-	bundle_adjustment(pointMap,gCameraPoses,cam_Frames,pointCloud);
+	bundle_adjustment(pointMap,cam_Frames,gCameraPoses,pointCloud);
 	
 	_log.tok();
 

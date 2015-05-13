@@ -53,7 +53,7 @@ private:
 
 	void bundle_adjustment(
 	const PointMap& pointMap,
-	const CameraPoses& poses,
 	const CamFrames& camFrames,
-	PointCloud pointCloud);
+	CameraPoses& poses,
+	PointCloud& pointCloud);
 };

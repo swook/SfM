@@ -18,12 +18,12 @@ struct ErrorFunctor {
 		const float observed_depth,const Mat& cameraMatrix)
 	{
 		// unproject observed 3D point
-		Point3f backProjected;
-		backProjected = backproject3D(observed_x,observed_y,observed_depth,cameraMatrix);
-		double len = norm(backProjected);
-		localPoint3D_obs_tmp[0] = (double) backProjected.x/len;
-		localPoint3D_obs_tmp[1] = (double) backProjected.y/len;
-		localPoint3D_obs_tmp[2] = (double) backProjected.z/len;
+		// Point3f backProjected;
+		// backProjected = backproject3D(observed_x,observed_y,observed_depth,cameraMatrix);
+		// double len = norm(backProjected);
+		// localPoint3D_obs_tmp[0] = (double) backProjected.x/len;
+		// localPoint3D_obs_tmp[1] = (double) backProjected.y/len;
+		// localPoint3D_obs_tmp[2] = (double) backProjected.z/len;
 		_observed_x = (double) observed_x;
 		_observed_y = (double) observed_y;
 		_observed_depth = (double) observed_depth;
@@ -135,9 +135,9 @@ struct ErrorFunctor {
 
 void Pipeline::bundle_adjustment(
 	const PointMap& pointMap,
-	const CameraPoses& poses,
 	const CamFrames& camFrames,
-	PointCloud pointCloud)
+	CameraPoses& poses,
+	PointCloud& pointCloud)
 {
 	Logger _log("Step 8 (BA)");
 	// number of parameters per camera and per point
@@ -194,9 +194,39 @@ void Pipeline::bundle_adjustment(
 	ceres::Solver::Options options;
 	options.linear_solver_type = ceres::SPARSE_SCHUR;
 	options.use_inner_iterations = true;
-	options.max_num_iterations = 30;
+	options.max_num_iterations = 100;
+	options.num_linear_solver_threads = 8;
+	options.num_threads = 8;
 	options.minimizer_progress_to_stdout = true;
 	ceres::Solver::Summary summary;
 	ceres::Solve(options, &problem, &summary);
 	std::cout << summary.FullReport() << "\n";
+
+	// write out the result
+	for(int pointIdx = 0; pointIdx<pointCloud.size();pointIdx++){
+		pointCloud[pointIdx].x = (float) points[pointIdx*pPoint_num];
+		pointCloud[pointIdx].y = (float) points[pointIdx*pPoint_num+1];
+		pointCloud[pointIdx].z = (float) points[pointIdx*pPoint_num+2];
+	}
+
+	for(int camIdx = 0; camIdx<poses.size(); camIdx ++){
+		double r_arr[3];
+		r_arr[0] = cameras[camIdx*pCamera_num];
+		r_arr[1] = cameras[camIdx*pCamera_num + 1];
+		r_arr[2] = cameras[camIdx*pCamera_num + 2];
+		double t_arr[3];
+		t_arr[0] = cameras[camIdx*pCamera_num + 3];
+		t_arr[1] = cameras[camIdx*pCamera_num + 4];
+		t_arr[2] = cameras[camIdx*pCamera_num + 5];
+
+		Mat r(3, 1, CV_64F, r_arr);
+		r.convertTo(r,CV_32F);
+		Mat R;
+		Rodrigues(r,R);
+		poses[camIdx].R = R;
+		
+		Mat t(3, 1, CV_64F, t_arr);
+		t.convertTo(t,CV_32F);
+		poses[camIdx].t = t;
+	}
 }
