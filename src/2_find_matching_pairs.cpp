@@ -8,7 +8,7 @@ using namespace cv;
 #include "util.hpp"
 
 void Pipeline::find_matching_pairs(
-	const Images&		  images,
+	const Images&         images,
 	const CamFrames&      camframes,
 	const DescriptorsVec& descriptors_vec,
 	      ImagePairs&     pairs
@@ -21,26 +21,18 @@ void Pipeline::find_matching_pairs(
 	// Our parameters
 	const float max_ratio   = 0.8; // larger: more possible mismatches
 	const int   min_matches = 20;
-	const float max_dist	= 100;
 
 	// Match between all image pairs possible
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int j = 0; j < N; j++)
 	{
 		// Initialise descriptors matcher
-		// FlannBasedMatcher flann;
-		// BFMatcher bfmatcher(NORM_L2);
+		// Enable cross-checking
 		BFMatcher bfmatcher(NORM_L2,true);
 
 		// Get descriptors of j-th image
 		Descriptors descriptors_j = descriptors_vec[j];
 		descriptors_j.convertTo(descriptors_j, CV_32F);
-
-		// Train matcher with j-th image
-		// flann.add(descriptors_j);
-		// flann.train();
-		// bfmatcher.add(descriptors_j);
-		// bfmatcher.train();
 
 		Descriptors descriptors_i;
 
@@ -56,40 +48,25 @@ void Pipeline::find_matching_pairs(
 
 			/* Match descriptors
 			 Output is distance between descriptors */
-			// flann.match(descriptors_i, descriptors_j, matches);
-			// flann.knnMatch(descriptors_i, matches, 2);
 			// brute force matcher
 			bfmatcher.match(descriptors_i, descriptors_j, matches);
-			// bfmatcher.knnMatch(descriptors_i, matches, 2);
 
 			//_log("Input: (%d: %d rows, %d: %d rows)\t Output: %d rows",
 			//	i, descriptors_i.rows,
 			//	j, descriptors_j.rows,
 			//	matches.size());
 
-			// Only pick good matches
-			std::vector<DMatch> good_matches;
-			double d1, d2;
-			for (int m = 0; m < matches.size(); m++)
-			{
-				// d1 = matches[m][0].distance; // Distance to 1st nearest neighbour
-				// d2 = matches[m][1].distance; // Distance to 2nd nearest neighbour
-				if (matches[m].distance< max_dist)
-				// if (d1 < d2 * max_ratio && d1< max_dist)
-					// good_matches.push_back(matches[m][0]);
-					good_matches.push_back(matches[m]);
-			}
-
-			if (good_matches.size() < min_matches) continue;
+			// Stop if not enough matches
+			if (matches.size() < min_matches) continue;
 #pragma omp critical
-			_log("Got %03d good matches for %04d-%04d.", good_matches.size(), i, j);
+			_log("Got %03d matches for %04d-%04d.", matches.size(), i, j);
 
 			// only store matched keypoints and their depths
 			std::vector<Point2f> matched_keypoints_i, matched_keypoints_j;
 			std::vector<int> matched_indices_i,matched_indices_j;
 			Depths depth_values_i, depth_values_j;
-			for (auto it = good_matches.begin(); it != good_matches.end(); it++){
-				
+			for (auto it = matches.begin(); it != matches.end(); it++){
+
 				assert(camframes[i].key_points.size() > it->queryIdx);
 				assert(camframes[j].key_points.size() > it->trainIdx);
 
@@ -127,7 +104,7 @@ void Pipeline::find_matching_pairs(
 			});
 
 			// add matches to match_map
-			// match_map.insert(make_pair(i,j),good_matches);
+			// match_map.insert(make_pair(i,j), matches);
 
 			// Draw matches
 			// NOTE: remove continue; to see images
@@ -136,11 +113,11 @@ void Pipeline::find_matching_pairs(
 			{
 				std::cout << camframes[i].key_points.size() << "\t"
 				        << camframes[j].key_points.size() << "\t"
-					<< good_matches.size() << std::endl;
+					<< matches.size() << std::endl;
 				Mat out;
 				drawMatches(images[i].rgb, camframes[i].key_points,
 					    images[j].rgb, camframes[j].key_points,
-					    good_matches, out,
+					    matches, out,
 					    Scalar::all(-1),
 					    Scalar::all(-1),
 					    std::vector<char>(),

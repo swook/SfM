@@ -10,13 +10,15 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 	Logger _log("Step 3 (register)");
 
 	// ---------Parameters for solvePnPRansac----------------//
-	bool useExtrinsicGuess = false;
-	int iterationsCount=1000;
-	float reprojectionError=8.0;
-	// portion of inliers in matches
-	float minInliers = 0.90;
-	float minInliers_check = 0.75;
-	int flag = SOLVEPNP_EPNP; //SOLVEPNP_ITERATIVE SOLVEPNP_P3P SOLVEPNP_EPNP SOLVEPNP_DLS SOLVEPNP_UPNP
+	const bool  useExtrinsicGuess = false;
+	const int   iterationsCount   = 1000;
+	const float reprojectionError = 3.0; // Bernhard: should be low, like 3
+
+	const float confidence = 0.999; // Bernhard: should be very high to use more iterations
+	const int   minInliers = 30;    // Bernhard: min 12, but 30 is okay for small dataset
+
+	// SOLVEPNP_ITERATIVE SOLVEPNP_P3P SOLVEPNP_EPNP SOLVEPNP_DLS SOLVEPNP_UPNP
+	const int flag = SOLVEPNP_EPNP;
 
 	// get 3D-2D registration for all matched frames
 	for(auto pair = pairs.begin(); pair != pairs.end(); pair++){
@@ -42,7 +44,7 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 			float x_j = keyPoints_j[k].x;
 			float y_j = keyPoints_j[k].y;
 			float d_j = depths_j[k];
-			
+
 			// backproject 3d points
 			Point3f objPoints_i = backproject3D(x_i,y_i,d_i,cameraMatrix);
 			// valid_keyPoints_i.push_back(keyPoints_i[k]);
@@ -59,46 +61,48 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		solvePnPRansac(points3D_i,keyPoints_j,
 			cameraMatrix,noArray(),
 			rvec_i,tvec_i,
-			useExtrinsicGuess, iterationsCount, reprojectionError, minInliers, inliers_i, flag);
+			useExtrinsicGuess, iterationsCount, reprojectionError, confidence, inliers_i, flag);
 		// get R_j and t_j wrt camera i
 		solvePnPRansac(points3D_j,keyPoints_i,
 			cameraMatrix,noArray(),
 			rvec_j,tvec_j,
-			useExtrinsicGuess, iterationsCount, reprojectionError, minInliers, inliers_j, flag);
-		
+			useExtrinsicGuess, iterationsCount, reprojectionError, confidence, inliers_j, flag);
+
+		// Bernhard: Use absolute threshold for inliers number
+		if (inliers_i.rows < minInliers || inliers_j.rows < minInliers) {
+			continue;
+		}
+
 		_log("%03d inliers for %04d-%04d pair.", inliers_i.rows, i, j);
 
 		tvec_i.convertTo(tvec_i,CV_32FC1);
 		rvec_i.convertTo(rvec_i,CV_32FC1);
 		tvec_j.convertTo(tvec_j,CV_32FC1);
 		rvec_j.convertTo(rvec_j,CV_32FC1);
-		
+
 		// average R_i and R_j transpose using quaternion
 		Mat r,R,tvec;
 		r = (rvec_i-rvec_j)/2;
 		tvec = (tvec_i - tvec_j)/2;
 		Rodrigues(r,R);
-		
+
+		// Bernhard: Shouldn't need, Rodrigues should do this
 		// check validity
-		if (!checkCoherentRotation(R))
+		//if (!checkCoherentRotation(R))
+		//{
+		//	_log("Invalid R in %04d-%04d, this pair is skipped!", i, j);
+		//	continue;
+		//}
+
+		// Bernhard: Should be done, good work Yifan
+		if (!checkCoherent(rvec_i,rvec_j))
 		{
-			_log("Invalid R in %04d-%04d, this pair is skipped!", i, j);
-			continue;
-		}
-		
-		if (!checkCoherent(rvec_i,rvec_j))		
-		{		
 			_log("Invalid r in %04d-%04d, this pair is skipped!", i, j);
 			std::cout << "rvec" << std::endl;
 			std::cout << rvec_i << std::endl;
-			std::cout << rvec_j << std::endl;		
+			std::cout << rvec_j << std::endl;
 			continue;
 		}
-
-		if (inliers_j.rows< (int)(keyPoints_j.size()*minInliers_check) || inliers_i.rows< (int) (keyPoints_i.size()*minInliers_check)){
-			_log("Too few inliers in %04d-%04d, this pair is skipped!", i, j);
-			continue;	
-		} 
 
 		// get rid of outliers
 		int inliers_idx_j = 0;
@@ -114,7 +118,7 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 
 	        if (inliers_i.at<int>(inliers_idx_i,0) < inliers_j.at<int>(inliers_idx_j,0)) {
 	            ++inliers_idx_i;
-	        } 
+	        }
 	        else
 	        {
 	            if (!(inliers_j.at<int>(inliers_idx_j,0) < inliers_i.at<int>(inliers_idx_i,0))) {
