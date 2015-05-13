@@ -79,19 +79,19 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		tvec = (tvec_i - tvec_j)/2;
 		Rodrigues(r,R);
 		
-		// TODO check validity
+		// check validity
 		if (!checkCoherentRotation(R))
 		{
 			_log("Invalid R in %04d-%04d, this pair is skipped!", i, j);
 			continue;
 		}
-		Mat _rvev_j = -rvec_j;
-		std::cout << "rvec" << std::endl;
-		std::cout << _rvev_j << std::endl;
-		std::cout << rvec_i << std::endl;
-		if (!checkCoherent(rvec_i,_rvev_j))		
+		
+		if (!checkCoherent(rvec_i,rvec_j))		
 		{		
-			_log("Invalid q in %04d-%04d, this pair is skipped!", i, j);		
+			_log("Invalid r in %04d-%04d, this pair is skipped!", i, j);
+			std::cout << "rvec" << std::endl;
+			std::cout << rvec_i << std::endl;
+			std::cout << rvec_j << std::endl;		
 			continue;
 		}
 
