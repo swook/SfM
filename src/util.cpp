@@ -83,7 +83,7 @@ Vec4f R2Quaternion(Mat& R)
     	q2 = ( r02 - r20 ) * s;
     	q3 = ( r10 - r01 ) * s;
 	} else {
-    	if ( r00 > r11 && r00 > r22 ) 
+    	if ( r00 > r11 && r00 > r22 )
     	{
       	float s = 2.0 * sqrt( 1.0 + r00 - r11 - r22);
       	q0 = (r21 - r12 ) / s;
@@ -120,12 +120,12 @@ Mat quat2R(Vec4f& q){
     float m00 = ( sqx - sqy - sqz + sqw)*invs ; // since sqw + sqx + sqy + sqz =1/invs*invs
     float m11 = (-sqx + sqy - sqz + sqw)*invs ;
     float m22 = (-sqx - sqy + sqz + sqw)*invs ;
-    
+
     float tmp1 = q[1]*q[2];
     float tmp2 = q[3]*q[0];
     float m10 = 2.0 * (tmp1 + tmp2)*invs ;
     float m01 = 2.0 * (tmp1 - tmp2)*invs ;
-    
+
     tmp1 = q[1]*q[3];
     tmp2 = q[2]*q[0];
     float m20 = 2.0 * (tmp1 - tmp2)*invs ;
@@ -139,13 +139,13 @@ Mat quat2R(Vec4f& q){
 }
 
 bool checkCoherentRotation(cv::Mat& R) {
-	
+
 	if(fabs(determinant(R))-1.0 > 1e-05) return false;
 	return true;
 }
 
 bool checkCoherentQ(Vec4f& q0, Vec4f& q1)
-{	
+{
 	Vec4f absdelta,reldelta;
 	absdiff(q0,q1,absdelta);
 	divide(absdelta,q1,reldelta);
@@ -155,15 +155,15 @@ bool checkCoherentQ(Vec4f& q0, Vec4f& q1)
 }
 
 bool checkCoherent(Mat& q0, Mat& q1)
-{	
+{
 	Mat q0_normed,q1_normed;
 	normalize(q0,q0_normed);
 	normalize(q1,q1_normed);
 
 	// check direction
-	if (norm(q1_normed+q0_normed) > 1.0) return false;
+	if (norm(q1_normed+q0_normed) > 0.1) return false;
 	// check rotation angle
-	if (norm(q0)-norm(q1) > 1.0) return false;
+	if (norm(q0)-norm(q1) > 0.1) return false;
 	return true;
 }
 

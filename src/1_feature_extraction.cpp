@@ -20,9 +20,9 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 	// Create a SIFT detector
 	// Bernhard-checked
 	const int    feature_num      = 0;    // Default: 0
-	const int    octavelayers_num = 3;    // Default: 3
+	const int    octavelayers_num = 4;    // Default: 3
 	const double constrast_thresh = .04f; // Default: 0.04 (larger: less feats)
-	const double edge_threshold   = 5.0f; // Default: 10   (larger: more feats)
+	const double edge_threshold   = 4.0f; // Default: 10   (larger: more feats)
 	const double sigma            = 1.6f; // Default: 1.6
 	Ptr<Feature2D> sift_detector = SIFT::create(feature_num,
 		octavelayers_num, constrast_thresh, edge_threshold, sigma);

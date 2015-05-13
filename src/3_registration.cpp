@@ -12,7 +12,7 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 	// ---------Parameters for solvePnPRansac----------------//
 	const bool  useExtrinsicGuess = false;
 	const int   iterationsCount   = 1000;
-	const float reprojectionError = 3.0; // Bernhard: should be low, like 3
+	const float reprojectionError = 2.5; // Bernhard: should be low, like 3
 
 	const float confidence = 0.999; // Bernhard: should be very high to use more iterations
 	const int   minInliers = 30;    // Bernhard: min 12, but 30 is okay for small dataset

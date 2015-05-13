@@ -19,8 +19,7 @@ void Pipeline::find_matching_pairs(
 	const int N = descriptors_vec.size();
 
 	// Our parameters
-	const float max_ratio   = 0.8; // larger: more possible mismatches
-	const int   min_matches = 20;
+	const int min_matches = 30;
 
 	// Match between all image pairs possible
 #pragma omp parallel for
