@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
 # Add libraries
 
-find_package(PCL 1.5    REQUIRED common io visualization)
+find_package(PCL 1.5    REQUIRED common io filters visualization)
 find_package(OpenCV     REQUIRED core highgui imgproc xfeatures2d xphoto)
 find_package(Boost      REQUIRED program_options system filesystem date_time)
 find_package(Ceres      REQUIRED)

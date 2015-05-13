@@ -1,4 +1,5 @@
-#include "opencv2/core.hpp"
+#include <opencv2/core.hpp>
+#include <pcl/filters/voxel_grid.h>
 
 #include "Viewer.hpp"
 
@@ -15,15 +16,28 @@ Viewer::Viewer()
 	_viewer.addCoordinateSystem(0.1, "global");
 }
 
+void Viewer::reduceCloud(cloud_t::Ptr& cloud)
+{
+	const float voxel_resolution = 2.f;
+
+	// Configure grid
+	_grid.setInputCloud(cloud);
+	_grid.setLeafSize(voxel_resolution, voxel_resolution, voxel_resolution);
+
+	// Filter
+	cloud_t::Ptr reduc(new cloud_t);
+	_grid.filter(*reduc);
+
+	std::swap(cloud, reduc);
+}
+
 void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 	const cv::Mat& cameraMatrix)
 {
 	// Fill cloud structure
-	typedef pcl::PointXYZRGB point_t;
-	pcl::PointCloud<point_t>::Ptr pcl_points(new pcl::PointCloud<point_t>);
+	cloud_t::Ptr pcl_points(new cloud_t);
 
 	// Per camera
-#pragma omp parallel for
 	for (int c = 0; c < poses.size(); c++)
 	{
 		Image   image = images[c];
@@ -65,11 +79,17 @@ void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 				pcl_p.r = rgb[2];
 				pcl_p.g = rgb[1];
 				pcl_p.b = rgb[0];
-#pragma omp critical
 				pcl_points->points.push_back(pcl_p);
 			}
 		}
+		// Reduce points every 10 cameras
+		if (c % 10 == 0) reduceCloud(pcl_points);
 	}
+
+	// Final reduction of points
+	reduceCloud(pcl_points);
+
+	// TODO: Save to disk with timestamp
 
 	// Show cloud
 	_log("Showing %d points", pcl_points->points.size());
