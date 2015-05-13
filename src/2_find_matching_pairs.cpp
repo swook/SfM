@@ -23,7 +23,7 @@ void Pipeline::find_matching_pairs(
 	const int   min_matches = 20;
 
 	// Match between all image pairs possible
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int j = 0; j < N; j++)
 	{
 		// Initialise descriptors matcher
@@ -108,7 +108,7 @@ void Pipeline::find_matching_pairs(
 
 			// Draw matches
 			// NOTE: remove continue; to see images
-			// continue;
+			continue;
 //#pragma omp critical
 			{
 				std::cout << camframes[i].key_points.size() << "\t"
