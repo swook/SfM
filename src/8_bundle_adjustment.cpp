@@ -195,6 +195,8 @@ void Pipeline::bundle_adjustment(
 	options.linear_solver_type = ceres::SPARSE_SCHUR;
 	options.use_inner_iterations = true;
 	options.max_num_iterations = 100;
+	options.function_tolerance = 1e-4;
+	options.parameter_tolerance = 1e-8;
 	options.num_linear_solver_threads = 8;
 	options.num_threads = 8;
 	options.minimizer_progress_to_stdout = true;
