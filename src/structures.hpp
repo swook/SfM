@@ -76,12 +76,12 @@ typedef std::pair<std::vector<cv::Point2f>, std::vector<cv::Point2f> > KeyPoints
 typedef std::pair<std::vector<int>, std::vector<int> >				   MatchIdxPair;
 struct ImagePair
 {
-	const std::pair<int,int>			  pair_index;
-	KeyPointsPair 				  		  matched_points;
-	MatchIdxPair		  	      	  	  matched_indices;
-	const std::pair<Depths,Depths>		  pair_depths;
-	cv::Mat 							  R;
-	cv::Mat           					  t;
+	const std::pair<int,int>  pair_index;
+	KeyPointsPair             matched_points;
+	MatchIdxPair              matched_indices;
+	std::pair<Depths,Depths>  pair_depths;
+	cv::Mat                   R;
+	cv::Mat                   t;
 };
 typedef std::vector<ImagePair>   ImagePairs;
 typedef std::vector<ImagePair*> pImagePairs;
