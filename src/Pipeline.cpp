@@ -1,5 +1,11 @@
 #include "opencv2/opencv.hpp"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+namespace ptime = boost::posix_time;
+
+#include <boost/format.hpp>
+typedef boost::format fmt;
+
 #include "Pipeline.hpp"
 #include "Associativity.hpp"
 #include "Viewer.hpp"
@@ -100,8 +106,12 @@ void Pipeline::run()
 
 	// Save cloud before BA
 	Viewer viewer;
-	auto cloud = viewer.createPointCloud(images, gCameraPoses, cameraMatrix);
-	viewer.saveCloud(cloud, "noBA");
+	auto      cloud  = viewer.createPointCloud(images, gCameraPoses, cameraMatrix);
+	const int n      = cloud->points.size();
+	auto      time   = ptime::second_clock::local_time();
+	auto      tstamp = ptime::to_iso_string(time);
+	auto      fname  = (fmt("output_%s_%d%s_noBA.pcd") % tstamp % n).str().c_str();
+	viewer.saveCloud(cloud, fname);
 
 	/**
 	 * State 8: Bundle Adjustment
@@ -120,6 +130,7 @@ void Pipeline::run()
 	 * Show calculated point cloud
 	 */
 	cloud = viewer.createPointCloud(images, gCameraPoses, cameraMatrix);
-	viewer.saveCloud(cloud, "BA");
+	fname  = (fmt("output_%s_%d%s_BA.pcd") % tstamp % n).str().c_str();
+	viewer.saveCloud(cloud, fname);
 	viewer.showCloudPoints(cloud);
 }

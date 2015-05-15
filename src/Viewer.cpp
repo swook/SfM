@@ -2,12 +2,6 @@
 
 #include <pcl/io/pcd_io.h>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-namespace ptime = boost::posix_time;
-
-#include <boost/format.hpp>
-typedef boost::format fmt;
-
 #include "Viewer.hpp"
 
 Viewer::Viewer()
@@ -101,14 +95,9 @@ Viewer::cloud_t::Ptr Viewer::createPointCloud(const Images& images, const Camera
 	return pcl_points;
 }
 
-void Viewer::saveCloud(cloud_t::Ptr pcl_points, std::string suffix)
+void Viewer::saveCloud(cloud_t::Ptr pcl_points, const char* fname)
 {
 	// TODO: Save to disk with timestamp
-	const int n = pcl_points->points.size();
-	auto time   = ptime::second_clock::local_time();
-	auto tstamp = ptime::to_iso_string(time);
-	auto fname  = (fmt("output_%s_%d%s%s.pcd") % tstamp % n %
-	               (suffix.length() > 0 ? "_" : "") % suffix).str().c_str();
 	pcl::PCDWriter writer;
 	writer.writeBinaryCompressed(fname, *pcl_points);
 	_log("Saved point cloud to: %s", fname);
