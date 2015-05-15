@@ -43,6 +43,8 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 		Mat R_j = cameraPoses[j].R;
 		Mat t_j = cameraPoses[j].t;
 		
+		if (R_i.empty()||R_j.empty()) return true;
+
 		// for all matching in camera j, get their global coordinate
 		// and insert them in corresponding cluster
 		for(size_t m=0;m < keypoints_j.size();m++){
@@ -103,6 +105,14 @@ void Pipeline::find_clusters(Associativity& tree,const CameraPoses& cameraPoses,
 		}
 		return true;
 	});
-
+	// for (int i = 0;i!=pointClusters.size();i++)
+	// {
+	// 	std::vector<Point3f> cluster;
+	// 	std::cout << "cluster " << i << std::endl;
+	// 	cluster = pointClusters[i];
+	// 	for (int j =0; j < cluster.size(); j++)
+	// 		std::cout << cluster[j] << ',';
+	// 	std::cout << std::endl;
+	// }
 	_log.tok();
 }

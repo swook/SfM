@@ -98,10 +98,16 @@ struct ErrorFunctor {
 	reprojection error
 	*/
 
-    T point[3];
-    ceres::AngleAxisRotatePoint(c, p, point);
-    // camera[3,4,5] are the translation.
-    point[0] += c[3]; point[1] += c[4]; point[2] += c[5];
+    T _point[3],point[3] ;
+    // ceres::AngleAxisRotatePoint(c, p, point);
+    // // camera[3,4,5] are the translation.
+    // point[0] += c[3]; point[1] += c[4]; point[2] += c[5];
+
+    _point[0] = p[0] + c[3];
+    _point[1] = p[1] + c[4];
+    _point[2] = p[2] + c[5];
+
+    ceres::AngleAxisRotatePoint(c, _point, point);
 
     // Compute the center of distortion. The sign change comes from
     // the camera model that Noah Snavely's Bundler assumes, whereby
@@ -145,6 +151,9 @@ void Pipeline::bundle_adjustment(
 	const int pPoint_num = 3;			// point 3x1
 	const double huberParam = 1.0;
 	const double cauchyParam = 1.0;
+	const double function_tolerance = 1e-5;
+	const double parameter_tolerance = 1e-8;
+
 	const int camera_num = camFrames.size();
 	/*
 		set initial parameter
@@ -195,8 +204,8 @@ void Pipeline::bundle_adjustment(
 	options.linear_solver_type = ceres::SPARSE_SCHUR;
 	options.use_inner_iterations = true;
 	options.max_num_iterations = 100;
-	options.function_tolerance = 1e-4;
-	options.parameter_tolerance = 1e-8;
+	options.function_tolerance = function_tolerance;
+	options.parameter_tolerance = parameter_tolerance;
 	options.num_linear_solver_threads = 8;
 	options.num_threads = 8;
 	options.minimizer_progress_to_stdout = true;
@@ -212,6 +221,8 @@ void Pipeline::bundle_adjustment(
 	}
 
 	for(int camIdx = 0; camIdx<poses.size(); camIdx ++){
+		if (poses[camIdx].R.empty()) continue;
+
 		double r_arr[3];
 		r_arr[0] = cameras[camIdx*pCamera_num];
 		r_arr[1] = cameras[camIdx*pCamera_num + 1];
@@ -230,5 +241,7 @@ void Pipeline::bundle_adjustment(
 		Mat t(3, 1, CV_64F, t_arr);
 		t.convertTo(t,CV_32F);
 		poses[camIdx].t = t;
+
+
 	}
 }
