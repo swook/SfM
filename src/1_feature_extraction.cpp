@@ -41,25 +41,26 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 
 		KeyPoints key_points;
 		Descriptors descriptors;
-		// detects and computes descriptors
 
 #pragma omp critical
+		// Detect keypoints and calculate descriptor vectors
 		sift_detector->detectAndCompute(image.gray, noArray(), key_points, descriptors);
 		// brisk_detector->detectAndCompute(image.gray, noArray(), key_points, descriptors);
 
-		// Remove 0-depth keypoints
 		KeyPoints   keep_key_points;
 		Descriptors keep_descriptors;
-		Depths		keep_depths;
+		Depths      keep_depths;
+
+		// Keep keypoints with valid depth only
+		// Valid depth is [0.4, 8]m
 		for (size_t k = 0; k < key_points.size(); k++)
 		{
 			float d = image.dep.at<float>(key_points[k].pt);
-			if (d != 0)
-			{
-				keep_key_points.push_back(key_points[k]);
-				keep_descriptors.push_back(descriptors.row(k));
-				keep_depths.push_back(d);
-			}
+			if (d < 400.f || d > 8000) continue;
+
+			keep_key_points.push_back(key_points[k]);
+			keep_descriptors.push_back(descriptors.row(k));
+			keep_depths.push_back(d);
 		}
 
 		// wrap keypoints to cam_Frame and add in to cam_Frames
