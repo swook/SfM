@@ -133,10 +133,15 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 
 		// Get list of common inlier indices
 		std::vector<int> inliers(max(inliers_i.rows, inliers_j.rows));
-		auto it = std::set_intersection(inliers_i.begin<int>(), inliers_i.end<int>(),
+		auto it = std::set_intersection(
+			inliers_i.begin<int>(), inliers_i.end<int>(),
 			inliers_j.begin<int>(), inliers_j.end<int>(),
 			inliers.begin());
 		inliers.resize(it - inliers.begin());
+
+		std::vector<bool> isInlier(*std::max_element(inliers.begin(), inliers.end()));
+		for (auto it = inliers.begin(); it != inliers.end(); ++it)
+			isInlier[*it] = true;
 
 
 		// Go through all existing keypoint pairs
@@ -146,15 +151,14 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 			    keyIdx_j = pair->matched_indices.second[k];
 
 			// If both keypoints are inliers
-			if (std::find(inliers.begin(), inliers.end(), keyIdx_i) != inliers.end() &&
-			    std::find(inliers.begin(), inliers.end(), keyIdx_j) != inliers.end())
+			if (isInlier[keyIdx_i] && isInlier[keyIdx_j])
 			{
 				new_matched_indices_i.push_back(keyIdx_i);
 				new_matched_indices_j.push_back(keyIdx_j);
-				new_matched_kp_i.push_back(pair->matched_points.first[k]);
-				new_matched_kp_j.push_back(pair->matched_points.second[k]);
-				new_depths_i.push_back(pair->pair_depths.first[k]);
-				new_depths_j.push_back(pair->pair_depths.second[k]);
+				new_matched_kp_i.push_back(keyPoints_i[k]);
+				new_matched_kp_j.push_back(keyPoints_j[k]);
+				new_depths_i.push_back(depths_i[k]);
+				new_depths_j.push_back(depths_j[k]);
 			}
 
 		}
