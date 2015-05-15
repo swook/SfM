@@ -157,16 +157,23 @@ bool checkCoherentQ(Vec4f& q0, Vec4f& q1)
 	return true;
 }
 
+// Checks if two given rvec (from solvePnP) match.
+//   q0 is expected to represent R_ji and
+//   q1 is expected to represent R_ij
+// It can be assumed that q0 + q1 should be close to 0-vector
 bool checkCoherent(Mat& q0, Mat& q1)
 {
 	Mat q0_normed,q1_normed;
 	normalize(q0,q0_normed);
 	normalize(q1,q1_normed);
 
-	// check direction
+	// NOTE: norm() uses L2-norm by default
+	// Check direction of rotation
 	if (norm(q1_normed+q0_normed) > 0.1) return false;
-	// check rotation angle
+
+	// Check rotation angle (magnitude of rvecs)
 	if (norm(q0)-norm(q1) > 0.1) return false;
+
 	return true;
 }
 

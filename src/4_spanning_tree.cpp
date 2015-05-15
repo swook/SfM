@@ -22,10 +22,12 @@ const int Pipeline::build_spanning_tree(const ImagePairs& pairs, Associativity& 
 	int new_n = 1;
 	assocMat.walk([&tree, &new_n, &checked](const int i, const int j, ImagePair* pair) -> bool
 	{
+		// If node/camera in tree, don't add
 		if (checked[j]) return true;
 
+		// If invalid R (not registered), ignore
 		if (pair->R.empty()) return true;
-		
+
 		tree(i, j) = pair;
 		checked[j] = true;
 		new_n++;

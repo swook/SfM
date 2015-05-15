@@ -37,17 +37,16 @@ void Pipeline::find_matching_pairs(
 
 		for (int i = j + 1; i < N; i++)
 		{
-			// std::vector<std::vector<DMatch>> matches;
 			std::vector<DMatch> matches;
+
 			// Get descriptors from image i
 			descriptors_i = descriptors_vec[i];
 
-			// Must convert types to pass on to FLANN matcher
+			// Must convert types to pass on to matcher
 			descriptors_i.convertTo(descriptors_i, CV_32F);
 
-			/* Match descriptors
-			 Output is distance between descriptors */
-			// brute force matcher
+			// Match descriptors
+			// Output is distance between descriptors
 			bfmatcher.match(descriptors_i, descriptors_j, matches);
 
 			//_log("Input: (%d: %d rows, %d: %d rows)\t Output: %d rows",
@@ -58,7 +57,7 @@ void Pipeline::find_matching_pairs(
 			// Stop if not enough matches
 			if (matches.size() < min_matches) continue;
 #pragma omp critical
-			_log("Got %03d matches for %04d-%04d.", matches.size(), i, j);
+			_log("Got %04d matches for %04d-%04d.", matches.size(), i, j);
 
 			// only store matched keypoints and their depths
 			std::vector<Point2f> matched_keypoints_i, matched_keypoints_j;
@@ -102,8 +101,6 @@ void Pipeline::find_matching_pairs(
 				std::pair<Depths,Depths> (depth_values_i,depth_values_j)
 			});
 
-			// add matches to match_map
-			// match_map.insert(make_pair(i,j), matches);
 
 			// Draw matches
 			// NOTE: remove continue; to see images
@@ -125,7 +122,6 @@ void Pipeline::find_matching_pairs(
 				sprintf(title, "Match %d-%d", i, j);
 				showImageAndWait("Match results", out);
 			}
-
 		}
 	}
 

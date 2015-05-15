@@ -74,7 +74,7 @@ void Pipeline::load_images(string folder_path, Images& images)
 		string rgb_path = (fmt("%s/frame_%s_rgb.png")   % folder_path % time_str).str();
 		string dep_path = (fmt("%s/frame_%s_depth.png") % folder_path % time_str).str();
 		Mat rgb_img = imread(rgb_path);
-		Mat _depth_img = imread(dep_path,CV_LOAD_IMAGE_ANYDEPTH);
+		Mat _depth_img = imread(dep_path,CV_LOAD_IMAGE_ANYDEPTH); // load 16bit img
 
 		// White-balance RGB image
 		// TODO: undistort?
@@ -95,6 +95,9 @@ void Pipeline::load_images(string folder_path, Images& images)
 		Mat depth_smooth_img;
 		//bilateralFilter(InputArray src, OutputArray dst, int d, double sigmaColor, double sigmaSpace, int borderType=BORDER_DEFAULT )
 		bilateralFilter(depth_img, depth_smooth_img, 5, 10, 10);
+		// FINAL RGB:   White-balance 3-channels
+		// FINAL GRAY:  White-balance 1-channel
+		// FINAL DEPTH: 1-channel, floats, bilateralFilter smoothing
 
 		// Store Image struct with image read using imread
 		images[i] = (Image){
