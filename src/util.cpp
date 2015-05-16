@@ -169,10 +169,10 @@ bool checkCoherent(Mat& q0, Mat& q1)
 
 	// NOTE: norm() uses L2-norm by default
 	// Check direction of rotation
-	if (norm(q1_normed+q0_normed) > 0.1) return false;
+	if (norm(q1_normed+q0_normed) > 0.2) return false;
 
 	// Check rotation angle (magnitude of rvecs)
-	if (norm(q0)-norm(q1) > 0.1) return false;
+	if (norm(q0)-norm(q1) > 0.2 || norm(q0)-norm(q1) < -0.2) return false;
 
 	return true;
 }
