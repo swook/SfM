@@ -4,10 +4,10 @@
 
 #include "Viewer.hpp"
 
-Viewer::Viewer()
+Viewer::Viewer(const char* title)
 :
 	_log("PCL"),
-	_viewer("Point Cloud")
+	_viewer(title)
 {
 	// Set viewer settings
 	_viewer.setShowFPS(true);
