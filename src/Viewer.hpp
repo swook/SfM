@@ -20,7 +20,7 @@ public:
 	void         saveCloud(cloud_t::Ptr cloud, const char* fname);
 	void         showCloudPoints(const Images& images, const CameraPoses& poses,
 	                             const cv::Mat& cameraMatrix);
-	void         showCloudPoints(const cloud_t::Ptr pcl_points);
+	void         showCloudPoints(const cloud_t::Ptr pcl_points, bool wait=true);
 
 private:
 	vis::PCLVisualizer _viewer;

@@ -99,7 +99,7 @@ void Viewer::saveCloud(cloud_t::Ptr pcl_points, const char* fname)
 {
 	// TODO: Save to disk with timestamp
 	pcl::PCDWriter writer;
-	writer.writeBinaryCompressed(fname, *pcl_points);
+	writer.writeBinary(fname, *pcl_points);
 	_log("Saved point cloud to: %s", fname);
 	_log.tok();
 }
@@ -112,15 +112,15 @@ void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 }
 
 
-void Viewer::showCloudPoints(const cloud_t::Ptr pcl_points)
+void Viewer::showCloudPoints(const cloud_t::Ptr pcl_points, bool wait)
 {
 	// Show cloud
-	_log("Showing %d points",pcl_points->points.size());
+	_log("Showing %d points", pcl_points->points.size());
 	vis::PointCloudColorHandlerRGBField<point_t> rgb_handler(pcl_points);
 	_viewer.addPointCloud<pcl::PointXYZRGB>(pcl_points, rgb_handler);
 
 	// Wait until closed
-	while (!_viewer.wasStopped())
+	while (wait && !_viewer.wasStopped())
 	{
 		_viewer.spinOnce(15);
 	}

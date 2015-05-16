@@ -87,31 +87,19 @@ struct ErrorFunctor {
 		//  localPoint3D_est[1]*localPoint3D_obs[1] +
 		//  localPoint3D_est[2]*localPoint3D_obs[2] );
 
-	/*
-	depth term
-	*/
-	// T depth_est = p[2];
-	// T depth_obs = T(_observed_depth);
-	// residuals[2] = T(5/depth_est) * (depth_est - depth_obs);
-
     /*
 	reprojection error
 	*/
 
     T _point[3],point[3] ;
-    // ceres::AngleAxisRotatePoint(c, p, point);
-    // // camera[3,4,5] are the translation.
-    // point[0] += c[3]; point[1] += c[4]; point[2] += c[5];
-
+    // camera[3,4,5] are the translation.
     _point[0] = p[0] + c[3];
     _point[1] = p[1] + c[4];
     _point[2] = p[2] + c[5];
 
     ceres::AngleAxisRotatePoint(c, _point, point);
 
-    // Compute the center of distortion. The sign change comes from
-    // the camera model that Noah Snavely's Bundler assumes, whereby
-    // the camera coordinate system has a negative z axis.
+    // compute coordinate on image frame
     T xp =  point[0] / point[2];
     T yp =  point[1] / point[2];
 
@@ -123,6 +111,13 @@ struct ErrorFunctor {
     residuals[0] = predicted_x - T(_observed_x);
     residuals[1] = predicted_y - T(_observed_y);
      	
+ 	/*
+	depth term
+	*/
+	T depth_est = p[2];
+	T depth_obs = T(_observed_depth);
+	residuals[2] = depth_est - depth_obs;
+    
     return true;
     }
 
@@ -133,7 +128,7 @@ struct ErrorFunctor {
                                   const float observed_depth,
                                   const Mat& cameraMatrix) 
 		{
- 			return (new ceres::AutoDiffCostFunction<ErrorFunctor, 2, 6, 3>(
+ 			return (new ceres::AutoDiffCostFunction<ErrorFunctor, 3, 6, 3>(
              new ErrorFunctor(observed_x, observed_y,observed_depth, cameraMatrix)));
 		}
 
@@ -171,13 +166,16 @@ void Pipeline::bundle_adjustment(
 
 		int pPoint_idx = pointIdx*pPoint_num;
 		points[pPoint_idx] = point3D.x; 
-		points[pPoint_idx+1] = point3D.y; 
+		points[pPoint_idx+1] = point3D.y;
 		points[pPoint_idx+2] = point3D.z;	
 
 		// parameters associated to cameras
 		int camIdx = (it-> first).first;
 		int kpIdx = (it-> first).second;
 	
+		// skip reduced camera (although reduced camera shouldn't be in pointMap anymore)
+		if (poses[camIdx].R.empty()) continue;
+
 		// camera pose
 		Mat r;
 		Rodrigues(poses[camIdx].R,r);
@@ -241,7 +239,5 @@ void Pipeline::bundle_adjustment(
 		Mat t(3, 1, CV_64F, t_arr);
 		t.convertTo(t,CV_32F);
 		poses[camIdx].t = t;
-
-
 	}
 }
