@@ -47,7 +47,7 @@ typedef std::vector<cv::KeyPoint> KeyPoints;
 // Descriptor-related helper typedefs
 typedef cv::Mat                  Descriptors;
 typedef std::vector<Descriptors> DescriptorsVec;
-typedef std::vector<float> 		 Depths;
+typedef std::vector<float>       Depths;
 
 /**
  * Necessary information for each camera frame

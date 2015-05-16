@@ -40,16 +40,19 @@ void Pipeline::run()
 	DescriptorsVec descriptors_vec;
 	extract_features(images, cam_Frames, descriptors_vec);
 
+	// Free Image.gray
+	for (int i = 0; i < images.size(); i++)
+		const_cast<cv::Mat&>(images[i].gray).release();
+
 
 	/**
 	 * Stage 2: Calculate descriptors and find image pairs through matching
 	 */
 	ImagePairs image_pairs;
-	find_matching_pairs(images,cam_Frames, descriptors_vec, image_pairs);
+	find_matching_pairs(images, cam_Frames, descriptors_vec, image_pairs);
 
 
 	// Free some memory
-	//Images().swap(images);
 	DescriptorsVec().swap(descriptors_vec);
 
 
@@ -90,19 +93,29 @@ void Pipeline::run()
 	CameraPoses gCameraPoses;
 	glo_cam_poses(images, gCameraPoses, image_pairs, tree);
 
+
 	/**
 	 * Stage 6: Find and cluster depth points from local camera frame to global camera frame
 	 */
 	PointClusters pointClusters;
 	PointMap pointMap;
-	find_clusters(assocMat,gCameraPoses,cam_Frames,pointClusters,pointMap);
+	find_clusters(assocMat, gCameraPoses, cam_Frames, pointClusters, pointMap);
+
+	// Free some memory
+	ImagePairs().swap(image_pairs);
+
 
 	/**
 	 * Stage 7: get center of mass from clusters
 	 */
 	PointCloud pointCloud(pointClusters.size());
-	// find_CoM(pointClusters, image_pairs, pointCloud);
-	find_CoM(pointClusters,pointCloud);
+	find_CoM(pointClusters, pointCloud);
+
+	// Free pointClusters
+	for (int i = 0; i < pointClusters.size(); i++)
+		PointCluster().swap(pointClusters[i]);
+	PointClusters().swap(pointClusters);
+
 
 	// Save cloud before BA
 	Viewer viewer;
@@ -113,16 +126,16 @@ void Pipeline::run()
 	auto fname  = (fmt("output_%s_%d_noBA.pcd") % tstamp % n).str().c_str();
 	viewer.saveCloud(cloud, fname);
 
+
 	/**
 	 * State 8: Bundle Adjustment
 	 */
-	// RevPointMap revPointMap;
-	// for ( auto it = pointMap.begin(); it != pointMap.end(); ++it )
-	// {
-	// 	std::vector<std::pair<int,int> >* v = &revPointMap[it -> second];
-	// 	v -> push_back(it -> first);
-	// }
-	bundle_adjustment(pointMap,cam_Frames,gCameraPoses,pointCloud);
+	bundle_adjustment(pointMap, cam_Frames, gCameraPoses, pointCloud);
+
+	// Free some memory
+	PointMap().swap(pointMap);
+	CamFrames().swap(cam_Frames);
+	PointCloud().swap(pointCloud);
 
 	_log.tok();
 
@@ -132,6 +145,11 @@ void Pipeline::run()
 	cloud = viewer.createPointCloud(images, gCameraPoses, cameraMatrix);
 	n     = cloud->points.size();
 	fname = (fmt("output_%s_%d_BA.pcd") % tstamp % n).str().c_str();
+
+	// Free some memory
+	Images().swap(images);
+	CameraPoses().swap(gCameraPoses);
+
 	viewer.saveCloud(cloud, fname);
 	viewer.showCloudPoints(cloud);
 }
