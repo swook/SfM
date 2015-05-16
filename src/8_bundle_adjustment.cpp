@@ -13,24 +13,20 @@ using namespace cv;
 */
 struct ErrorFunctor {
 
-	// constructor measurements as argument
+	// constructor measurements as argument (without depth)
 	ErrorFunctor(const float observed_x, const float observed_y, 
-		const float observed_depth,const Mat& cameraMatrix)
+		const float observed_depth,const Mat& cameraMatrix, const bool useDepth)
 	{
-		// unproject observed 3D point
-		// Point3f backProjected;
-		// backProjected = backproject3D(observed_x,observed_y,observed_depth,cameraMatrix);
-		// double len = norm(backProjected);
-		// localPoint3D_obs_tmp[0] = (double) backProjected.x/len;
-		// localPoint3D_obs_tmp[1] = (double) backProjected.y/len;
-		// localPoint3D_obs_tmp[2] = (double) backProjected.z/len;
 		_observed_x = (double) observed_x;
 		_observed_y = (double) observed_y;
 		_observed_depth = (double) observed_depth;
+
 		focal_x = cameraMatrix.at<float>(0,0);
 		focal_y = cameraMatrix.at<float>(1,1);
 		c_x = cameraMatrix.at<float>(0,2);
 		c_y = cameraMatrix.at<float>(1,2);
+
+		_useDepth = useDepth;
 	}
 
 	double _observed_x;
@@ -41,6 +37,7 @@ struct ErrorFunctor {
 	double focal_y;
 	double c_x;
 	double c_y;
+	bool _useDepth;
 	/*
 		method to compute residual given rotation vector and translation vector of camera i
 		and 3D point j
@@ -49,43 +46,6 @@ struct ErrorFunctor {
     bool operator()(const T* const c,
               		const T* const p,
               		T* residuals) const {
-
-  //   	/*
-		// angular term
-  //   	*/
-  //   	// observed 3D point is back projected pixel
-  //   	T localPoint3D_obs[3];
-
-  //   	localPoint3D_obs[0] = T(localPoint3D_obs_tmp[0]);
-  //   	localPoint3D_obs[1] = T(localPoint3D_obs_tmp[1]);
-  //   	localPoint3D_obs[2] = T(localPoint3D_obs_tmp[2]);
-
-  //   	// estimated 3D point is estimated point3D transformed in local camera
-  //   	T localPoint3D_est[3];
-  //   	T point3D[3];
-  //   	ceres::AngleAxisRotatePoint(c,p,point3D);
-  //   	localPoint3D_est[0] += c[3]; 
-  //   	localPoint3D_est[1] += c[4]; 
-  //   	localPoint3D_est[2] += c[5];
-  //   	T squaredNorm = localPoint3D_est[0]*localPoint3D_est[0]
-  //   		+ localPoint3D_est[1]*localPoint3D_est[1]
-  //   		+ localPoint3D_est[2]*localPoint3D_est[2];
-  //   	if (squaredNorm>T(0.0)){
-
-  //   		T norm = ceres::sqrt(squaredNorm);
-
-		// 	localPoint3D_est[0] = localPoint3D_est[0]/norm;
-  //   		localPoint3D_est[1] = localPoint3D_est[1]/norm;
-  //   		localPoint3D_est[2] = localPoint3D_est[2]/norm;
-  //   	}else{
-  //   		localPoint3D_est
-  //   	}
-		
-
-  //   	residuals[0] = T(1.0) - 
-  //   	(localPoint3D_est[0]*localPoint3D_obs[0] + 
-		//  localPoint3D_est[1]*localPoint3D_obs[1] +
-		//  localPoint3D_est[2]*localPoint3D_obs[2] );
 
     /*
 	reprojection error
@@ -114,10 +74,12 @@ struct ErrorFunctor {
  	/*
 	depth term
 	*/
-	T depth_est = p[2];
-	T depth_obs = T(_observed_depth);
-	residuals[2] = depth_est - depth_obs;
-    
+	if (_useDepth){
+		T depth_est = p[2];
+		T depth_obs = T(_observed_depth);
+		residuals[2] = (depth_est - depth_obs)/depth_obs;
+	}
+	
     return true;
     }
 
@@ -126,10 +88,17 @@ struct ErrorFunctor {
 		static ceres::CostFunction* Create(const float observed_x,
                                   const float observed_y,
                                   const float observed_depth,
-                                  const Mat& cameraMatrix) 
-		{
- 			return (new ceres::AutoDiffCostFunction<ErrorFunctor, 3, 6, 3>(
-             new ErrorFunctor(observed_x, observed_y,observed_depth, cameraMatrix)));
+                                  const Mat& cameraMatrix,
+                                  const bool useDepth) 
+		{			
+			if (useDepth) {
+				return (new ceres::AutoDiffCostFunction<ErrorFunctor, 3, 6, 3>(
+             	new ErrorFunctor(observed_x, observed_y,observed_depth, cameraMatrix,useDepth)));
+			}else {
+				return (new ceres::AutoDiffCostFunction<ErrorFunctor, 2, 6, 3>(
+             	new ErrorFunctor(observed_x, observed_y,observed_depth, cameraMatrix,useDepth)));
+			}
+ 			
 		}
 
 };
@@ -137,6 +106,7 @@ struct ErrorFunctor {
 void Pipeline::bundle_adjustment(
 	const PointMap& pointMap,
 	const CamFrames& camFrames,
+	const bool useDepth,
 	CameraPoses& poses,
 	PointCloud& pointCloud)
 {
@@ -146,7 +116,7 @@ void Pipeline::bundle_adjustment(
 	const int pPoint_num = 3;			// point 3x1
 	const double huberParam = 1.0;
 	const double cauchyParam = 1.0;
-	const double function_tolerance = 1e-5;
+	const double function_tolerance = 1e-4;
 	const double parameter_tolerance = 1e-8;
 
 	const int camera_num = camFrames.size();
@@ -194,14 +164,14 @@ void Pipeline::bundle_adjustment(
 		
 		ceres::CostFunction* cost_function =
       		ErrorFunctor::Create(
-           		observed_x,observed_y,observed_depth,cameraMatrix);
+           		observed_x,observed_y,observed_depth,cameraMatrix,useDepth);
   		problem.AddResidualBlock(cost_function,loss_function,cameras+pCamera_idx,points+pPoint_idx);
 	}
 	std::cout << "problem created " << std::endl;
 	ceres::Solver::Options options;
 	options.linear_solver_type = ceres::SPARSE_SCHUR;
 	options.use_inner_iterations = true;
-	options.max_num_iterations = 100;
+	options.max_num_iterations = 200;
 	options.function_tolerance = function_tolerance;
 	options.parameter_tolerance = parameter_tolerance;
 	options.num_linear_solver_threads = 8;

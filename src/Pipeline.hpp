@@ -54,6 +54,7 @@ private:
 	void bundle_adjustment(
 	const PointMap& pointMap,
 	const CamFrames& camFrames,
+	const bool useDepth,
 	CameraPoses& poses,
 	PointCloud& pointCloud);
 };

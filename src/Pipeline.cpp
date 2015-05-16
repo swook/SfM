@@ -133,28 +133,45 @@ void Pipeline::run(const bool save_clouds)
 	/**
 	 * State 8: Bundle Adjustment
 	 */
-	bundle_adjustment(pointMap, cam_Frames, gCameraPoses, pointCloud);
+	bundle_adjustment(pointMap, cam_Frames, false, gCameraPoses, pointCloud);
+	_log.tok();
+
+	/**
+	 * Show calculated point cloud
+	 */
+	Viewer viewer_ba("After BA no Depth");
+	cloud = viewer_ba.createPointCloud(images, gCameraPoses, cameraMatrix);
+	n     = cloud->points.size();
+	fname = (fmt("output_%s_%d_BA_noD.pcd") % tstamp % n).str().c_str();
+
+
+	if (save_clouds)
+		viewer_ba.saveCloud(cloud, fname);
+	viewer_ba.showCloudPoints(cloud,false);
+
+	bundle_adjustment(pointMap, cam_Frames, true, gCameraPoses, pointCloud);
 
 	// Free some memory
 	PointMap().swap(pointMap);
 	CamFrames().swap(cam_Frames);
 	PointCloud().swap(pointCloud);
 
-	_log.tok();
-
 	/**
 	 * Show calculated point cloud
 	 */
-	Viewer viewer_ba("After BA");
-	cloud = viewer_ba.createPointCloud(images, gCameraPoses, cameraMatrix);
+	Viewer viewer_baD("After BA with Depth");
+	cloud = viewer_baD.createPointCloud(images, gCameraPoses, cameraMatrix);
 	n     = cloud->points.size();
-	fname = (fmt("output_%s_%d_BA.pcd") % tstamp % n).str().c_str();
+	fname = (fmt("output_%s_%d_BA_D.pcd") % tstamp % n).str().c_str();
 
 	// Free some memory
 	Images().swap(images);
 	CameraPoses().swap(gCameraPoses);
 
 	if (save_clouds)
-		viewer_ba.saveCloud(cloud, fname);
-	viewer_ba.showCloudPoints(cloud);
+		viewer_baD.saveCloud(cloud, fname);
+	viewer_baD.showCloudPoints(cloud);
+
+
+	
 }
