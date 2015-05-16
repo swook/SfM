@@ -19,7 +19,7 @@ Viewer::Viewer()
 
 void Viewer::reduceCloud(cloud_t::Ptr& cloud)
 {
-	const float voxel_resolution = 10.f;
+	const float voxel_resolution = 20.f;
 
 	// Configure grid
 	_grid.setInputCloud(cloud);
