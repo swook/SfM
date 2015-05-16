@@ -19,7 +19,7 @@ public:
 	/**
 	 * Run pipeline
 	 */
-	void run();
+	void run(bool save_clouds=true);
 
 private:
 	std::string folder_path;

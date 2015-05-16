@@ -12,6 +12,7 @@ int main(int argc, char** argv)
 	desc.add_options()
 	    ("help", "Show this message")
 	    ("data-path,d", po::value<std::string>(), "Input dataset folder path")
+	    ("no-save-clouds,n", po::bool_switch()->default_value(false), "Don't save cloud outputs")
 	;
 
 	po::positional_options_description p;
@@ -29,6 +30,7 @@ int main(int argc, char** argv)
 	}
 
 	std::string folder_path = vm["data-path"].as<std::string>();
+	bool save_clouds = !vm["no-save-clouds"].as<bool>();
 
 
 	/**
@@ -38,7 +40,7 @@ int main(int argc, char** argv)
 	// Create instance of pipeline
 	Pipeline pipeline(folder_path);
 	// and run
-	pipeline.run();
+	pipeline.run(save_clouds);
 
 
 	/**

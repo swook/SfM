@@ -22,7 +22,7 @@ Pipeline::Pipeline(std::string _folder_path)
 	folder_path = _folder_path;
 }
 
-void Pipeline::run()
+void Pipeline::run(const bool save_clouds)
 {
 	Logger _log("Pipeline");
 
@@ -124,8 +124,10 @@ void Pipeline::run()
 	auto time   = ptime::second_clock::local_time();
 	auto tstamp = ptime::to_iso_string(time);
 	auto fname  = (fmt("output_%s_%d_noBA.pcd") % tstamp % n).str().c_str();
-	// viewer.saveCloud(cloud, fname);
-	viewer.showCloudPoints(cloud,false);
+
+	if (save_clouds)
+		viewer.saveCloud(cloud, fname);
+	viewer.showCloudPoints(cloud, false);
 
 
 	/**
@@ -151,6 +153,8 @@ void Pipeline::run()
 	// Free some memory
 	Images().swap(images);
 	CameraPoses().swap(gCameraPoses);
-	// viewer.saveCloud(cloud, fname);
+
+	if (save_clouds)
+		viewer_ba.saveCloud(cloud, fname);
 	viewer_ba.showCloudPoints(cloud);
 }
