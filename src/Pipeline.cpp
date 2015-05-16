@@ -3,6 +3,9 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 namespace ptime = boost::posix_time;
 
+#include "boost/filesystem.hpp"
+namespace fs  = boost::filesystem;
+
 #include <boost/format.hpp>
 typedef boost::format fmt;
 
@@ -19,6 +22,10 @@ Pipeline::Pipeline(std::string _folder_path)
 	cameraMatrix(cv::Mat(3, 3, CV_32F, _intrinsic_array)),
 	distCoeffs(cv::Mat(1, 4, CV_32F, _distcoeff_array))
 {
+	int n = _folder_path.size();
+	if (_folder_path[n - 1] == '/') _folder_path.resize(n - 1);
+	std::cout << _folder_path << std::endl;
+
 	folder_path = _folder_path;
 }
 
@@ -123,7 +130,8 @@ void Pipeline::run(const bool save_clouds)
 	int  n      = cloud->points.size();
 	auto time   = ptime::second_clock::local_time();
 	auto tstamp = ptime::to_iso_string(time);
-	auto fname  = (fmt("output_%s_%d_noBA.pcd") % tstamp % n).str().c_str();
+	auto folder = fs::path(folder_path).filename().string();
+	auto fname  = (fmt("%s_%s_%d_noBA.pcd") % folder % tstamp % n).str().c_str();
 
 	if (save_clouds)
 		viewer.saveCloud(cloud, fname);
@@ -142,7 +150,7 @@ void Pipeline::run(const bool save_clouds)
 	Viewer viewer_ba("After BA no Depth");
 	cloud = viewer_ba.createPointCloud(images, gCameraPoses, cameraMatrix);
 	n     = cloud->points.size();
-	fname = (fmt("output_%s_%d_BA_noD.pcd") % tstamp % n).str().c_str();
+	fname = (fmt("%s_%s_%d_BA_noD.pcd") % folder % tstamp % n).str().c_str();
 
 
 	if (save_clouds)
@@ -162,7 +170,7 @@ void Pipeline::run(const bool save_clouds)
 	Viewer viewer_baD("After BA with Depth");
 	cloud = viewer_baD.createPointCloud(images, gCameraPoses, cameraMatrix);
 	n     = cloud->points.size();
-	fname = (fmt("output_%s_%d_BA_D.pcd") % tstamp % n).str().c_str();
+	fname = (fmt("%s_%s_%d_BA_D.pcd") % folder % tstamp % n).str().c_str();
 
 	// Free some memory
 	Images().swap(images);
@@ -173,5 +181,5 @@ void Pipeline::run(const bool save_clouds)
 	viewer_baD.showCloudPoints(cloud);
 
 
-	
+
 }
