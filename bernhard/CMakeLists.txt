@@ -12,6 +12,7 @@ set (CMAKE_BUILD_TYPE RelWithDebInfo)
 # set(PCL_DIR "/usr/local/share/pcl-1.5/")
 # message (STATUS "PCL directory set to " ${PCL_DIR})
 
+find_package(Qt5Widgets REQUIRED)
 find_package(PCL 1.5 REQUIRED common io visualization)
 
 # In case find_package can't find PCL you can also set the 3 following variables by hand.
