@@ -123,53 +123,69 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		pair->R = R;
 		pair->t = tvec;
 
-		// get rid of outliers
+		// New vectors to retain only inliers info
 		std::vector<int> new_matched_indices_i;
 		std::vector<int> new_matched_indices_j;
 		std::vector<cv::Point2f> new_matched_kp_i;
 		std::vector<cv::Point2f> new_matched_kp_j;
-		Depths new_depths_i;
-		Depths new_depths_j;
+		Depths new_matched_depth_i, new_matched_depth_j;
 
-		// Get list of common inlier indices
-		std::vector<int> inliers(max(inliers_i.rows, inliers_j.rows));
-		auto it = std::set_intersection(
-			inliers_i.begin<int>(), inliers_i.end<int>(),
-			inliers_j.begin<int>(), inliers_j.end<int>(),
-			inliers.begin());
-		inliers.resize(it - inliers.begin());
-
-		std::vector<bool> isInlier(*std::max_element(inliers.begin(), inliers.end()));
-		for (auto it = inliers.begin(); it != inliers.end(); ++it)
-			isInlier[*it] = true;
-
-
-		// Go through all existing keypoint pairs
-		for (int k = 0; k < pair->matched_indices.first.size(); k++)
+		int inliers_idx_j = 0;
+                int inliers_idx_i = 0;
+		while (inliers_idx_i != inliers_i.rows && inliers_idx_j != inliers_j.rows)
 		{
-			int keyIdx_i = pair->matched_indices.first[k],
-			    keyIdx_j = pair->matched_indices.second[k];
 
-			// If both keypoints are inliers
-			if (isInlier[keyIdx_i] && isInlier[keyIdx_j])
+			if (inliers_i.at<int>(inliers_idx_i,0) < inliers_j.at<int>(inliers_idx_j,0))
 			{
-				new_matched_indices_i.push_back(keyIdx_i);
-				new_matched_indices_j.push_back(keyIdx_j);
-				new_matched_kp_i.push_back(keyPoints_i[k]);
-				new_matched_kp_j.push_back(keyPoints_j[k]);
-				new_depths_i.push_back(depths_i[k]);
-				new_depths_j.push_back(depths_j[k]);
+				++inliers_idx_i;
 			}
+			else
+			{
+				if (inliers_j.at<int>(inliers_idx_j,0) == inliers_i.at<int>(inliers_idx_i,0))
+				{
+					int idx = inliers_j.at<int>(inliers_idx_j,0);
+					// std::cout << idx << std::endl;
+					//
+					new_matched_indices_i.push_back(pair->matched_indices.first[idx]);
+					new_matched_indices_j.push_back(pair->matched_indices.second[idx]);
+					new_matched_kp_i.push_back(keyPoints_i[idx]);
+					new_matched_kp_j.push_back(keyPoints_j[idx]);
+					new_matched_depth_i.push_back(depths_i[idx]);
+					new_matched_depth_j.push_back(depths_j[idx]);
 
+					// test math
+					// std::cout <<"reference in j: " << keyPoints_j[idx] << std::endl;
+					// Point3f _testPoint = backproject3D(
+					//      keyPoints_i[idx].x,keyPoints_i[idx].y,depths_i[idx],cameraMatrix);
+					// Mat testPoint = Mat(_testPoint);
+					// Mat projectinj = cameraMatrix * R.t() * (testPoint + tvec);
+
+					// projectinj = cameraMatrix * R * (testPoint - tvec);
+					// projectinj = projectinj/projectinj.at<float>(2,0);
+					// std::cout << "projected R_ji*(P_i-t_ji): " << projectinj.at<float>(0,0) << ','<< projectinj.at<float>(1,0) << std::endl;
+					// // std::cout << norm(projectinj,keyPoints_j[idx]) << std::endl;
+					// projectinj = cameraMatrix * R * testPoint - tvec;
+					// projectinj = projectinj/projectinj.at<float>(2,0);
+					// std::cout << "projected R_ji*P_i-t_ji: " << projectinj.at<float>(0,0) << ','<< projectinj.at<float>(1,0) << std::endl;
+					// // std::cout << norm(projectinj,keyPoints_j[idx]) << std::endl;
+					// projectinj = cameraMatrix * R * testPoint + tvec;
+					// projectinj = projectinj/projectinj.at<float>(2,0);
+					// std::cout << "projected R_ji*P_i+t_ji: " << projectinj.at<float>(0,0) << ','<< projectinj.at<float>(1,0) << std::endl;
+					// // std::cout << norm(projectinj,keyPoints_j[idx]) << std::endl;
+					// projectinj = cameraMatrix * R * (testPoint + tvec);
+					// projectinj = projectinj/projectinj.at<float>(2,0);
+					// std::cout << "projected R_ji*(P_i+t_ji): " << projectinj.at<float>(0,0) << ','<< projectinj.at<float>(1,0) << std::endl;
+					// // std::cout << norm(projectinj,keyPoints_j[idx]) << std::endl;
+				}
+				++inliers_idx_j;
+			}
 		}
-
-		// Keep only inlier keypoints
-		pair->matched_indices.first  = new_matched_indices_i;
+		pair->matched_indices.first = new_matched_indices_i;
 		pair->matched_indices.second = new_matched_indices_j;
-		pair->matched_points.first   = new_matched_kp_i;
-		pair->matched_points.second  = new_matched_kp_j;
-		pair->pair_depths.first      = new_depths_i;
-		pair->pair_depths.second     = new_depths_j;
+		pair->matched_points.first = new_matched_kp_i;
+		pair->matched_points.second = new_matched_kp_j;
+		pair->pair_depths.first = new_matched_depth_i;
+		pair->pair_depths.second = new_matched_depth_j;
 	}
 
 	_log.tok();
