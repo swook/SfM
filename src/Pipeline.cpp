@@ -124,7 +124,8 @@ void Pipeline::run()
 	auto time   = ptime::second_clock::local_time();
 	auto tstamp = ptime::to_iso_string(time);
 	auto fname  = (fmt("output_%s_%d_noBA.pcd") % tstamp % n).str().c_str();
-	viewer.saveCloud(cloud, fname);
+	// viewer.saveCloud(cloud, fname);
+	viewer.showCloudPoints(cloud,false);
 
 
 	/**
@@ -142,14 +143,14 @@ void Pipeline::run()
 	/**
 	 * Show calculated point cloud
 	 */
-	cloud = viewer.createPointCloud(images, gCameraPoses, cameraMatrix);
+	Viewer viewer_ba;
+	cloud = viewer_ba.createPointCloud(images, gCameraPoses, cameraMatrix);
 	n     = cloud->points.size();
 	fname = (fmt("output_%s_%d_BA.pcd") % tstamp % n).str().c_str();
 
 	// Free some memory
 	Images().swap(images);
 	CameraPoses().swap(gCameraPoses);
-
-	viewer.saveCloud(cloud, fname);
-	viewer.showCloudPoints(cloud);
+	// viewer.saveCloud(cloud, fname);
+	viewer_ba.showCloudPoints(cloud);
 }
