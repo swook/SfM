@@ -130,7 +130,7 @@ void Pipeline::run(const bool save_clouds, const bool show_clouds)
 	auto time   = ptime::second_clock::local_time();
 	auto tstamp = ptime::to_iso_string(time);
 	auto folder = fs::path(folder_path).filename().string();
-	auto fname  = (fmt("%s_%s_%d_noBA.pcd") % folder % tstamp % n).str().c_str();
+	auto fname  = (fmt("%s_%s_%d_noBA.pcd") % folder % tstamp % n).str();
 
 	if (save_clouds)
 		viewer.saveCloud(cloud, fname);
@@ -150,7 +150,7 @@ void Pipeline::run(const bool save_clouds, const bool show_clouds)
 	Viewer viewer_ba("After BA no Depth");
 	cloud = viewer_ba.createPointCloud(images, gCameraPoses, cameraMatrix);
 	n     = cloud->points.size();
-	fname = (fmt("%s_%s_%d_BA_noD.pcd") % folder % tstamp % n).str().c_str();
+	fname = (fmt("%s_%s_%d_BA_noD.pcd") % folder % tstamp % n).str();
 
 
 	if (save_clouds)
@@ -171,7 +171,7 @@ void Pipeline::run(const bool save_clouds, const bool show_clouds)
 	Viewer viewer_baD("After BA with Depth");
 	cloud = viewer_baD.createPointCloud(images, gCameraPoses, cameraMatrix);
 	n     = cloud->points.size();
-	fname = (fmt("%s_%s_%d_BA_D.pcd") % folder % tstamp % n).str().c_str();
+	fname = (fmt("%s_%s_%d_BA_D.pcd") % folder % tstamp % n).str();
 
 	// Free some memory
 	Images().swap(images);

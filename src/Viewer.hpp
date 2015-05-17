@@ -17,7 +17,7 @@ public:
 	Viewer(const char* title);
 	cloud_t::Ptr createPointCloud(const Images& images, const CameraPoses& poses,
 	                              const cv::Mat& cameraMatrix);
-	void         saveCloud(cloud_t::Ptr cloud, const char* fname);
+	void         saveCloud(cloud_t::Ptr cloud, const std::string fname);
 	void         showCloudPoints(const Images& images, const CameraPoses& poses,
 	                             const cv::Mat& cameraMatrix);
 	void         showCloudPoints(const cloud_t::Ptr pcl_points, bool wait=true);

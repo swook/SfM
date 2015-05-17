@@ -89,12 +89,12 @@ Viewer::cloud_t::Ptr Viewer::createPointCloud(const Images& images, const Camera
 	return pcl_points;
 }
 
-void Viewer::saveCloud(cloud_t::Ptr pcl_points, const char* fname)
+void Viewer::saveCloud(cloud_t::Ptr pcl_points, const std::string fname)
 {
 	// TODO: Save to disk with timestamp
 	pcl::PCDWriter writer;
 	writer.writeBinary(fname, *pcl_points);
-	_log("Saved point cloud to: %s", fname);
+	_log("Saved point cloud to: %s", fname.c_str());
 	_log.tok();
 }
 
