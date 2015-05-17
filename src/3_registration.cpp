@@ -99,7 +99,7 @@ void Pipeline::register_camera(ImagePairs& pairs,CamFrames& cam_Frames){
 		// Average R_i & R_j and t_i & t_j
 		Mat rvec, tvec, R;
 		rvec = (rvec_i - rvec_j) / 2.f;
-		tvec = (tvec_i - tvec_j) / 2.f;
+		tvec = tvec_i;
 		Rodrigues(rvec, R);
 
 		// Bernhard: Shouldn't need, Rodrigues should do this
