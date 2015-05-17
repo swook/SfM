@@ -24,7 +24,6 @@ Pipeline::Pipeline(std::string _folder_path)
 {
 	int n = _folder_path.size();
 	if (_folder_path[n - 1] == '/') _folder_path.resize(n - 1);
-	std::cout << _folder_path << std::endl;
 
 	folder_path = _folder_path;
 }

@@ -42,10 +42,8 @@ void Pipeline::extract_features(const Images& images,CamFrames& cam_Frames,Descr
 		KeyPoints key_points;
 		Descriptors descriptors;
 
-#pragma omp critical
 		// Detect keypoints and calculate descriptor vectors
 		sift_detector->detectAndCompute(image.gray, noArray(), key_points, descriptors);
-		// brisk_detector->detectAndCompute(image.gray, noArray(), key_points, descriptors);
 
 		KeyPoints   keep_key_points;
 		Descriptors keep_descriptors;

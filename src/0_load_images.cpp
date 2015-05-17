@@ -62,8 +62,9 @@ void Pipeline::load_images(string folder_path, Images& images)
 
 	_log("Found %d timestamps.", n);
 
-	images = Images(n);
+	images = Images();
 
+	int new_n = 0;
 #pragma omp parallel for
 	for (int i = 0; i < n; i++)
 	{
@@ -75,6 +76,7 @@ void Pipeline::load_images(string folder_path, Images& images)
 		string dep_path = (fmt("%s/frame_%s_depth.png") % folder_path % time_str).str();
 		Mat rgb_img = imread(rgb_path);
 		Mat _depth_img = imread(dep_path,CV_LOAD_IMAGE_ANYDEPTH); // load 16bit img
+		if (!rgb_img.data || !_depth_img.data) continue;
 
 		// White-balance RGB image
 		// TODO: undistort?
@@ -100,7 +102,7 @@ void Pipeline::load_images(string folder_path, Images& images)
 		// FINAL DEPTH: 1-channel, floats, bilateralFilter smoothing
 
 		// Store Image struct with image read using imread
-		images[i] = (Image){
+		Image image = {
 			i,
 			pt::from_iso_string(time_str),
 			rgb_undist_img,
@@ -109,7 +111,14 @@ void Pipeline::load_images(string folder_path, Images& images)
 			rgb_path,
 			dep_path
 		};
+		images.push_back(image);
+
+#pragma omp atomic
+		new_n++;
 	}
+
+	images.resize(new_n);
+	_log("Loaded %d RGB-D images.", new_n);
 
 	_log.tok();
 }
