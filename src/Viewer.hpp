@@ -23,9 +23,9 @@ public:
 	void         showCloudPoints(const cloud_t::Ptr pcl_points, bool wait=true);
 
 private:
-	vis::PCLVisualizer _viewer;
-	Logger             _log;
-	grid_t             _grid;
+	const char* _title;
+	Logger      _log;
+	grid_t      _grid;
 
 	void reduceCloud(cloud_t::Ptr& cloud);
 };

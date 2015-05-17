@@ -29,7 +29,7 @@ Pipeline::Pipeline(std::string _folder_path)
 	folder_path = _folder_path;
 }
 
-void Pipeline::run(const bool save_clouds)
+void Pipeline::run(const bool save_clouds, const bool show_clouds)
 {
 	Logger _log("Pipeline");
 
@@ -135,7 +135,8 @@ void Pipeline::run(const bool save_clouds)
 
 	if (save_clouds)
 		viewer.saveCloud(cloud, fname);
-	viewer.showCloudPoints(cloud, false);
+	if (show_clouds)
+		viewer.showCloudPoints(cloud, false);
 
 
 	/**
@@ -155,7 +156,8 @@ void Pipeline::run(const bool save_clouds)
 
 	if (save_clouds)
 		viewer_ba.saveCloud(cloud, fname);
-	viewer_ba.showCloudPoints(cloud,false);
+	if (show_clouds)
+		viewer_ba.showCloudPoints(cloud,false);
 
 	bundle_adjustment(pointMap, cam_Frames, true, gCameraPoses, pointCloud);
 
@@ -178,7 +180,8 @@ void Pipeline::run(const bool save_clouds)
 
 	if (save_clouds)
 		viewer_baD.saveCloud(cloud, fname);
-	viewer_baD.showCloudPoints(cloud);
+	if (show_clouds)
+		viewer_baD.showCloudPoints(cloud);
 
 
 

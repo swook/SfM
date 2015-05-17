@@ -7,14 +7,8 @@
 Viewer::Viewer(const char* title)
 :
 	_log("PCL"),
-	_viewer(title)
+	_title(title)
 {
-	// Set viewer settings
-	_viewer.setShowFPS(true);
-	_viewer.setWindowBorders(false);
-
-	_viewer.setBackgroundColor(0.1, 0.1, 0.1);
-	_viewer.addCoordinateSystem(0.1, "global");
 }
 
 void Viewer::reduceCloud(cloud_t::Ptr& cloud)
@@ -111,18 +105,25 @@ void Viewer::showCloudPoints(const Images& images, const CameraPoses& poses,
 	showCloudPoints(pcl_points);
 }
 
-
 void Viewer::showCloudPoints(const cloud_t::Ptr pcl_points, bool wait)
 {
+	auto _viewer = vis::PCLVisualizer(_title);
+
+	// Set viewer settings
+	_viewer.setShowFPS(true);
+	_viewer.setWindowBorders(false);
+
+	_viewer.setBackgroundColor(0.1, 0.1, 0.1);
+	_viewer.addCoordinateSystem(0.1, "global");
+
 	// Show cloud
 	_log("Showing %d points", pcl_points->points.size());
 	vis::PointCloudColorHandlerRGBField<point_t> rgb_handler(pcl_points);
 	_viewer.addPointCloud<pcl::PointXYZRGB>(pcl_points, rgb_handler);
+	_viewer.spinOnce(1000);
 
 	// Wait until closed
 	while (wait && !_viewer.wasStopped())
-	{
 		_viewer.spinOnce(15);
-	}
 }
 
