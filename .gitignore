@@ -30,6 +30,11 @@
 # Latex output files
 *.bbl
 *.aux
+report/*.dvi
+report/*.log
+report/*.blg
+report/*.fdb_latexmk
+report/*.fls
 
 # Bernhard's data acquisition code
 /bernhard/build
