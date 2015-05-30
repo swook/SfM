@@ -74,36 +74,100 @@ composed of 5 main steps listed below.
 It is important to note that the acquired images in this case is RGB-D and is
 acquired using a Microsoft Kinect (first generation).
 
+The pipeline is implemented in C++. Third party libraries used include OpenCV
+3.0, Ceres Solver and PCL 1.8.
 
-## Dataset
-
-*Panorama of BeersNMore*
-
-Our dataset is acquired from BeersNMore (figure #), a craft beer shop on
-Universitätstrasse. The interior of the shop contains repeating as well
-as numerous unique features in the form of labelled beer bottles and crates.
-
-The dataset consists of 229 colour (RGB) and depth (11bit) images which were
-acquired with the intent to create sufficient correspondences between the
-images.
 
 
 ## Data acquisition
 
-*NOTE: Kinect parameters, f, kx*
+OpenNI and OpenCV are used to acquire RGB images and depth maps from a Kinect.
+The two output images are stored with the same timestamps.
+
+It is worth noting that the Kinect returns depth in mm in range $[0, 10000]$
+which is stored as a 16-bit unsigned integer. Camera parameters are taken from
+*(smisek20133d)* and used in methods in the following steps.
+
+While acquiring data, we attempt to find areas with sufficient potential
+features and try to maximise the overlap between each shot to retain enough
+correspondences.
+
+*Panorama of BeersNMore*
+
+This resulted in the BeersNMore dataset, taken at a craft beer shop on
+Universitätstrasse. The interior of the shop (as seen in figure #) exhibits
+numerous unique and repeating features in the form of labelled beer bottles
+boxes, and crates. The dataset consists of 229 RGB and depth images.
 
 
 
 ## Feature detection and matching
 
+For each given RGB image, SIFT features are found, and 128-dimensional are
+descriptors calculated. Standard OpenCV parameters are used for this step.
+
+A matching algorithm is then run between all potential image pairs. This is
+an $\mathcal{O}(n^2)$ operation. The matcher compares the distance between
+descriptors and finds those with minimum distance. This produces numerous
+incorrect matches, often visible by the violation of epipolar geometry.
+
+The matching is therefore performed in a bi-directional manner, both from image
+i to j, and j to i. This results in a better sample of matches. RANSAC can be
+used in the camera registration step to further eliminate outliers.
+
+
 
 ## Pairwise camera pose estimation
+
+The previous step yields a list of image pairs which have matching features.
+The discovered features from image i can then be projected into 3D space
+using its depth map values, and reprojected into image j. The minimisation
+of this error is carried out using OpenCV's EPnP solver.
+
+The mentioned solver also identifies outlier matches via RANSAC. Only inliers
+are retained to improve any further optimisations. To ensure that only good
+image pairs are retained, we also filter these image pairs based on an absolute
+minimum number of inliers of 30. If two images have less then 30 feature matches
+which are inliers in the registration process, it is assumed that the image pair
+is not good enough for subsequent steps.
+
+Similar to the feature matching step, the PnP solver is run in both directions,
+projecting 3D points from image i into image j, and projecting 3D points from
+image j into image i. This allows for two things, (1) the averaging of pose
+estimates to improve accuracy and (2) reduction of bad matches where relative
+rotation vectors do not add up to 0.
+
+The final output from this step is a list of camera pairs which are deemed to
+have good matching features, and associated pairwise camera pose estimates.
+
 
 
 ## Transform to global coordinate system
 
+The final goal of this SfM pipeline is to combine the data from all images
+acquired. To do so, previously acquired pairwise camera pose estimates must
+be transformed into a single coordinate frame.
+
+The 0th camera is selected to be the reference coordinate frame. A breadth-first
+algorithm is used to construct a minimum spanning tree with cameras as nodes and
+the existence of camera pose estimate as edges (whether an image pair exists).
+The spanning tree can be walked to calculate camera pose estimates relative to
+the 0th camera.
+
+The outcome of this step needs to be a cloud of keypoints and camera pose
+estimates in global coordinate frame. However, each keypoint is observed by a
+minimum of two cameras, resulting in a cluster of keypoint coordinate estimates.
+The centre of mass (CoM) of this cluster is calculated by averaging the
+coordinate estimations. This results in a single keypoint coordinate estimate,
+and consequently an initial point cloud of sparse features.
+
+
+
 
 ## Bundle adjustment
+
+With global keypoint and camera pose estimates, it is now possible to perform a
+global optimisation known as bundle adjustment.
 
 
 
