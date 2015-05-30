@@ -6,9 +6,6 @@ Compile output using `latexmk -pdf report.tex` or `pdflatex report.tex` or simil
 
 Introduction
 ============
-*NOTE: Problem statement*
-
-# Structure from Motion
 
 Structure from Motion (SfM) concerns the recreation of a real environment
 through the inferring of motion from images. (1) First, a 3D object or
@@ -148,11 +145,15 @@ The final goal of this SfM pipeline is to combine the data from all images
 acquired. To do so, previously acquired pairwise camera pose estimates must
 be transformed into a single coordinate frame.
 
+*Spanning Tree diagram*
+
 The 0th camera is selected to be the reference coordinate frame. A breadth-first
 algorithm is used to construct a minimum spanning tree with cameras as nodes and
 the existence of camera pose estimate as edges (whether an image pair exists).
 The spanning tree can be walked to calculate camera pose estimates relative to
 the 0th camera.
+
+*Cluster of keypoints diagram*
 
 The outcome of this step needs to be a cloud of keypoints and camera pose
 estimates in global coordinate frame. However, each keypoint is observed by a
