@@ -4,6 +4,8 @@
 \usepackage{times}
 \usepackage{epsfig}
 \usepackage{graphicx}
+\usepackage{color}
+\usepackage{transparent}
 \usepackage{amsmath}
 \usepackage{amssymb}
 
@@ -127,7 +129,13 @@ The pipeline is implemented in C++. Third party libraries used include OpenCV
 %-------------------------------------------------------------------------
 
 \subsection{Data acquisition}
-
+\begin{figure*}
+\begin{center}
+   \includegraphics[width=0.9\linewidth]{figures/BeersNMore_panorama.jpg}
+\end{center}
+\caption{Panorama of BeersNMore interior, displaying a high number of features}
+\label{fig:panorama}
+\end{figure*}
 OpenNI and OpenCV are used to acquire RGB images and depth maps from a Kinect.
 The two output images are stored with the same timestamps. The code used for
 this step is provided by our supervisor, Bernhard Zeisl.
@@ -139,14 +147,6 @@ which is stored as a 16-bit unsigned integer. Camera parameters are taken from
 While acquiring data, we attempt to find areas with sufficient potential
 features and try to maximise the overlap between each shot to retain enough
 correspondences.
-
-\begin{figure}[t]
-\begin{center}
-   \includegraphics[width=1.0\linewidth]{figures/BeersNMore_panorama.jpg}
-\end{center}
-\caption{Panorama of BeersNMore interior, displaying a high number of features}
-\label{fig:panorama}
-\end{figure}
 
 This resulted in the BeersNMore dataset, taken at a craft beer shop on
 Universit\"atstrasse. The interior of the shop (as seen in figure \ref{fig:panorama}) exhibits
@@ -161,14 +161,14 @@ boxes, and crates. The dataset consists of 229 RGB and depth images.
 
 For each given RGB image, SIFT features are found, and 128-dimensional are
 descriptors calculated. Standard OpenCV parameters are used for this step.
+In each image, around 1000 to 3000 features are found.
 
 A matching algorithm is then run between all potential image pairs. This is
-an $\mathcal{O}(n^2)$ operation. The matcher compares the distance between
-descriptors and finds those with minimum distance. This produces numerous
+an $\mathcal{O}(n^2)$ operation. The matcher computes the euclidian distances of the $i$-th descriptor in one image to all descriptors in the other image and returns the descriptor with minimum distance as the match to descriptor $i$. This produces numerous
 incorrect matches, often visible by the violation of epipolar geometry.
 
 The matching is therefore performed in a bi-directional manner, both from image
-$i$ to $j$, and $j$ to $i$. This results in a better sample of matches. RANSAC
+$i$ to $j$, and $j$ to $i$, so that only consistent matches are kept. This results in a better sample of matches. RANSAC
 can be used in the camera registration step to further eliminate outliers.
 
 
@@ -179,15 +179,15 @@ can be used in the camera registration step to further eliminate outliers.
 
 The previous step yields a list of image pairs which have matching features.
 The discovered features from image $i$ can then be projected into 3D space
-using its depth map values, and reprojected into image $j$. The minimisation
+using its depth map values, and reprojected into image $j$ (see figure \ref{fig:reg}). The minimisation
 of this error is carried out using OpenCV's EPnP solver.
 
 \begin{figure}[t]
 \begin{center}
    \includegraphics[width=0.9\linewidth]{figures/registration.pdf}
 \end{center}
-\caption{TODO: Registration caption}
-\label{fig:spanning}
+\caption{Pairwise camera pose registration. Features of camera $i$ are unprojected into 3D space and the reprojection errors (red) are minimised.}
+\label{fig:reg}
 \end{figure}
 
 The mentioned solver also identifies outlier matches via RANSAC. Only inliers
@@ -199,9 +199,8 @@ is not good enough for subsequent steps.
 
 Similar to the feature matching step, the PnP solver is run in both directions,
 projecting 3D points from image $i$ into image $j$, and projecting 3D points
-from image $j$ into image $i$. This allows for two things, (1) the averaging of
-pose estimates to improve accuracy and (2) reduction of bad matches where
-relative rotation vectors do not add up to 0.
+from image $j$ into image $i$. This allows for two things, (1) validation of registration result and (2) the averaging of
+pose estimates to improve accuracy. In particular, the registration of a camera pair (i,j) is considered successful, only when the rotational vector $r_{ij}$ and $r_{ji}$ from the bi-directional registration are anti-parallel and have similar magnitude.
 
 The final output from this step is a list of camera pairs which are deemed to
 have good matching features, and associated pairwise camera pose estimates.
