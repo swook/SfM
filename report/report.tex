@@ -289,13 +289,24 @@ P^{i}_{g} = \sum_{k}{P^{i}_{g,k}}
 %-------------------------------------------------------------------------
 
 \subsection{Bundle adjustment}
-With global keypoint and camera pose estimates, it is now possible to perform a global optimisation known as bundle adjustment. This step takes consideration of all estimated 3D points and camera pose into consideration and minimizes a predefined cost function, that reflects the reconstruction quality. Conventionally, this the total reprojection error (as in equation \ref{eqn:baNoD} is used as cost function.
+
+With global keypoint and camera pose estimates, it is now possible to perform a
+global optimisation known as bundle adjustment. This step takes all estimated 3D
+points and camera pose into consideration and minimizes a predefined cost
+function that reflects the reconstruction quality.
+Conventionally, a total reprojection error (as in equation \ref{eqn:baNoD})
+is used as cost function.
 
 \begin{equation}\label{eqn:baNoD}
 \sum_{R_k,t_k}\sum_{P_i}{\norm{\pi\left(P_i;R_k,t_k\right)-m^i_{k}}}^2,
 \end{equation}
 
-To this end, having extra depth values of all 3D points, we altered the cost function to exploit this information in hope of an improvement in the reconstruction quality. As can in figure \ref{fig:baCost} and equation \ref{eqn:baD} ,relative error in depth value is incorporated as an extra term, where $d^i_k$ and $\rho^i_k$ denote the measured and estimated depth value respectively.
+To this end, having extra depth values of all 3D points, we altered the cost
+function to exploit this information in hope of an improvement in the
+reconstruction quality. As can be seen in figure \ref{fig:baCost} and equation
+\ref{eqn:baD}, relative error in depth value is incorporated as an extra term,
+where $d^i_k$ and $\rho^i_k$ denote the measured and estimated depth value
+respectively.
 
 \begin{equation}\label{eqn:baD}
 \sum_{R_k,t_k}\sum_{P_i}{\norm{\pi\left(P_i;R_k,t_k\right)-m^i_{k}}^2+\left\lvert\dfrac{d^i_k-\rho^i_k}{d^i_k}\right\rvert ^2},
