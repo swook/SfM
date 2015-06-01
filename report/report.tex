@@ -165,6 +165,10 @@ Universit\"atstrasse. The interior of the shop (as seen in figure \ref{fig:panor
 numerous unique and repeating features in the form of labelled beer bottles
 boxes, and crates. The dataset consists of 229 RGB and depth images.
 
+The final reconstruction uses pixels with depth data in the range
+$\left[0.4,8\right]$m. This is the range in which depth information
+is reliable, as studied by Newcombe \etal \cite{newcombe2011kinectfusion}.
+
 
 
 %-------------------------------------------------------------------------
@@ -393,8 +397,9 @@ due to the limited resolution of depth data compared to reprojection errors.
 
 Nonetheless, the pipeline works well in general, and does not require specific
 parameters and is thus general purpose. Even with as few as 6 images, an
-accurate dense reconstruction is possible (figure \ref{fig:3D_6images}) and this can be extended to larger
-areas with more images with sufficient correspondences.
+accurate dense reconstruction is possible (figure \ref{fig:3D_6images}) and this
+can be extended to larger areas with more images provided sufficient
+correspondences.
 
 
 %-------------------------------------------------------------------------
@@ -418,8 +423,8 @@ quality of the final model, but this may require more analysis.
 It can be claimed that incorporating depth data into the pipeline makes it more
 robust. This is because depth data is used in multiple steps such as camera
 registration and the finding of centre-of-mass of keypoint pose clusters instead
-of periodic bundle adjustment. A final bundle adjustment is enough to produce a
-high quality final model.
+of periodic bundle adjustment. A single bundle adjustment step is enough to
+produce a high quality final model.
 
 One assessment which may be helpful is the comparison of our 2D-3D registration
 method against a more conventional 2D-2D registration as well as 3D-3D
