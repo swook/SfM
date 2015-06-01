@@ -182,6 +182,14 @@ The discovered features from image $i$ can then be projected into 3D space
 using its depth map values, and reprojected into image $j$. The minimisation
 of this error is carried out using OpenCV's EPnP solver.
 
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.9\linewidth]{figures/registration.pdf}
+\end{center}
+\caption{TODO: Registration caption}
+\label{fig:spanning}
+\end{figure}
+
 The mentioned solver also identifies outlier matches via RANSAC. Only inliers
 are retained to improve any further optimisations. To ensure that only good
 image pairs are retained, we also filter these image pairs based on an absolute
@@ -239,6 +247,14 @@ and consequently an initial point cloud of sparse features.
 %-------------------------------------------------------------------------
 
 \subsection{Bundle adjustment}
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.9\linewidth]{figures/ba.pdf}
+\end{center}
+\caption{TODO: BA caption}
+\label{fig:spanning}
+\end{figure}
 
 
 %-------------------------------------------------------------------------
