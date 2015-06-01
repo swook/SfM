@@ -242,11 +242,12 @@ The 0th camera is selected to be the reference coordinate frame. A breadth-first
 algorithm is used to construct a minimum spanning tree with cameras as nodes and
 the existence of camera pose estimate as edges (whether an image pair exists).
 The spanning tree can be walked to calculate camera pose estimates relative to
-the 0th camera as follows
-\begin{align*}\label{eqn:global}
-R_{k} &= R_{kj}R_{ji}\ldots R_{0}\\
-t_{k} &= t_{kj}+t_{ji}+\ldots t_{0}.
-\end{align*}
+the 0th camera as in equation \ref{eqn:globalpose}. Having the global poses, one can obtain the 3D keypoints in global frame using equation \ref{eqn:globalpoint}, where $P^{i}_{k}$ denotes the $i$-th keypoints in $k$-th camera and $P^{i}_{g}$ denotes this point in global frame.
+\begin{align}\label{eqn:globalpose}
+R_{k} &= R_{kj}R_{ji}\ldots R_{0}\nonumber\\
+t_{k} &= t_{kj}+t_{ji}+\ldots t_{0}\\
+P^{i}_{g} &= R_{k}^T P^{i}_{k} - t_{k} \label{eqn:globalpoint}
+\end{align}
 
 \begin{figure}[t]
 \begin{center}
