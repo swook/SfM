@@ -100,22 +100,29 @@ reprojection is the (5) bundle adjustment step.
 
 A final model can be constructed by projecting all known data into 3D space
 using final camera pose estimates. In such a way a dense 3D reconstruction is
-possible.
+possible. The alignment of RGB-D data in the final reconstruction is
+representative of the SfM pipeline's performance.
 
 This study concerns the use of depth data in hopes to improve the accuracy of
-the final 3D reconstruction output.
+the final 3D reconstruction output. This is done both in the pairwise camera
+pose estimation step as well as the bundle adjustment step where depth data
+is introduced into the minimisation problems.
 
-
-%-------------------------------------------------------------------------
-
-\section{Theory}
 
 %-------------------------------------------------------------------------
 
 \section{Methodology}
 
+\begin{figure*}[ht]
+\begin{center}
+   \includegraphics[width=0.9\linewidth]{figures/pipeline.pdf}
+\end{center}
+\caption{Overview of Structure from Motion pipeline}
+\label{fig:pipeline}
+\end{figure*}
+
 As outlined in the previous sections, our structure from motion pipeline is
-composed of 5 main steps listed below.
+composed of 5 main steps as shown in figure \ref{fig:pipeline}.
 
 \begin{enumerate}
 \item Data acquisition
