@@ -182,13 +182,15 @@ can be used in the camera registration step to further eliminate outliers.
 
 The previous step yields a list of image pairs which have matching features.
 As in equation \ref{eqn:backprojection}, given the camera matrix $K$, the discovered features $m_{i} = (u,v)^{T}$ from image $i$ can be projected into 3D space
-using its depth map values $\rho$. These 3D points are then reprojected into image $j$ (see figure \ref{fig:reg}). The 3D points $P_{i}$ and their corresponding 2D matches image $j$ $m_{j}$ are fed into OpenCV's EPnP solver, which computes the relative camera pose $T_{ji} = \left(R_{ji}, t_{ji}\right)$ by minimising projection error in a Ransac manner.
+using its depth map values $\rho$. These 3D points are then reprojected into image $j$ (see figure \ref{fig:reg}). The 3D points $P_{i}$ and their corresponding 2D matches $m_{j}$ in image $j$ are fed into OpenCV's EPnP solver, which computes the camera pose $i$ w.r.t camera $j$, $T_{ji} = \left(R_{ji}, t_{ji}\right)$ by minimising reprojection error $e$, as defined in equation \ref{eqn:reprojerror} in a RANSAC manner.
 
-\begin{equation}\label{eqn:backprojection}
-P = \rho K^{-1} \begin{pmatrix}
+\begin{align}
+P &= \rho K^{-1} \begin{pmatrix}
 u\\v\\1
-\end{pmatrix}
-\end{equation}
+\end{pmatrix} \label{eqn:backprojection}\\
+e &= \sqrt{\norm{R_{ji}\left(P_{i}+t_{ji}\right)-m_{j}}^2} \label{eqn:reprojerror}
+\end{align}
+
 \begin{figure}[t]
 \begin{center}
    \includegraphics[width=0.9\linewidth]{figures/registration.pdf}
@@ -209,13 +211,11 @@ projecting 3D points from image $i$ into image $j$, and projecting 3D points
 from image $j$ into image $i$. This allows for two things, (1) validation of registration result and (2) the averaging of
 pose estimates to improve accuracy. In particular, the registration of a camera pair (i,j) is considered successful, only when the rotational vector $r_{ij}$ and $r_{ji}$ from the bi-directional registration are anti-parallel (equation \ref{eqn:check1}) and have similar magnitude (equation \ref{eqn:check2}). 
 
-\begin{equation}
+\begin{align}
 \norm{\frac{r_{ij}}{\norm{r_{ij}}} + \frac{r_{ji}}{\norm{r_{ji}}}} < 0.2
-\label{eqn:check1}\end{equation}
-
-\begin{equation}
-\abs{\norm{r_{ij}} - \norm{r_{ji}}} < 0.2
-\label{eqn:check2}\end{equation}
+\label{eqn:check1}\\
+\abs{\norm{r_{ij}} - \norm{r_{ji}}} < 0.2\label{eqn:check2}
+\end{align}
 The final output from this step is a list of camera pairs which are deemed to
 have good matching features, and associated pairwise camera pose estimates.
 
@@ -240,7 +240,11 @@ The 0th camera is selected to be the reference coordinate frame. A breadth-first
 algorithm is used to construct a minimum spanning tree with cameras as nodes and
 the existence of camera pose estimate as edges (whether an image pair exists).
 The spanning tree can be walked to calculate camera pose estimates relative to
-the 0th camera.
+the 0th camera as follows
+\begin{align*}\label{eqn:global}
+R_{k} &= R_{kj}R_{ji}\ldots R_{0}\\
+t_{k} &= t_{kj}+t_{ji}+\ldots t_{0}.
+\end{align*}
 
 \begin{figure}[t]
 \begin{center}
