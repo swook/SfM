@@ -192,14 +192,21 @@ can be used in the camera registration step to further eliminate outliers.
 
 The previous step yields a list of image pairs which have matching features.
 As in equation \ref{eqn:backprojection}, given the camera matrix $K$, the discovered features $m_{i} = (u,v)^{T}$ from image $i$ can be projected into 3D space
-using its depth map values $\rho$. These 3D points are then reprojected into image $j$ (see figure \ref{fig:reg}). The 3D points $P_{i}$ and their corresponding 2D matches $m_{j}$ in image $j$ are fed into OpenCV's EPnP solver, which computes the camera pose $i$ w.r.t camera $j$, $T_{ji} = \left(R_{ji}, t_{ji}\right)$ by minimising reprojection error $e$, as defined in equation \ref{eqn:reprojerror} in a RANSAC manner.
+using its depth map values $\rho$. These 3D points are then reprojected into image $j$ (see figure \ref{fig:reg}). The 3D points $P_{i}$ and their corresponding 2D matches $m^i_{j}$ in image $j$ are fed into OpenCV's EPnP solver, which computes the camera pose $i$ w.r.t camera $j$, $T_{ji} = \left(R_{ji}, t_{ji}\right)$ by minimising reprojection error $e$, as defined in equation \ref{eqn:reprojerror} in a RANSAC manner.
 
 \begin{align}
 P &= \rho K^{-1} \begin{pmatrix}
 u\\v\\1
 \end{pmatrix} \label{eqn:backprojection}\\
-e &= \sqrt{\norm{R_{ji}\left(P_{i}+t_{ji}\right)-m_{j}}^2} \label{eqn:reprojerror}
+e &= \sqrt{\norm{\pi\left(P_{i};R_{ji},t_{ji}\right)-m^i_{j}}^2},\label{eqn:reprojerror}
 \end{align}
+where $\pi$ denotes the projection function \[
+\rho
+\begin{pmatrix}
+\pi\left(P;R,t\right)\\1
+\end{pmatrix} = KR\left(P+t\right).
+\]
+
 
 \begin{figure}[t]
 \begin{center}
@@ -249,17 +256,16 @@ be transformed into a single coordinate frame.
 The 0th camera is selected to be the reference coordinate frame. A breadth-first
 algorithm is used to construct a minimum spanning tree with cameras as nodes and
 the existence of camera pose estimate as edges (whether an image pair exists).
+
 An example of such a spanning tree structure can be seen in figure
-\ref{fig:spanning}. The spanning tree can be walked to calculate camera pose
-estimates relative to the 0th camera as in equation \ref{eqn:globalpose}.
-Having the global poses, one can obtain the 3D keypoints in global frame using
-equation \ref{eqn:globalpoint}, where $P^{i}_{k}$ denotes the $i$-th keypoints
-in $k$-th camera and $P^{i}_{g}$ denotes this point in global frame.
+\ref{fig:spanning}. 
+The spanning tree can be walked to calculate camera pose estimates relative to
+the 0th camera as in equation \ref{eqn:globalpose}. Having the global poses, one can obtain the 3D keypoints in global frame using equation \ref{eqn:globalpoint}, where $P^{i}_{k}$ denotes the $i$-th keypoints in $k$-th camera and $P^{i}_{g,k}$ denotes this point transformed in global frame.
 
 \begin{align}\label{eqn:globalpose}
 R_{k} &= R_{kj}R_{ji}\ldots R_{0}\nonumber\\
 t_{k} &= t_{kj}+t_{ji}+\ldots t_{0}\\
-P^{i}_{g} &= R_{k}^T P^{i}_{k} - t_{k} \label{eqn:globalpoint}
+P^{i}_{g,k} &= R_{k}^T P^{i}_{k} - t_{k} \label{eqn:globalpoint}
 \end{align}
 
 \begin{figure}[t]
@@ -275,25 +281,41 @@ estimates in global coordinate frame. However, each keypoint is observed by a
 minimum of two cameras, resulting in a cluster of keypoint coordinate estimates.
 This is illustrated in figure \ref{fig:clusters}.
 The centre of mass (CoM) of this cluster is calculated by averaging the
-coordinate estimations \cite{reckerdepth}. This results in a single keypoint
-coordinate estimate, and consequently an initial point cloud of sparse features.
+coordinate estimations as in equation \ref{eqn:CoM} \cite{reckerdepth}. This results in a single keypoint coordinate estimate,
+and consequently an initial point cloud of sparse features.
+\begin{equation}\label{eqn:CoM}
+P^{i}_{g} = \sum_{k}{P^{i}_{g,k}}
+\end{equation}
 
 %-------------------------------------------------------------------------
 
 \subsection{Bundle adjustment}
+With global keypoint and camera pose estimates, it is now possible to perform a global optimisation known as bundle adjustment. This step takes consideration of all estimated 3D points and camera pose into consideration and minimizes a predefined cost function, that reflects the reconstruction quality. Conventionally, this the total reprojection error (as in equation \ref{eqn:baNoD} is used as cost function.
+
+\begin{equation}\label{eqn:baNoD}
+\sum_{R_k,t_k}\sum_{P_i}{\norm{\pi\left(P_i;R_k,t_k\right)-m^i_{k}}}^2,
+\end{equation}
+
+To this end, having extra depth values of all 3D points, we altered the cost function to exploit this information in hope of an improvement in the reconstruction quality. As can in figure \ref{fig:baCost} and equation \ref{eqn:baD} ,relative error in depth value is incorporated as an extra term, where $d^i_k$ and $\rho^i_k$ denote the measured and estimated depth value respectively.
+
+\begin{equation}\label{eqn:baD}
+\sum_{R_k,t_k}\sum_{P_i}{\norm{\pi\left(P_i;R_k,t_k\right)-m^i_{k}}^2+\left\lvert\dfrac{d^i_k-\rho^i_k}{d^i_k}\right\rvert ^2},
+\end{equation}
+
+The result and comparison of both cost functions is shown in section \ref{sec:result}.
 
 \begin{figure}[t]
 \begin{center}
    \includegraphics[width=0.9\linewidth]{figures/ba.pdf}
 \end{center}
 \caption{TODO: BA caption}
-\label{fig:spanning}
+\label{fig:baCost}
 \end{figure}
 
 
 %-------------------------------------------------------------------------
 
-\section{Results and discussion}
+\section{Results and discussion}\label{sec:result}
 
 \begin{figure*}
 \centering
