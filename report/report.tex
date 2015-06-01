@@ -66,12 +66,12 @@ ETH Zurich \\
 \section{Introduction}
 
 Structure from Motion (SfM) concerns the recreation of a real environment
-through the inferring of motion from images. (1) First, a 3D object or
-environment is imaged from multiple different perspectives. (2) In each image,
-it is possible to find keypoints via feature detection algorithms such as SIFT
-and SURF, and calculate descriptors with which correspondences can be found in
-other images. (3) After finding corresponding pairs, the relative pose of each
-camera can be inferred in various ways.
+through the inferring of motion from images \cite{varga2008practical}. (1)
+First, a 3D object or environment is imaged from multiple different
+perspectives. (2) In each image, it is possible to find keypoints via feature
+detection algorithms such as SIFT and SURF, and calculate descriptors with which
+correspondences can be found in other images. (3) After finding corresponding
+pairs, the relative pose of each camera can be inferred in various ways.
 
 With early implementations of SfM, keypoints are projected into 3D space and
 optimisation algorithms such as RANSAC and Levenberg-Marquardt are used to find
@@ -274,8 +274,8 @@ estimates in global coordinate frame. However, each keypoint is observed by a
 minimum of two cameras, resulting in a cluster of keypoint coordinate estimates.
 This is illustrated in figure \ref{fig:clusters}.
 The centre of mass (CoM) of this cluster is calculated by averaging the
-coordinate estimations. This results in a single keypoint coordinate estimate,
-and consequently an initial point cloud of sparse features.
+coordinate estimations \cite{reckerdepth}. This results in a single keypoint
+coordinate estimate, and consequently an initial point cloud of sparse features.
 
 %-------------------------------------------------------------------------
 
@@ -398,7 +398,7 @@ and enthusiasm.
 %-------------------------------------------------------------------------
 
 {\small
-\bibliographystyle{ieee}
+\bibliographystyle{ieeetr}
 \bibliography{egbib}
 }
 
