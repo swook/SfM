@@ -53,13 +53,14 @@ ETH Zurich \\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-   The ABSTRACT is to be in fully-justified italicized text, at the top
-   of the left-hand column, below the author and affiliation
-   information. Use the word ``Abstract'' as the title, in 12-point
-   Times, boldface type, centered relative to the column, initially
-   capitalized. The abstract is to be in 10-point, single-spaced type.
-   Leave two blank lines after the Abstract, then begin the main text.
-   Look at previous 3DIMPVT/3DIM/3DPVT abstracts to get a feel for style and length.
+   A structure from motion pipeline is constructed using C++, OpenCV, Ceres
+   solver, and PCL. This includes the acquisition of data, extraction and
+   matching of features, estimation of pairwise camera pose using depth data,
+   transformation of estimates into a global coordinate frame, and performing
+   bundle adjustment on all data. This pipeline incorporates depth data taken
+   from a Microsoft Kinect in pairwise camera pose estimation to improve the
+   final 3D reconstruction. The inclusion of depth data in the bundle adjustment
+   step is attempted, with a tentative conclusion that it is not helpful.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -377,11 +378,36 @@ areas with more images with sufficient correspondences.
 
 \section{Conclusion}
 
+A Structure from Motion pipeline taking advantage of both RGB and depth
+information was successfully implemented. This involved all steps starting
+from the acquisition of data to the visualisation of the final 3D model. A
+good understanding of all parts of the pipeline as well as associated technology
+was required.
+
+One of the goals of this project was to investigate the improvements which can
+be made by incorporating the depth information provided by the Kinect. We can
+show that the camera registration step works quite well with depth data, as can
+be seen in the final reconstructions. It cannot be said however that depth data
+can improve the bundle adjustment step. Our initial assessment shows that the
+low resolution of depth data ($2^{11}$ bits) can result in a degradation in
+quality of the final model, but this may require more analysis.
+
+It can be claimed that incorporating depth data into the pipeline makes it more
+robust. This is because depth data is used in multiple steps such as camera
+registration and the finding of centre-of-mass of keypoint pose clusters instead
+of periodic bundle adjustment. A final bundle adjustment is enough to produce a
+high quality final model.
+
+One assessment which may be helpful is the comparison of our 2D-3D registration
+method against a more conventional 2D-2D registration as well as 3D-3D
+registration using depth data from both images in a pair. This would further
+inform us whether depth data is helpful in structure from motion and in which
+steps. We propose this as future work in this area.
 
 
 %-------------------------------------------------------------------------
 
-\section{Work distribution}
+\section*{Work distribution}
 
 The authors worked together weekly and thus shared workload fairly.
 
