@@ -248,8 +248,13 @@ be transformed into a single coordinate frame.
 The 0th camera is selected to be the reference coordinate frame. A breadth-first
 algorithm is used to construct a minimum spanning tree with cameras as nodes and
 the existence of camera pose estimate as edges (whether an image pair exists).
-The spanning tree can be walked to calculate camera pose estimates relative to
-the 0th camera as in equation \ref{eqn:globalpose}. Having the global poses, one can obtain the 3D keypoints in global frame using equation \ref{eqn:globalpoint}, where $P^{i}_{k}$ denotes the $i$-th keypoints in $k$-th camera and $P^{i}_{g}$ denotes this point in global frame.
+An example of such a spanning tree structure can be seen in figure
+\ref{fig:spanning}. The spanning tree can be walked to calculate camera pose
+estimates relative to the 0th camera as in equation \ref{eqn:globalpose}.
+Having the global poses, one can obtain the 3D keypoints in global frame using
+equation \ref{eqn:globalpoint}, where $P^{i}_{k}$ denotes the $i$-th keypoints
+in $k$-th camera and $P^{i}_{g}$ denotes this point in global frame.
+
 \begin{align}\label{eqn:globalpose}
 R_{k} &= R_{kj}R_{ji}\ldots R_{0}\nonumber\\
 t_{k} &= t_{kj}+t_{ji}+\ldots t_{0}\\
@@ -261,12 +266,13 @@ P^{i}_{g} &= R_{k}^T P^{i}_{k} - t_{k} \label{eqn:globalpoint}
    \includegraphics[width=0.9\linewidth]{figures/clusters.eps}
 \end{center}
 \caption{An example of a cluster of keypoint pose estimations}
-\label{fig:spanning}
+\label{fig:clusters}
 \end{figure}
 
 The outcome of this step needs to be a cloud of keypoints and camera pose
 estimates in global coordinate frame. However, each keypoint is observed by a
 minimum of two cameras, resulting in a cluster of keypoint coordinate estimates.
+This is illustrated in figure \ref{fig:clusters}.
 The centre of mass (CoM) of this cluster is calculated by averaging the
 coordinate estimations. This results in a single keypoint coordinate estimate,
 and consequently an initial point cloud of sparse features.
