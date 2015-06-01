@@ -6,6 +6,8 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{transparent}
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{mathtools}
@@ -209,7 +211,7 @@ is not good enough for subsequent steps.
 Similar to the feature matching step, the PnP solver is run in both directions,
 projecting 3D points from image $i$ into image $j$, and projecting 3D points
 from image $j$ into image $i$. This allows for two things, (1) validation of registration result and (2) the averaging of
-pose estimates to improve accuracy. In particular, the registration of a camera pair (i,j) is considered successful, only when the rotational vector $r_{ij}$ and $r_{ji}$ from the bi-directional registration are anti-parallel (equation \ref{eqn:check1}) and have similar magnitude (equation \ref{eqn:check2}). 
+pose estimates to improve accuracy. In particular, the registration of a camera pair (i,j) is considered successful, only when the rotational vector $r_{ij}$ and $r_{ji}$ from the bi-directional registration are anti-parallel (equation \ref{eqn:check1}) and have similar magnitude (equation \ref{eqn:check2}).
 
 \begin{align}
 \norm{\frac{r_{ij}}{\norm{r_{ij}}} + \frac{r_{ji}}{\norm{r_{ji}}}} < 0.2
@@ -277,6 +279,84 @@ and consequently an initial point cloud of sparse features.
 %-------------------------------------------------------------------------
 
 \section{Results and discussion}
+
+\begin{figure*}
+\centering
+
+   \begin{subfigure}[b]{1.0\columnwidth}
+   \includegraphics[width=\textwidth]{figures/result_small_noBA.png}
+   \caption{Before BA}
+   \label{fig:beforeBA}
+   \end{subfigure}
+   \hfill
+   \begin{subfigure}[b]{1.0\columnwidth}
+   \includegraphics[width=\textwidth]{figures/result_small_BA_noD.png}
+   \caption{After BA}
+   \label{fig:afterBA}
+   \end{subfigure}
+
+\caption{3D reconstruction using a 37-image subset of data. An improvement in
+reconstruction quality can be seen after the bundle adjustment step.}
+\label{fig:3Dsmall}
+\end{figure*}
+
+The pipeline works very well on small datasets which cover an area well with
+numerous overlapping shots. The resulting dense reconstruction is of high
+quality and alignment is noticably improved with bundle adjustment. This can be
+seen in figures \ref{fig:beforeBA} and \ref{fig:afterBA} where a rough initial
+estimate is refined through bundle adjustment.
+
+\begin{figure*}
+\centering
+
+   \begin{subfigure}[b]{1.0\columnwidth}
+   \includegraphics[width=\textwidth]{figures/result_large_BA_noD.png}
+   \caption{BA without depth}
+   \label{fig:BA_noD}
+   \end{subfigure}
+   \hfill
+   \begin{subfigure}[b]{1.0\columnwidth}
+   \includegraphics[width=\textwidth]{figures/result_large_BA_D.png}
+   \caption{BA with depth}
+   \label{fig:BA_withD}
+   \end{subfigure}
+
+\caption{3D reconstruction using the full dataset (226 images). With the depth
+term added to the bundle adjustment step, the reconstruction is no longer
+successful. It can also be seen the the reconstruction quality drops for the
+larger dataset.}
+\label{fig:3Dlarge}
+\end{figure*}
+
+However, it performs less well when some correspondences are weak and thus
+prevents the final spanning tree from spanning all cameras. This results in a
+partial reconstruction of the scene. This is also evident when there are
+sufficient correspondences for the spanning tree construction to propagate,
+but not enough for a good estimate of camera pose to be made. This results in a
+lower quality reconstruction (figure \ref{fig:3Dlarge}).
+
+The lack of correspondences is not only due to issues in data acquisition, but
+also due to varying lighting conditions. For example, the light bleeding from
+the beer fridges and windows caused feature matches to succeed less well.
+
+We attempt to use depth data in our bundle adjustment step. This was in hopes of
+improving the final reconstruction accuracy. It can be seen however in figures
+\ref{fig:BA_noD} and \ref{fig:BA_withD} that using depth data can sometimes
+prevent the bundle adjustment step from executing successfully. This could be
+due to the limited resolution of depth data compared to reprojection errors.
+
+\begin{figure}
+\begin{center}
+   \includegraphics[width=0.9\linewidth]{figures/result_tiny_noBA.png}
+\end{center}
+\caption{3D reconstruction result using just 6 images}
+\label{fig:3D_6images}
+\end{figure}
+
+Nonetheless, the pipeline works well in general, and does not require specific
+parameters and is thus general purpose. Even with as few as 6 images, an
+accurate dense reconstruction is possible (figure \ref{fig:3D_6images}) and this can be extended to larger
+areas with more images with sufficient correspondences.
 
 
 %-------------------------------------------------------------------------

@@ -175,8 +175,28 @@ global optimisation known as bundle adjustment.
 
 Results
 =======
-*NOTE: + discussion*
 
+The pipeline works very well on small datasets which cover an area well with
+numerous overlapping shots. The resulting dense reconstruction is of high
+quality and alignment is noticably improved with bundle adjustment. This can be
+seen in figures N and N where a rough initial estimate is refined through bundle
+adjustment.
+
+However, it performs less well when some correspondences are weak and thus
+prevents the final spanning tree from spanning all cameras. This results in a
+partial reconstruction of the scene. This is also evident when there are
+sufficient correspondences for the spanning tree construction to propagate,
+but not enough for a good estimate of camera pose to be made. This results in a
+lower quality reconstruction.
+
+The lack of correspondences is not only due to issues in data acquisition, but
+also due to varying lighting conditions. For example, the light bleeding from
+the beer fridges and windows caused feature matches to succeed less well.
+
+Nonetheless, the pipeline works well in general, and does not require specific
+parameters and is thus general purpose. Even with as few as 10 images, an
+accurate dense reconstruction is possible and this can be extended to larger
+areas with more images with sufficient correspondences.
 
 
 Conclusion
