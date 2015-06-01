@@ -16,31 +16,29 @@
 
 \cvprfinalcopy % *** Uncomment this line for the final submission
 
-\def\cvprPaperID{****} % *** Enter the 3DV Paper ID here
+\def\cvprPaperID{} % *** Enter the 3DV Paper ID here
 \def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
 
 % Pages are numbered in submission mode, and unnumbered in camera-ready
 %\ifcvprfinal\pagestyle{empty}\fi
-\setcounter{page}{4321}
+\setcounter{page}{1}
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{\LaTeX\ Author Guidelines for 3DV Proceedings}
+\title{Structure from Motion with RGB-D}
 
-\author{First Author\\
-Institution1\\
-Institution1 address\\
-{\tt\small firstauthor@i1.org}
+\author{Seonwook Park \\
+ETH Zurich \\
+{\tt\small spark@student.ethz.ch}
 % For a paper whose authors are all at the same institution,
 % omit the following lines up until the closing ``}''.
 % Additional authors and addresses can be added with ``\and'',
 % just like the second author.
 % To save space, use either the email address or home page, not both
 \and
-Second Author\\
-Institution2\\
-First line of institution2 address\\
-{\tt\small secondauthor@i2.org}
+Yifan Wang \\
+ETH Zurich \\
+{\tt\small yifan.wang@student.ethz.ch}
 }
 
 \maketitle
@@ -60,60 +58,202 @@ First line of institution2 address\\
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
-Please follow the steps outlined below when submitting your manuscript to
-the IEEE Computer Society Press.  This style guide now has several
-important modifications (for example, you are no longer warned against the
-use of sticky tape to attach your artwork to the paper), so all authors
-should read this new version.
+Structure from Motion (SfM) concerns the recreation of a real environment
+through the inferring of motion from images. (1) First, a 3D object or
+environment is imaged from multiple different perspectives. (2) In each image,
+it is possible to find keypoints via feature detection algorithms such as SIFT
+and SURF, and calculate descriptors with which correspondences can be found in
+other images. (3) After finding corresponding pairs, the relative pose of each
+camera can be inferred in various ways.
+
+With early implementations of SfM, keypoints are projected into 3D space and
+optimisation algorithms such as RANSAC and Levenberg-Marquardt are used to find
+the homography or perspective transformation between two image planes. With the
+advent of low-cost commercial depth sensing cameras, it is now possible to
+incorporate depth information in hopes to improve or speed this procedure up. An
+example is the Microsoft Kinect, which casts and reads an infra-red pattern
+which is used to calculate depth values per pixel imaged \cite{zhang2012microsoft}.
+
+For problems of corresponding 2D points (image plane) and 3D points (using depth
+values), one can use PnP or Perspective-n-Point algorithms \cite{d2013p3p}. A P3P
+algorithm uses a minimum of 3 data points to infer the relative pose between a
+pair of cameras. There are optimised PnP algorithms available, which when
+coupled with RANSAC can discard outliers and estimate relative camera pose
+accurately \cite{lepetit2009epnp}.
+
+Once an initial estimate for relative camera pose is made, this can be optimised
+via bundle adjustment, an optimisation step operated on sparse keypoints from
+the perspective of all cameras. To do so, (4) pairwise camera pose estimates
+need to be transformed into a single coordinate system. This is achieved through
+the construction of a minimum spanning tree with cameras as nodes and the
+existence of corresponding pairs as edges. When camera pose estimates are
+relative to a single coordinate system, it is possible to project keypoints into
+the coordinate system from the perspective of each camera. Minimising this
+reprojection is the (5) bundle adjustment step.
+
+A final model can be constructed by projecting all known data into 3D space
+using final camera pose estimates. In such a way a dense 3D reconstruction is
+possible.
+
+This study concerns the use of depth data in hopes to improve the accuracy of
+the final 3D reconstruction output.
+
 
 %-------------------------------------------------------------------------
-\subsection{Language}
 
-All manuscripts must be in English.
-
-\subsection{Dual submission}
-
-By submitting a manuscript to 3DV, the authors assert that it has not been
-previously published in substantially similar form. Furthermore, no paper
-which contains significant overlap with the contributions of this paper
-either has been or will be submitted during the 3DV 2014 review period to
-{\bf either a journal} or any conference or any
-workshop.
- {\bf Papers violating this condition will be rejected and a list of violating authors may be included in the proceedings.}
-
-If there are papers that may appear to the reviewers
-to violate this condition, then it is your responsibility to: (1)~cite
-these papers (preserving anonymity as described in Section 1.6 below),
-(2)~argue in the body of your paper why your 3DV paper is non-trivially
-different from these concurrent submissions, and (3)~include anonymized
-versions of those papers in the supplemental material.
-
-\subsection{Paper length}
-3DV papers may be between 6 pages and 8 pages. Overlength papers will simply not be reviewed.  This includes papers
-where the margins and formatting are deemed to have been significantly
-altered from those laid down by this style guide.  Note that this
-\LaTeX\ guide already sets figure captions and references in a smaller font.
-The reason such papers will not be reviewed is that there is no provision for
-supervised revisions of manuscripts.  The reviewing process cannot determine
-the suitability of the paper for presentation in eight pages if it is
-reviewed in eleven. 
+\section{Theory}
 
 %-------------------------------------------------------------------------
-\subsection{The ruler}
-The \LaTeX\ style defines a printed ruler which should be present in the
-version submitted for review.  The ruler is provided in order that
-reviewers may comment on particular lines in the paper without
-circumlocution.  If you are preparing a document using a non-\LaTeX\
-document preparation system, please arrange for an equivalent ruler to
-appear on the final output pages.  The presence or absence of the ruler
-should not change the appearance of any other content on the page.  The
-camera ready copy should not contain a ruler. (\LaTeX\ users may uncomment
-the \verb'\cvprfinalcopy' command in the document preamble.)  Reviewers:
-note that the ruler measurements do not align well with lines in the paper
---- this turns out to be very difficult to do well when the paper contains
-many figures and equations, and, when done, looks ugly.  Just use fractional
-references (e.g.\ this line is $095.5$), although in most cases one would
-expect that the approximate location will be adequate.
+
+\section{Methodology}
+
+As outlined in the previous sections, our structure from motion pipeline is
+composed of 5 main steps listed below.
+
+\begin{enumerate}
+\item Data acquisition
+\item Feature detection and matching
+\item Pairwise camera pose estimation
+\item Transform to global coordinate system
+\item Bundle adjustment
+\end{enumerate}
+
+It is important to note that the acquired images in this case is RGB-D and is
+acquired using a Microsoft Kinect (first generation).
+
+The pipeline is implemented in C++. Third party libraries used include OpenCV
+3.0, Ceres Solver and PCL 1.8.
+
+%-------------------------------------------------------------------------
+
+\subsection{Data acquisition}
+
+OpenNI and OpenCV are used to acquire RGB images and depth maps from a Kinect.
+The two output images are stored with the same timestamps. The code used for
+this step is provided by our supervisor, Bernhard Zeisl.
+
+It is worth noting that the Kinect returns depth in mm in range $[0, 10000]$
+which is stored as a 16-bit unsigned integer. Camera parameters are taken from
+\cite{smisek20133d} and used in methods in the following steps.
+
+While acquiring data, we attempt to find areas with sufficient potential
+features and try to maximise the overlap between each shot to retain enough
+correspondences.
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=1.0\linewidth]{figures/BeersNMore_panorama.jpg}
+\end{center}
+\caption{Panorama of BeersNMore interior, displaying a high number of features}
+\label{fig:panorama}
+\end{figure}
+
+This resulted in the BeersNMore dataset, taken at a craft beer shop on
+Universit\"atstrasse. The interior of the shop (as seen in figure \ref{fig:panorama}) exhibits
+numerous unique and repeating features in the form of labelled beer bottles
+boxes, and crates. The dataset consists of 229 RGB and depth images.
+
+
+
+%-------------------------------------------------------------------------
+
+\subsection{Feature detection and matching}
+
+For each given RGB image, SIFT features are found, and 128-dimensional are
+descriptors calculated. Standard OpenCV parameters are used for this step.
+
+A matching algorithm is then run between all potential image pairs. This is
+an $\mathcal{O}(n^2)$ operation. The matcher compares the distance between
+descriptors and finds those with minimum distance. This produces numerous
+incorrect matches, often visible by the violation of epipolar geometry.
+
+The matching is therefore performed in a bi-directional manner, both from image
+$i$ to $j$, and $j$ to $i$. This results in a better sample of matches. RANSAC
+can be used in the camera registration step to further eliminate outliers.
+
+
+
+%-------------------------------------------------------------------------
+
+\subsection{Pairwise camera pose estimation}
+
+The previous step yields a list of image pairs which have matching features.
+The discovered features from image $i$ can then be projected into 3D space
+using its depth map values, and reprojected into image $j$. The minimisation
+of this error is carried out using OpenCV's EPnP solver.
+
+The mentioned solver also identifies outlier matches via RANSAC. Only inliers
+are retained to improve any further optimisations. To ensure that only good
+image pairs are retained, we also filter these image pairs based on an absolute
+minimum number of inliers of 30. If two images have less then 30 feature matches
+which are inliers in the registration process, it is assumed that the image pair
+is not good enough for subsequent steps.
+
+Similar to the feature matching step, the PnP solver is run in both directions,
+projecting 3D points from image $i$ into image $j$, and projecting 3D points
+from image $j$ into image $i$. This allows for two things, (1) the averaging of
+pose estimates to improve accuracy and (2) reduction of bad matches where
+relative rotation vectors do not add up to 0.
+
+The final output from this step is a list of camera pairs which are deemed to
+have good matching features, and associated pairwise camera pose estimates.
+
+
+%-------------------------------------------------------------------------
+
+\subsection{Transform to global coordinate system}
+
+The final goal of this SfM pipeline is to combine the data from all images
+acquired. To do so, previously acquired pairwise camera pose estimates must
+be transformed into a single coordinate frame.
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.9\linewidth]{figures/spanning_tree.eps}
+\end{center}
+\caption{An example of a minimum spanning tree in terms of this pipeline}
+\label{fig:spanning}
+\end{figure}
+
+The 0th camera is selected to be the reference coordinate frame. A breadth-first
+algorithm is used to construct a minimum spanning tree with cameras as nodes and
+the existence of camera pose estimate as edges (whether an image pair exists).
+The spanning tree can be walked to calculate camera pose estimates relative to
+the 0th camera.
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.9\linewidth]{figures/clusters.eps}
+\end{center}
+\caption{An example of a cluster of keypoint pose estimations}
+\label{fig:spanning}
+\end{figure}
+
+The outcome of this step needs to be a cloud of keypoints and camera pose
+estimates in global coordinate frame. However, each keypoint is observed by a
+minimum of two cameras, resulting in a cluster of keypoint coordinate estimates.
+The centre of mass (CoM) of this cluster is calculated by averaging the
+coordinate estimations. This results in a single keypoint coordinate estimate,
+and consequently an initial point cloud of sparse features.
+
+%-------------------------------------------------------------------------
+
+\subsection{Bundle adjustment}
+
+
+%-------------------------------------------------------------------------
+
+\section{Results and discussion}
+
+
+%-------------------------------------------------------------------------
+
+\section{Conclusion}
+
+
+%-------------------------------------------------------------------------
+\clearpage
+\clearpage
 
 \subsection{Mathematics}
 
@@ -308,12 +448,12 @@ within a print area 6-7/8 inches (17.5 cm) wide by 8-7/8 inches (22.54 cm)
 high.  Page numbers should be in footer with page numbers, centered and .75
 inches from the bottom of the page and make it start at the correct page
 number rather than the 4321 in the example.  To do this fine the line (around
-line 23)  
+line 23)
 \begin{verbatim}
 %\ifcvprfinal\pagestyle{empty}\fi
 \setcounter{page}{4321}
 \end{verbatim}
-where the number 4321 is your assigned starting page.  
+where the number 4321 is your assigned starting page.
 
 Make sure the first page is numbered by commenting out the first page being
 empty on line 46

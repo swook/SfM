@@ -35,6 +35,7 @@ report/*.log
 report/*.blg
 report/*.fdb_latexmk
 report/*.fls
+report/figures/*eps-converted-to.pdf
 
 # Bernhard's data acquisition code
 /bernhard/build
