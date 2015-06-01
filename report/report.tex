@@ -8,6 +8,9 @@
 \usepackage{transparent}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{mathtools}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
 
 % Include other packages here, before hyperref.
 
@@ -157,11 +160,11 @@ boxes, and crates. The dataset consists of 229 RGB and depth images.
 
 %-------------------------------------------------------------------------
 
-\subsection{Feature detection and matching}
+\subsection{Feature detection and matching}\label{sec:extractfeature}
 
 For each given RGB image, SIFT features are found, and 128-dimensional are
 descriptors calculated. Standard OpenCV parameters are used for this step.
-In each image, around 1000 to 3000 features are found.
+In each image, around 1000 to 2000 features are found.
 
 A matching algorithm is then run between all potential image pairs. This is
 an $\mathcal{O}(n^2)$ operation. The matcher computes the euclidian distances of the $i$-th descriptor in one image to all descriptors in the other image and returns the descriptor with minimum distance as the match to descriptor $i$. This produces numerous
@@ -178,10 +181,14 @@ can be used in the camera registration step to further eliminate outliers.
 \subsection{Pairwise camera pose estimation}
 
 The previous step yields a list of image pairs which have matching features.
-The discovered features from image $i$ can then be projected into 3D space
-using its depth map values, and reprojected into image $j$ (see figure \ref{fig:reg}). The minimisation
-of this error is carried out using OpenCV's EPnP solver.
+As in equation \ref{eqn:backprojection}, given the camera matrix $K$, the discovered features $m_{i} = (u,v)^{T}$ from image $i$ can be projected into 3D space
+using its depth map values $\rho$. These 3D points are then reprojected into image $j$ (see figure \ref{fig:reg}). The 3D points $P_{i}$ and their corresponding 2D matches image $j$ $m_{j}$ are fed into OpenCV's EPnP solver, which computes the relative camera pose $T_{ji} = \left(R_{ji}, t_{ji}$ by minimising projection error in Ransac manner.
 
+\begin{equation}\label{eqn:backprojection}
+P = \rho K^{-1} \begin{pmatrix}
+u\\v\\1
+\end{pmatrix}
+\end{equation}
 \begin{figure}[t]
 \begin{center}
    \includegraphics[width=0.9\linewidth]{figures/registration.pdf}
@@ -200,8 +207,15 @@ is not good enough for subsequent steps.
 Similar to the feature matching step, the PnP solver is run in both directions,
 projecting 3D points from image $i$ into image $j$, and projecting 3D points
 from image $j$ into image $i$. This allows for two things, (1) validation of registration result and (2) the averaging of
-pose estimates to improve accuracy. In particular, the registration of a camera pair (i,j) is considered successful, only when the rotational vector $r_{ij}$ and $r_{ji}$ from the bi-directional registration are anti-parallel and have similar magnitude.
+pose estimates to improve accuracy. In particular, the registration of a camera pair (i,j) is considered successful, only when the rotational vector $r_{ij}$ and $r_{ji}$ from the bi-directional registration are anti-parallel (equation \ref{eqn:check1}) and have similar magnitude (equation \ref{eqn:check2}). 
 
+\begin{equation}
+\norm{\frac{r_{ij}}{\norm{r_{ij}}} + \frac{r_{ji}}{\norm{r_{ji}}}} < 0.2
+\label{eqn:check1}\end{equation}
+
+\begin{equation}
+\abs{\norm{r_{ij}} - \norm{r_{ji}}} < 0.2
+\label{eqn:check2}\end{equation}
 The final output from this step is a list of camera pairs which are deemed to
 have good matching features, and associated pairwise camera pose estimates.
 
