@@ -79,7 +79,8 @@ The pipeline is implemented in C++. Third party libraries used include OpenCV
 ## Data acquisition
 
 OpenNI and OpenCV are used to acquire RGB images and depth maps from a Kinect.
-The two output images are stored with the same timestamps.
+The two output images are stored with the same timestamps. The code used for
+this step is provided by our supervisor, Bernhard Zeisl.
 
 It is worth noting that the Kinect returns depth in mm in range $[0, 10000]$
 which is stored as a 16-bit unsigned integer. Camera parameters are taken from
