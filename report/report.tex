@@ -182,7 +182,7 @@ can be used in the camera registration step to further eliminate outliers.
 
 The previous step yields a list of image pairs which have matching features.
 As in equation \ref{eqn:backprojection}, given the camera matrix $K$, the discovered features $m_{i} = (u,v)^{T}$ from image $i$ can be projected into 3D space
-using its depth map values $\rho$. These 3D points are then reprojected into image $j$ (see figure \ref{fig:reg}). The 3D points $P_{i}$ and their corresponding 2D matches image $j$ $m_{j}$ are fed into OpenCV's EPnP solver, which computes the relative camera pose $T_{ji} = \left(R_{ji}, t_{ji}$ by minimising projection error in Ransac manner.
+using its depth map values $\rho$. These 3D points are then reprojected into image $j$ (see figure \ref{fig:reg}). The 3D points $P_{i}$ and their corresponding 2D matches image $j$ $m_{j}$ are fed into OpenCV's EPnP solver, which computes the relative camera pose $T_{ji} = \left(R_{ji}, t_{ji}\right)$ by minimising projection error in a Ransac manner.
 
 \begin{equation}\label{eqn:backprojection}
 P = \rho K^{-1} \begin{pmatrix}
