@@ -12,7 +12,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
 find_package(PCL    1.8 REQUIRED common io filters visualization)
 find_package(OpenCV 3.0 REQUIRED core highgui imgproc xfeatures2d xphoto)
-find_package(Boost  1.5 REQUIRED program_options system filesystem date_time)
+find_package(Boost  1.5 REQUIRED program_options regex system filesystem date_time)
 find_package(Ceres      REQUIRED)
 
 include_directories(${PCL_INCLUDE_DIRS})

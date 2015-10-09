@@ -1,11 +1,12 @@
 #include <map>
-#include <regex>
 using namespace std;
 
 #include "boost/filesystem.hpp"
 #include "boost/format.hpp"
-namespace fs  = boost::filesystem;
+#include "boost/regex.hpp"
+namespace fs = boost::filesystem;
 typedef boost::format fmt;
+using namespace boost;
 
 #include "opencv2/opencv.hpp"
 #include "opencv2/xphoto.hpp"
@@ -27,7 +28,8 @@ void Pipeline::load_images(string folder_path, Images& images)
 	images = Images(0);
 
 	// Regex to parse image names
-	auto fname_regex = regex(".*/frame_([0-9T\\.]+)_(rgb|depth)\\.png$");
+	auto fname_regex = regex("^.*/frame_([\\dT\\.]+)_(rgb|depth)\\.png$",
+		regex_constants::ECMAScript);
 
 	// Create intermediate map structure
 	map<string, bool> _tstamps;
@@ -40,6 +42,7 @@ void Pipeline::load_images(string folder_path, Images& images)
 		{
 			path = itr->path().string();
 			regex_match(path, match, fname_regex);
+			cout << match[0] << " " << match[1] << endl;
 
 			if (match.size() == 3)
 			{
