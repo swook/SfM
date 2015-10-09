@@ -42,7 +42,6 @@ void Pipeline::load_images(string folder_path, Images& images)
 		{
 			path = itr->path().string();
 			regex_match(path, match, fname_regex);
-			cout << match[0] << " " << match[1] << endl;
 
 			if (match.size() == 3)
 			{
